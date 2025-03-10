@@ -1,1 +1,1 @@
-# labs-tg-bot
+# Labs Planner Telegram Bot

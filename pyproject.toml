@@ -1,0 +1,20 @@
+[project]
+name = "labs-tg-bot"
+version = "0.1.0"
+description = "Телеграм-бот для управления лабораторными работами"
+authors = [
+    {name = "Xsen-a",email = "malikina2003@mail.ru"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiogram (>=3.18.0,<4.0.0)",
+    "fastapi (>=0.115.11,<0.116.0)",
+    "alembic (>=1.15.1,<2.0.0)",
+    "sqlmodel (>=0.0.24,<0.0.25)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
