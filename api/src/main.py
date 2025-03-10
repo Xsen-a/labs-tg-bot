@@ -2,7 +2,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from .database import SessionDep
-from .routers import authorization, teacher, utils, authentication, student, admin
+# from .routers import authorization, teacher, utils, authentication, student, admin
 
 def create_app() -> FastAPI:
     """
@@ -11,12 +11,7 @@ def create_app() -> FastAPI:
     app = FastAPI()
 
     # Подключение маршрутов
-    app.include_router(authorization.router)
-    app.include_router(teacher.router)
-    app.include_router(utils.router)
-    app.include_router(authentication.router)
-    app.include_router(student.router)
-    app.include_router(admin.router)
+    # app.include_router(authorization.router)
 
     # Пример базового маршрута
     @app.get("/")
