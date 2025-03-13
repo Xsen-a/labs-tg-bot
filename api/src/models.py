@@ -42,7 +42,7 @@ class Teacher(SQLModel, table=True):
     classroom: Optional[str] = Field(default=None, max_length=100, description="Аудитория, в которой можно найти преподавателя")
     is_from_API: bool = Field(default=False, description="Флаг, получен ли преподаватель из API ПетрГУ")
 
-    user: User = Relationship(back_populates="teacher")
+    user: User = Relationship(back_populates="teachers")
     disciplines: list["Discipline"] = Relationship(back_populates="teacher")
 
 

@@ -7,10 +7,10 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.types import TelegramObject
-from aiogram.utils.i18n import I18nMiddleware, I18n
+from aiogram.utils.i18n import I18nMiddleware, I18n, FSMI18nMiddleware
 from typing import Any
 
-from .handlers import main_handler
+from .handlers import main_handler, teacher_handler
 
 
 TOKEN = settings.BOT_TOKEN
@@ -28,15 +28,16 @@ async def main() -> None:
 
     # Настройка i18n
     i18n = I18n(path="locales", default_locale="ru", domain="messages")
-    i18n_middleware = BotI18nMiddleware(i18n)
+    i18n_middleware = FSMI18nMiddleware(i18n)
 
 
     # Добавление middleware в диспетчер
     dp.message.outer_middleware(i18n_middleware)
-    # BotI18nMiddleware(i18n).setup(dp)
+    FSMI18nMiddleware(i18n).setup(dp)
 
     # Добавление роутеров из всех handler
     dp.include_routers(main_handler.router)
+    dp.include_routers(teacher_handler.router)
 
     # logger.info("Запуск бота...")
     await dp.start_polling(bot)

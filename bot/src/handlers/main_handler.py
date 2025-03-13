@@ -11,7 +11,7 @@ import json
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 
-import bot.src.keyboards.menu as menu_keyboards
+import bot.src.keyboards.menu as kb
 
 router = Router()
 
@@ -20,7 +20,7 @@ router = Router()
 async def start_dialog(message: Message, state: FSMContext):
     await message.answer(
         _("Вы находитесь в главном меню."),
-        reply_markup=menu_keyboards.main_menu_keyboard(),
+        reply_markup=kb.main_menu_keyboard(),
     )
 
 
@@ -34,7 +34,7 @@ async def back_handler(msg: Message, state: FSMContext):
 async def open_labs_menu(message: Message, state: FSMContext):
     await message.answer(
         _("Вы находитесь в меню лабораторных работ."),
-        reply_markup=menu_keyboards.labs_menu_keyboard(),
+        reply_markup=kb.labs_menu_keyboard(),
     )
 
 
@@ -42,7 +42,7 @@ async def open_labs_menu(message: Message, state: FSMContext):
 async def open_labs_list(message: Message, state: FSMContext):
     await message.answer(
         _("Выберите вид отображения списка."),
-        reply_markup=menu_keyboards.labs_list_filer(),
+        reply_markup=kb.labs_list_filer(),
     )
 
 
@@ -50,7 +50,7 @@ async def open_labs_list(message: Message, state: FSMContext):
 async def open_gant_menu(message: Message, state: FSMContext):
     await message.answer(
         _("Выберите период для диаграммы Ганта."),
-        reply_markup=menu_keyboards.choose_gant_diagram(),
+        reply_markup=kb.choose_gant_diagram(),
     )
 
 
@@ -58,7 +58,7 @@ async def open_gant_menu(message: Message, state: FSMContext):
 async def open_discipline_menu(message: Message, state: FSMContext):
     await message.answer(
         _("Вы находитесь в меню дисциплин."),
-        reply_markup=menu_keyboards.discipline_menu_keyboard(),
+        reply_markup=kb.discipline_menu_keyboard(),
     )
 
 
@@ -66,7 +66,7 @@ async def open_discipline_menu(message: Message, state: FSMContext):
 async def open_teacher_menu(message: Message, state: FSMContext):
     await message.answer(
         _("Вы находитесь в меню преподавателей."),
-        reply_markup=menu_keyboards.teacher_menu_keyboard(),
+        reply_markup=kb.teacher_menu_keyboard(),
     )
 
 
@@ -74,7 +74,7 @@ async def open_teacher_menu(message: Message, state: FSMContext):
 async def open_lesson_menu(message: Message, state: FSMContext):
     await message.answer(
         _("Вы находитесь в меню пар."),
-        reply_markup=menu_keyboards.lesson_menu_keyboard(),
+        reply_markup=kb.lesson_menu_keyboard(),
     )
 
 
@@ -82,5 +82,5 @@ async def open_lesson_menu(message: Message, state: FSMContext):
 async def open_settings_menu(message: Message, state: FSMContext):
     await message.answer(
         _("Вы находитесь в разделе пользовательских настроек. (дополнить по статусу)"),
-        reply_markup=menu_keyboards.settings_menu_keyboard(),
+        reply_markup=kb.settings_menu_keyboard(),
     )
