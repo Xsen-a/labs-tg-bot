@@ -5,7 +5,6 @@ load_dotenv()
 
 class Settings(BaseSettings):
     BOT_TOKEN: str
-    RABBITMQ_URL: str
     API_URL: str
 
     class Config:

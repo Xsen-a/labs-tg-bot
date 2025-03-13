@@ -1,18 +1,16 @@
 import asyncio
 import logging
 import sys
-import gettext
-from settings import settings
+from .settings import settings
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.types import TelegramObject
 from aiogram.utils.i18n import I18nMiddleware, I18n
-from sqlalchemy.dialects.postgresql import Any
+from typing import Any
 
-from handlers import student_handler
-from handlers.admin_handlers import admin_handler
+from .handlers import main_handler
 
 
 TOKEN = settings.BOT_TOKEN
@@ -28,18 +26,20 @@ async def main() -> None:
 
     dp = Dispatcher()
 
-    # Добавление роутеров из всех handler
-    dp.include_routers(student_handler.router)
-
-    appname = 'bot'
-    localedir = './locales'
-    i18n = gettext.translation(appname, localedir, fallback=True, languages=['ru'])
-    i18n.install()
+    # Настройка i18n
     i18n = I18n(path="locales", default_locale="ru", domain="messages")
-    BotI18nMiddleware(i18n).setup(dp)
+    i18n_middleware = BotI18nMiddleware(i18n)
 
+
+    # Добавление middleware в диспетчер
+    dp.message.outer_middleware(i18n_middleware)
+    # BotI18nMiddleware(i18n).setup(dp)
+
+    # Добавление роутеров из всех handler
+    dp.include_routers(main_handler.router)
+
+    # logger.info("Запуск бота...")
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)

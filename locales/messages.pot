@@ -1,0 +1,147 @@
+# Translations template for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-03-13 16:03+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: bot/src/handlers/main_handler.py:22
+msgid "Вы находитесь в главном меню."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:36
+msgid "Вы находитесь в меню лабораторных работ."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:44
+msgid "Выберите вид отображения списка."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:52
+msgid "Выберите период для диаграммы Ганта."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:60
+msgid "Вы находитесь в меню дисциплин."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:68
+msgid "Вы находитесь в меню преподавателей."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:76
+msgid "Вы находитесь в меню пар."
+msgstr ""
+
+#: bot/src/handlers/main_handler.py:84
+msgid "Вы находитесь в разделе пользовательских настроек. (дополнить по статусу)"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:9 bot/src/keyboards/menu.py:11
+msgid "⬅ Назад"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:16
+msgid "Лабораторные работы"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:17
+msgid "Диаграммы Ганта"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:21
+msgid "Дисциплины"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:22
+msgid "Преподаватели"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:23
+msgid "Преподаватели и дисциплины"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:24
+msgid "Пары"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:25
+msgid "Настройки"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:34
+msgid "Добавить лабораторную работу"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:35
+msgid "Посмотреть список лабораторных работ"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:44
+msgid "По статусу"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:45
+msgid "По дисциплине"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:46
+msgid "На 7 дней"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:54
+msgid "Общая"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:55
+msgid "Месяц"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:56
+msgid "Две недели"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:64
+msgid "Добавить дисциплину"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:65
+msgid "Посмотреть список дисциплин"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:74
+msgid "Добавить преподавателя"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:75
+msgid "Посмотреть список преподавателей"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:84
+msgid "Добавить пару"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:85
+msgid "Посмотреть список пар"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:94
+msgid "Изменить группу"
+msgstr ""
+
+#: bot/src/keyboards/menu.py:95
+msgid "Изменить статус студента ПетрГУ"
+msgstr ""
+
