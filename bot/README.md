@@ -4,3 +4,5 @@
 msgfmt messages.po -o messages.mo
 ```
 
+***Создать .pot файл***
+

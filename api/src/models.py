@@ -28,7 +28,6 @@ class User(SQLModel, table=True):
     disciplines: list["Discipline"] = Relationship(back_populates="user")
     teachers: list["Teacher"] = Relationship(back_populates="user")
     tasks: list["Task"] = Relationship(back_populates="user")
-    files: list["File"] = Relationship(back_populates="user")
     lessons: list["Lesson"] = Relationship(back_populates="user")
 
 
@@ -98,10 +97,8 @@ class Task(SQLModel, table=True):
 class File(SQLModel, table=True):
     __tablename__ = "tblFile"
     file_id: int = Field(default=None, primary_key=True, description="Уникальный идентификатор записи о файле")
-    user_id: int = Field(foreign_key="tblUser.user_id", description="Ссылка на идентификатор записи о пользователе")
     task_id: int = Field(foreign_key="tblTask.task_id", description="Ссылка на идентификатор записи о лабораторной работе")
     file_name: str = Field(max_length=255, description="Имя файла")
     file_data: bytes = Field(description="Содержимое файла любого формата в байтах")
 
-    user: User = Relationship(back_populates="files")
     task: Task = Relationship(back_populates="files")

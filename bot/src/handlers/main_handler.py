@@ -18,6 +18,6 @@ router = Router()
 @router.message(CommandStart())
 async def get_contact_handler(message: Message, state: FSMContext):
     await message.answer(
-        _("Лабораторные работы"),
+        _("Вы находитесь в главном меню."),
         reply_markup=menu_keyboards.main_menu_keyboard(),
     )
