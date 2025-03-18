@@ -30,3 +30,12 @@ class AddUserSchema(SQLModel):
     telegram_id: str
     is_petrsu_student: bool
     group: str
+
+
+class CheckPetrsuStudentSchema(SQLModel):
+    telegram_id: str
+
+
+class CheckPetrsuStudentResponseSchema(BaseModel):
+    is_petrsu_student: bool
+    group: str

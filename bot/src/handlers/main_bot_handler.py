@@ -30,10 +30,27 @@ async def start_dialog(message: Message, state: FSMContext, telegram_id: int = N
     response = requests.get(url_req, json={"telegram_id": str(current_user_tg_id)})
     response_data = response.json()
     if response_data.get("exists", True):
-        await message.answer(
-            _("Вы находитесь в главном меню."),
-            reply_markup=kb.main_menu_keyboard(),
-        )
+        url_req = f"{settings.API_URL}/check_is_petrsu_student"
+        response = requests.get(url_req, json={"telegram_id": str(current_user_tg_id)})
+        response_data = response.json()
+        if response_data.get("is_petrsu_student", True):
+            if telegram_id is None:
+                await message.answer(
+                    _("Добро пожаловать! Ваша группа {group}.").format(group=response_data.get("group"))
+                )
+            await message.answer(
+                _("Вы находитесь в главном меню."),
+                reply_markup=kb.main_menu_keyboard(),
+            )
+        else:
+            if telegram_id is None:
+                await message.answer(
+                    _("Добро пожаловать!")
+                )
+            await message.answer(
+                _("Вы находитесь в главном меню."),
+                reply_markup=kb.main_menu_keyboard(),
+            )
     else:
         await state.update_data(tg_id=str(current_user_tg_id))
         await message.answer(
