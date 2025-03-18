@@ -11,7 +11,7 @@ pybabel init -i locales/messages.pot -d locales -D messages -l ru
 ```commandline
 pybabel extract -F babel.cfg -o locales/messages.pot .
 ```
-***Обновить .pot файл***
+***Обновить .po файлы***
 ```commandline
 pybabel update -d locales -D messages -i locales/messages.pot
 ```

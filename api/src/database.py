@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlmodel import Session
-from config.project_config import settings
+from ..config.project_config import settings
 
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
