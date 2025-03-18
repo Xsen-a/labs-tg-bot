@@ -71,7 +71,7 @@ async def add_teacher_fio(msg: Message, state: FSMContext):
     else:
         await state.update_data(name=fio)
         await msg.answer(
-            _("Введите номер телефона преподавателя.")
+            _("Введите номер телефона преподавателя в формате +79999999999.")
         )
         await state.set_state(AddTeacherStates.waiting_for_phone_number)
 
@@ -87,7 +87,7 @@ async def add_teacher_phone_number(msg: Message, state: FSMContext):
     else:
         await state.update_data(phone_number=phone_number)
         await msg.answer(
-            _("Введите почту преподавателя.")
+            _("Введите почту преподавателя в формате name@mail.ru.")
         )
         await state.set_state(AddTeacherStates.waiting_for_email)
 
@@ -175,56 +175,56 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
         await main_bot_handler.open_teacher_menu(callback_query.message, state)
     else:
         await callback_query.message.answer(json.loads(response.text).get('detail'))
-
-
-@router.callback_query(F.data == "change_fio")
-async def change_teacher_fio(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.message.answer("Введите новые ФИО.")
-    await state.set_state(AddTeacherStates.waiting_for_new_fio)
-
-
-@router.message(AddTeacherStates.waiting_for_new_fio)
-async def request_new_fio(msg: Message, state: FSMContext):
-    fio = msg.text
-    if not validate_fio(fio):
-        await msg.answer(
-            "Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество (если имеется)."
-        )
-        return
-    else:
-        await state.update_data(name=fio)
-        await msg.answer(f"Введенные ФИО:\n\n" f"{fio}")
-        user_data = await state.get_data()
-        name = user_data.get("name")
-        phone_number = user_data.get("phone_number")
-        await msg.answer(
-            f"Добавить преподавателя:\n\n" f"ФИО: {name}\n" f"Номер телефона: {phone_number}",
-            reply_markup=kb.add_teacher_confirm,
-        )
-
-
-@router.callback_query(F.data == "change_phone_number")
-async def change_teacher_fio(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.message.answer("Введите новый номер телефона.")
-    await state.set_state(AddTeacherStates.waiting_for_new_phone_number)
-
-
-@router.message(AddTeacherStates.waiting_for_new_phone_number)
-async def request_new_phone_number(msg: Message, state: FSMContext):
-    phone_number = msg.text
-    if not validate_phone_number(phone_number):
-        await msg.answer(
-            "Неверный формат номера телефона. Пожалуйста, введите номер в формате +79999999999."
-        )
-        return
-    else:
-        await state.update_data(phone=phone_number)
-        await msg.answer(f"Введенный номер телефона: {phone_number}")
-        user_data = await state.get_data()
-        name = user_data.get("name")
-        phone = user_data.get("phone")
-
-        await msg.answer(
-            f"Добавить преподавателя:\n\n" f"ФИО: {name}\n" f"Номер телефона: {phone}",
-            reply_markup=kb.add_teacher_confirm,
-        )
+#
+#
+# @router.callback_query(F.data == "change_fio")
+# async def change_teacher_fio(callback_query: CallbackQuery, state: FSMContext):
+#     await callback_query.message.answer("Введите новые ФИО.")
+#     await state.set_state(AddTeacherStates.waiting_for_new_fio)
+#
+#
+# @router.message(AddTeacherStates.waiting_for_new_fio)
+# async def request_new_fio(msg: Message, state: FSMContext):
+#     fio = msg.text
+#     if not validate_fio(fio):
+#         await msg.answer(
+#             "Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество (если имеется)."
+#         )
+#         return
+#     else:
+#         await state.update_data(name=fio)
+#         await msg.answer(f"Введенные ФИО:\n\n" f"{fio}")
+#         user_data = await state.get_data()
+#         name = user_data.get("name")
+#         phone_number = user_data.get("phone_number")
+#         await msg.answer(
+#             f"Добавить преподавателя:\n\n" f"ФИО: {name}\n" f"Номер телефона: {phone_number}",
+#             reply_markup=kb.add_teacher_confirm,
+#         )
+#
+#
+# @router.callback_query(F.data == "change_phone_number")
+# async def change_teacher_fio(callback_query: CallbackQuery, state: FSMContext):
+#     await callback_query.message.answer("Введите новый номер телефона.")
+#     await state.set_state(AddTeacherStates.waiting_for_new_phone_number)
+#
+#
+# @router.message(AddTeacherStates.waiting_for_new_phone_number)
+# async def request_new_phone_number(msg: Message, state: FSMContext):
+#     phone_number = msg.text
+#     if not validate_phone_number(phone_number):
+#         await msg.answer(
+#             "Неверный формат номера телефона. Пожалуйста, введите номер в формате +79999999999."
+#         )
+#         return
+#     else:
+#         await state.update_data(phone=phone_number)
+#         await msg.answer(f"Введенный номер телефона: {phone_number}")
+#         user_data = await state.get_data()
+#         name = user_data.get("name")
+#         phone = user_data.get("phone")
+#
+#         await msg.answer(
+#             f"Добавить преподавателя:\n\n" f"ФИО: {name}\n" f"Номер телефона: {phone}",
+#             reply_markup=kb.add_teacher_confirm,
+#         )

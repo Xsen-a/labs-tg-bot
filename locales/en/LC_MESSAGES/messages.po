@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-19 01:04+0300\n"
+"POT-Creation-Date: 2025-03-19 01:53+0300\n"
 "PO-Revision-Date: 2025-03-13 12:37+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -28,17 +28,17 @@ msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:63
 #, python-brace-format
-msgid "Добро пожаловать! Ваша группа {group}"
+msgid "Добро пожаловать! Ваша группа {group}."
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:69
 #: bot/src/handlers/auth_bot_handler.py:96
 #, python-brace-format
-msgid "Ошибка регистрации. Сервер недоступен. Ошибка {response_status}"
+msgid "Ошибка регистрации. Сервер недоступен. Ошибка {response_status}."
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:73
-msgid "Данная группа не найдена в ПетрГУ, повторите ввод"
+msgid "Данная группа не найдена в ПетрГУ, повторите ввод."
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:78
@@ -46,46 +46,46 @@ msgstr ""
 msgid ""
 "Сервер ПетрГУ в данный момент недоступен. Зарегистрируйтесь без статуса "
 "студента ПетрГУ.Вы можете сменить статус студента в настройках. Ошибка "
-"{status}"
+"{status}."
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:90
 msgid "Добро пожаловать!"
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:29
+#: bot/src/handlers/main_bot_handler.py:34
 msgid "Вы находитесь в главном меню."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:35
+#: bot/src/handlers/main_bot_handler.py:40
 msgid "Подтвердите, пожалуйста, отправку Telegram ID для регистрации."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:50
+#: bot/src/handlers/main_bot_handler.py:55
 msgid "Вы находитесь в меню лабораторных работ."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:58
+#: bot/src/handlers/main_bot_handler.py:63
 msgid "Выберите вид отображения списка."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:66
+#: bot/src/handlers/main_bot_handler.py:71
 msgid "Выберите период для диаграммы Ганта."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:74
+#: bot/src/handlers/main_bot_handler.py:79
 msgid "Вы находитесь в меню дисциплин."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:82
+#: bot/src/handlers/main_bot_handler.py:87
 msgid "Вы находитесь в меню преподавателей."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:90
+#: bot/src/handlers/main_bot_handler.py:95
 msgid "Вы находитесь в меню пар."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:98
+#: bot/src/handlers/main_bot_handler.py:103
 msgid "Вы находитесь в разделе пользовательских настроек. (дополнить по статусу)"
 msgstr ""
 
@@ -100,7 +100,7 @@ msgid ""
 msgstr ""
 
 #: bot/src/handlers/teacher_bot_handler.py:74
-msgid "Введите номер телефона преподавателя."
+msgid "Введите номер телефона преподавателя в формате +79999999999."
 msgstr ""
 
 #: bot/src/handlers/teacher_bot_handler.py:84
@@ -110,7 +110,7 @@ msgid ""
 msgstr ""
 
 #: bot/src/handlers/teacher_bot_handler.py:90
-msgid "Введите почту преподавателя."
+msgid "Введите почту преподавателя в формате name@mail.ru."
 msgstr ""
 
 #: bot/src/handlers/teacher_bot_handler.py:100
@@ -274,5 +274,27 @@ msgid "Изменить аудиторию"
 msgstr ""
 
 #~ msgid "Диаграмма Ганта"
+#~ msgstr ""
+
+#~ msgid "Добро пожаловать! Ваша группа {group}"
+#~ msgstr ""
+
+#~ msgid "Ошибка регистрации. Сервер недоступен. Ошибка {response_status}"
+#~ msgstr ""
+
+#~ msgid "Данная группа не найдена в ПетрГУ, повторите ввод"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Сервер ПетрГУ в данный момент "
+#~ "недоступен. Зарегистрируйтесь без статуса "
+#~ "студента ПетрГУ.Вы можете сменить статус "
+#~ "студента в настройках. Ошибка {status}"
+#~ msgstr ""
+
+#~ msgid "Введите номер телефона преподавателя."
+#~ msgstr ""
+
+#~ msgid "Введите почту преподавателя."
 #~ msgstr ""
 
