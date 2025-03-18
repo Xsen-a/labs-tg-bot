@@ -4,6 +4,7 @@
 
 from datetime import datetime, date, time
 
+from pydantic import BaseModel
 from sqlmodel import SQLModel
 
 
@@ -15,3 +16,17 @@ class AddTeacherSchema(SQLModel):
     social_page_link: str
     classroom: str
     is_from_API: bool
+
+
+class CheckUserSchema(SQLModel):
+    telegram_id: str
+
+
+class CheckUserResponseSchema(BaseModel):
+    exists: bool
+
+
+class AddUserSchema(SQLModel):
+    telegram_id: str
+    is_petrsu_student: bool
+    group: str

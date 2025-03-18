@@ -12,16 +12,30 @@ from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 
 import bot.src.keyboards.menu as kb
+import bot.src.keyboards.auth as kb_auth
+import bot.src.handlers.auth as auth
 
 router = Router()
 
 
 @router.message(CommandStart())
 async def start_dialog(message: Message, state: FSMContext):
-    await message.answer(
-        _("Вы находитесь в главном меню."),
-        reply_markup=kb.main_menu_keyboard(),
-    )
+    current_user_tg_id = message.from_user.id
+    url_req = f"{settings.API_URL}/check_user"
+    response = requests.get(url_req, json={"telegram_id": str(current_user_tg_id)})
+    response_data = response.json()
+    if response_data.get("exists", True):
+        await message.answer(
+            _("Вы находитесь в главном меню."),
+            reply_markup=kb.main_menu_keyboard(),
+        )
+    else:
+        await state.update_data(tg_id=str(current_user_tg_id))
+        await message.answer(
+            _("Подтвердите, пожалуйста, отправку Telegram ID для регистрации."),
+            reply_markup=kb_auth.send_tg_id(),
+        )
+
 
 
 @router.message(F.text == __("⬅ Назад"))
