@@ -10,8 +10,8 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 
-from bot.src.handlers import main
-import bot.src.keyboards.teacher as kb
+from bot.src.handlers import main_bot_handler
+import bot.src.keyboards.teacher_keyboard as kb
 from ..settings import settings
 
 router = Router()

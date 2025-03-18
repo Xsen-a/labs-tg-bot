@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from api.src.schemas import AddTeacherSchema
-from api.src.handlers.teacher import add_teacher_handler
+from api.src.handlers.teacher_api_handler import add_teacher_handler
 
 from api.src.database import SessionDep
 

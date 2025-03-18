@@ -11,9 +11,9 @@ import json
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 
-import bot.src.keyboards.menu as kb
-import bot.src.keyboards.auth as kb_auth
-import bot.src.handlers.auth as auth
+import bot.src.keyboards.menu_keyboard as kb
+import bot.src.keyboards.auth_keyboard as kb_auth
+import bot.src.handlers.auth_bot_handler as auth
 
 router = Router()
 

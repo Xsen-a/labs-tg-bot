@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from api.src.schemas import CheckUserSchema, AddUserSchema
-from api.src.handlers.auth import check_user_handler, add_user_handler
+from api.src.handlers.auth_api_handler import check_user_handler, add_user_handler
 
 from api.src.database import SessionDep
 

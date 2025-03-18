@@ -10,7 +10,7 @@ from aiogram.types import TelegramObject
 from aiogram.utils.i18n import I18nMiddleware, I18n, FSMI18nMiddleware
 from typing import Any
 
-from .handlers import main as main_handler, teacher as teacher_handler, auth as auth_handler
+from .handlers import main_bot_handler as main_handler, teacher_bot_handler as teacher_handler, auth_bot_handler as auth_handler
 
 
 TOKEN = settings.BOT_TOKEN

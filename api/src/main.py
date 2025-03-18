@@ -2,7 +2,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from .database import SessionDep
-from .routers import teacher, auth
+from .routers import teacher_api_router, auth_api_router
 
 def create_app() -> FastAPI:
     """
