@@ -60,23 +60,23 @@ async def get_group(message: Message, state: FSMContext):
             response_status = await add_user_to_db(state)
             if response_status == 200:
                 await message.answer(
-                    _("Добро пожаловать! Ваша группа {group}").format(group=group)
+                    _("Добро пожаловать! Ваша группа {group}.").format(group=group)
                 )
-                await main.start_dialog(message, state)
+                await main_bot_handler.start_dialog(message, state, message.from_user.id)
                 await state.clear()
             else:
                 await message.answer(
-                    _("Ошибка регистрации. Сервер недоступен. Ошибка {response_status}").format(response_status=response_status)
+                    _("Ошибка регистрации. Сервер недоступен. Ошибка {response_status}.").format(response_status=response_status)
                 )
         else:
             await message.answer(
-                _("Данная группа не найдена в ПетрГУ, повторите ввод")
+                _("Данная группа не найдена в ПетрГУ, повторите ввод.")
             )
             return
     else:
         await message.answer(
             _("Сервер ПетрГУ в данный момент недоступен. Зарегистрируйтесь без статуса студента ПетрГУ."
-              "Вы можете сменить статус студента в настройках. Ошибка {status}").format(status=response.status_code)
+              "Вы можете сменить статус студента в настройках. Ошибка {status}.").format(status=response.status_code)
         )
 
 
@@ -89,9 +89,9 @@ async def is_not_petrsu(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.answer(
             _("Добро пожаловать!")
         )
-        await main.start_dialog(callback_query.message, state)
+        await main_bot_handler.start_dialog(callback_query.message, state, callback_query.from_user.id)
         await state.clear()
     else:
         await callback_query.message.answer(
-            _("Ошибка регистрации. Сервер недоступен. Ошибка {response_status}").format(response_status=response_status)
+            _("Ошибка регистрации. Сервер недоступен. Ошибка {response_status}.").format(response_status=response_status)
         )

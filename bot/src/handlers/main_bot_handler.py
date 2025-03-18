@@ -19,8 +19,13 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def start_dialog(message: Message, state: FSMContext):
-    current_user_tg_id = message.from_user.id
+async def start_dialog(message: Message, state: FSMContext, telegram_id: int = None):
+
+    if telegram_id is not None:
+        current_user_tg_id = telegram_id
+    else:
+        current_user_tg_id = message.from_user.id
+
     url_req = f"{settings.API_URL}/check_user"
     response = requests.get(url_req, json={"telegram_id": str(current_user_tg_id)})
     response_data = response.json()

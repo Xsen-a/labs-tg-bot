@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-13 16:03+0300\n"
+"POT-Creation-Date: 2025-03-19 01:04+0300\n"
 "PO-Revision-Date: 2025-03-13 12:37+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,132 +18,259 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: bot/src/handlers/main_handler.py:22
+#: bot/src/handlers/auth_bot_handler.py:37
+msgid "Вы являетесь студентом ПетрГУ?"
+msgstr ""
+
+#: bot/src/handlers/auth_bot_handler.py:46
+msgid "Введите номер группы."
+msgstr ""
+
+#: bot/src/handlers/auth_bot_handler.py:63
+#, python-brace-format
+msgid "Добро пожаловать! Ваша группа {group}"
+msgstr ""
+
+#: bot/src/handlers/auth_bot_handler.py:69
+#: bot/src/handlers/auth_bot_handler.py:96
+#, python-brace-format
+msgid "Ошибка регистрации. Сервер недоступен. Ошибка {response_status}"
+msgstr ""
+
+#: bot/src/handlers/auth_bot_handler.py:73
+msgid "Данная группа не найдена в ПетрГУ, повторите ввод"
+msgstr ""
+
+#: bot/src/handlers/auth_bot_handler.py:78
+#, python-brace-format
+msgid ""
+"Сервер ПетрГУ в данный момент недоступен. Зарегистрируйтесь без статуса "
+"студента ПетрГУ.Вы можете сменить статус студента в настройках. Ошибка "
+"{status}"
+msgstr ""
+
+#: bot/src/handlers/auth_bot_handler.py:90
+msgid "Добро пожаловать!"
+msgstr ""
+
+#: bot/src/handlers/main_bot_handler.py:29
 msgid "Вы находитесь в главном меню."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:36
+#: bot/src/handlers/main_bot_handler.py:35
+msgid "Подтвердите, пожалуйста, отправку Telegram ID для регистрации."
+msgstr ""
+
+#: bot/src/handlers/main_bot_handler.py:50
 msgid "Вы находитесь в меню лабораторных работ."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:44
+#: bot/src/handlers/main_bot_handler.py:58
 msgid "Выберите вид отображения списка."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:52
+#: bot/src/handlers/main_bot_handler.py:66
 msgid "Выберите период для диаграммы Ганта."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:60
+#: bot/src/handlers/main_bot_handler.py:74
 msgid "Вы находитесь в меню дисциплин."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:68
+#: bot/src/handlers/main_bot_handler.py:82
 msgid "Вы находитесь в меню преподавателей."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:76
+#: bot/src/handlers/main_bot_handler.py:90
 msgid "Вы находитесь в меню пар."
 msgstr ""
 
-#: bot/src/handlers/main_handler.py:84
+#: bot/src/handlers/main_bot_handler.py:98
 msgid "Вы находитесь в разделе пользовательских настроек. (дополнить по статусу)"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:9 bot/src/keyboards/menu.py:11
+#: bot/src/handlers/teacher_bot_handler.py:59
+msgid "Введите ФИО преподавателя."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:68
+msgid ""
+"Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество "
+"(если имеется)."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:74
+msgid "Введите номер телефона преподавателя."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:84
+msgid ""
+"Неверный формат номера телефона. Пожалуйста, введите номер в формате "
+"+79999999999."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:90
+msgid "Введите почту преподавателя."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:100
+msgid "Неверный формат почты. Введите, пожалуйста, в формате name@mail.ru."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:106
+msgid "Введите ссылку на социальную сеть преподавателя."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:116
+msgid "Введите номер аудитории или кафедры, где можно найти преподавателя."
+msgstr ""
+
+#: bot/src/handlers/teacher_bot_handler.py:133
+#, python-brace-format
+msgid ""
+"Вы действительно хотите добавить преподавателя\n"
+"{name}?\n"
+"\n"
+"Номер телефона: {phone_number}\n"
+"Почта: {email}\n"
+"Социальная сеть: {social_page_link}\n"
+"Аудитория:{classroom}\n"
+msgstr ""
+
+#: bot/src/keyboards/auth_keyboard.py:9
+msgid "Отправить Telegram ID"
+msgstr ""
+
+#: bot/src/keyboards/auth_keyboard.py:16
+msgid "Да, я студент ПетрГУ"
+msgstr ""
+
+#: bot/src/keyboards/auth_keyboard.py:17
+msgid "Нет, я не студент ПетрГУ"
+msgstr ""
+
+#: bot/src/keyboards/menu_keyboard.py:9 bot/src/keyboards/menu_keyboard.py:11
 msgid "⬅ Назад"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:16
+#: bot/src/keyboards/menu_keyboard.py:16
 msgid "Лабораторные работы"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:17
+#: bot/src/keyboards/menu_keyboard.py:17
 msgid "Диаграммы Ганта"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:21
+#: bot/src/keyboards/menu_keyboard.py:21
 msgid "Дисциплины"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:22
+#: bot/src/keyboards/menu_keyboard.py:22
 msgid "Преподаватели"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:23
+#: bot/src/keyboards/menu_keyboard.py:23
 msgid "Преподаватели и дисциплины"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:24
+#: bot/src/keyboards/menu_keyboard.py:24
 msgid "Пары"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:25
+#: bot/src/keyboards/menu_keyboard.py:25
 msgid "Настройки"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:34
+#: bot/src/keyboards/menu_keyboard.py:34
 msgid "Добавить лабораторную работу"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:35
+#: bot/src/keyboards/menu_keyboard.py:35
 msgid "Посмотреть список лабораторных работ"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:44
+#: bot/src/keyboards/menu_keyboard.py:44
 msgid "По статусу"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:45
+#: bot/src/keyboards/menu_keyboard.py:45
 msgid "По дисциплине"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:46
+#: bot/src/keyboards/menu_keyboard.py:46
 msgid "На 7 дней"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:54
+#: bot/src/keyboards/menu_keyboard.py:54
 msgid "Общая"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:55
+#: bot/src/keyboards/menu_keyboard.py:55
 msgid "Месяц"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:56
+#: bot/src/keyboards/menu_keyboard.py:56
 msgid "Две недели"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:64
+#: bot/src/keyboards/menu_keyboard.py:64
 msgid "Добавить дисциплину"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:65
+#: bot/src/keyboards/menu_keyboard.py:65
 msgid "Посмотреть список дисциплин"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:74
+#: bot/src/keyboards/menu_keyboard.py:74
 msgid "Добавить преподавателя"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:75
+#: bot/src/keyboards/menu_keyboard.py:75
 msgid "Посмотреть список преподавателей"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:84
+#: bot/src/keyboards/menu_keyboard.py:84
 msgid "Добавить пару"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:85
+#: bot/src/keyboards/menu_keyboard.py:85
 msgid "Посмотреть список пар"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:94
+#: bot/src/keyboards/menu_keyboard.py:94
 msgid "Изменить группу"
 msgstr ""
 
-#: bot/src/keyboards/menu.py:95
+#: bot/src/keyboards/menu_keyboard.py:95
 msgid "Изменить статус студента ПетрГУ"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:10
+msgid "Да"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:11
+msgid "Нет"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:12
+msgid "Изменить ФИО"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:13
+msgid "Изменить номер телефона"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:14
+msgid "Изменить почту"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:15
+msgid "Изменить социальную сеть"
+msgstr ""
+
+#: bot/src/keyboards/teacher_keyboard.py:16
+msgid "Изменить аудиторию"
 msgstr ""
 
 #~ msgid "Диаграмма Ганта"

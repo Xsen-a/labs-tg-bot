@@ -11,8 +11,8 @@ def create_app() -> FastAPI:
     app = FastAPI()
 
     # Подключение маршрутов
-    app.include_router(teacher.router)
-    app.include_router(auth.router)
+    app.include_router(teacher_api_router.router)
+    app.include_router(auth_api_router.router)
 
     # Пример базового маршрута
     @app.get("/")

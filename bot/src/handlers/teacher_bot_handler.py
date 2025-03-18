@@ -172,7 +172,7 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
             )
         )
         await state.clear()
-        await main.open_teacher_menu(callback_query.message, state)
+        await main_bot_handler.open_teacher_menu(callback_query.message, state)
     else:
         await callback_query.message.answer(json.loads(response.text).get('detail'))
 
