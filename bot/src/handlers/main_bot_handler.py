@@ -13,7 +13,7 @@ from aiogram.utils.i18n import lazy_gettext as __
 
 import bot.src.keyboards.menu_keyboard as kb
 import bot.src.keyboards.auth_keyboard as kb_auth
-import bot.src.handlers.auth_bot_handler as auth
+import bot.src.keyboards.settings_keyboard as kb_settings
 
 router = Router()
 
@@ -59,11 +59,13 @@ async def start_dialog(message: Message, state: FSMContext, telegram_id: int = N
         )
 
 
-
 @router.message(F.text == __("⬅ Назад"))
-async def back_handler(msg: Message, state: FSMContext):
+async def back_handler(message: Message, state: FSMContext):
     await state.clear()
-    await start_dialog(msg, state)
+    await message.answer(
+        _("Вы находитесь в главном меню."),
+        reply_markup=kb.main_menu_keyboard(),
+    )
 
 
 @router.message(F.text == __("Лабораторные работы"))
@@ -115,8 +117,21 @@ async def open_lesson_menu(message: Message, state: FSMContext):
 
 
 @router.message(F.text == __("Настройки"))
-async def open_settings_menu(message: Message, state: FSMContext):
-    await message.answer(
-        _("Вы находитесь в разделе пользовательских настроек. (дополнить по статусу)"),
-        reply_markup=kb.settings_menu_keyboard(),
-    )
+async def open_settings_menu(message: Message, state: FSMContext,  telegram_id: int = None):
+    if telegram_id is None:
+        telegram_id = str(message.from_user.id)
+        await state.update_data(telegram_id=str(message.from_user.id))
+    url_req = f"{settings.API_URL}/check_is_petrsu_student"
+    response = requests.get(url_req, json={"telegram_id": telegram_id})
+    response_data = response.json()
+    if response_data.get("is_petrsu_student", True):
+        await message.answer(
+            _("Вы находитесь в разделе пользовательских настроек.\n\nВы являетесь студентом ПетрГУ.\n"
+              "Группа: {group}").format(group=response_data.get("group")),
+            reply_markup=kb_settings.settings_menu_keyboard(response_data.get("is_petrsu_student")),
+        )
+    else:
+        await message.answer(
+            _("Вы находитесь в разделе пользовательских настроек.\n\nВы не являетесь студентом ПетрГУ"),
+            reply_markup=kb_settings.settings_menu_keyboard(response_data.get("is_petrsu_student")),
+        )

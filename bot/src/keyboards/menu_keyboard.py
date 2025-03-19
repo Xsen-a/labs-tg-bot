@@ -86,13 +86,3 @@ def lesson_menu_keyboard():
     builder.row(back_button())
     builder.adjust(1)
     return builder.as_markup()
-
-
-def settings_menu_keyboard():
-    builder = ReplyKeyboardBuilder()
-
-    builder.button(text=_("Изменить группу"))
-    builder.button(text=_("Изменить статус студента ПетрГУ"))
-    builder.row(back_button())
-    builder.adjust(1)
-    return builder.as_markup()
