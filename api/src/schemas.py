@@ -43,5 +43,10 @@ class CheckPetrsuStudentResponseSchema(BaseModel):
 
 class ChangeUserGroupSchema(SQLModel):
     telegram_id: str
-    group:str
+    group: str
 
+
+class ChangeUserStatusSchema(SQLModel):
+    telegram_id: str
+    group: str
+    is_petrsu_student: bool

@@ -118,9 +118,10 @@ async def open_lesson_menu(message: Message, state: FSMContext):
 
 @router.message(F.text == __("Настройки"))
 async def open_settings_menu(message: Message, state: FSMContext,  telegram_id: int = None):
+    await state.clear()
     if telegram_id is None:
         telegram_id = str(message.from_user.id)
-        await state.update_data(telegram_id=str(message.from_user.id))
+    await state.update_data(telegram_id=telegram_id)
     url_req = f"{settings.API_URL}/check_is_petrsu_student"
     response = requests.get(url_req, json={"telegram_id": telegram_id})
     response_data = response.json()
@@ -132,6 +133,6 @@ async def open_settings_menu(message: Message, state: FSMContext,  telegram_id: 
         )
     else:
         await message.answer(
-            _("Вы находитесь в разделе пользовательских настроек.\n\nВы не являетесь студентом ПетрГУ"),
+            _("Вы находитесь в разделе пользовательских настроек.\n\nВы не являетесь студентом ПетрГУ."),
             reply_markup=kb_settings.settings_menu_keyboard(response_data.get("is_petrsu_student")),
         )

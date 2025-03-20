@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-19 01:53+0300\n"
+"POT-Creation-Date: 2025-03-21 00:43+0300\n"
 "PO-Revision-Date: 2025-03-13 12:37+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -27,6 +27,7 @@ msgid "Введите номер группы."
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:63
+#: bot/src/handlers/main_bot_handler.py:39
 #, python-brace-format
 msgid "Добро пожаловать! Ваша группа {group}."
 msgstr ""
@@ -38,10 +39,12 @@ msgid "Ошибка регистрации. Сервер недоступен. �
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:73
+#: bot/src/handlers/settings_bot_handler.py:69
 msgid "Данная группа не найдена в ПетрГУ, повторите ввод."
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:78
+#: bot/src/handlers/settings_bot_handler.py:74
 #, python-brace-format
 msgid ""
 "Сервер ПетрГУ в данный момент недоступен. Зарегистрируйтесь без статуса "
@@ -50,43 +53,90 @@ msgid ""
 msgstr ""
 
 #: bot/src/handlers/auth_bot_handler.py:90
+#: bot/src/handlers/main_bot_handler.py:48
 msgid "Добро пожаловать!"
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:34
+#: bot/src/handlers/main_bot_handler.py:42
+#: bot/src/handlers/main_bot_handler.py:51
+#: bot/src/handlers/main_bot_handler.py:66
 msgid "Вы находитесь в главном меню."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:40
+#: bot/src/handlers/main_bot_handler.py:57
 msgid "Подтвердите, пожалуйста, отправку Telegram ID для регистрации."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:55
+#: bot/src/handlers/main_bot_handler.py:74
 msgid "Вы находитесь в меню лабораторных работ."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:63
+#: bot/src/handlers/main_bot_handler.py:82
 msgid "Выберите вид отображения списка."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:71
+#: bot/src/handlers/main_bot_handler.py:90
 msgid "Выберите период для диаграммы Ганта."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:79
+#: bot/src/handlers/main_bot_handler.py:98
 msgid "Вы находитесь в меню дисциплин."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:87
+#: bot/src/handlers/main_bot_handler.py:106
 msgid "Вы находитесь в меню преподавателей."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:95
+#: bot/src/handlers/main_bot_handler.py:114
 msgid "Вы находитесь в меню пар."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:103
-msgid "Вы находитесь в разделе пользовательских настроек. (дополнить по статусу)"
+#: bot/src/handlers/main_bot_handler.py:130
+#, python-brace-format
+msgid ""
+"Вы находитесь в разделе пользовательских настроек.\n"
+"\n"
+"Вы являетесь студентом ПетрГУ.\n"
+"Группа: {group}"
+msgstr ""
+
+#: bot/src/handlers/main_bot_handler.py:136
+msgid ""
+"Вы находитесь в разделе пользовательских настроек.\n"
+"\n"
+"Вы не являетесь студентом ПетрГУ."
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:28
+msgid "Введите новый номер группы."
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:50
+#, python-brace-format
+msgid "Вы успешно изменили группу на {group}."
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:55
+#, python-brace-format
+msgid "Ошибка изменения группы. Сервер недоступен. Ошибка {response_status}."
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:64
+#, python-brace-format
+msgid "Ваша группа: {group}"
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:91
+msgid "Вы больше не являетесь студентом ПетрГУ."
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:96
+#, python-brace-format
+msgid "Ошибка изменения статуса. Сервер недоступен. Ошибка {response_status}."
+msgstr ""
+
+#: bot/src/handlers/settings_bot_handler.py:101
+msgid "Теперь Вы являетесь студентом ПетрГУ. Укажите номер группы."
 msgstr ""
 
 #: bot/src/handlers/teacher_bot_handler.py:59
@@ -237,11 +287,12 @@ msgstr ""
 msgid "Посмотреть список пар"
 msgstr ""
 
-#: bot/src/keyboards/menu_keyboard.py:94
+#: bot/src/keyboards/settings_keyboard.py:10
 msgid "Изменить группу"
 msgstr ""
 
-#: bot/src/keyboards/menu_keyboard.py:95
+#: bot/src/keyboards/settings_keyboard.py:11
+#: bot/src/keyboards/settings_keyboard.py:15
 msgid "Изменить статус студента ПетрГУ"
 msgstr ""
 
@@ -296,5 +347,10 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Введите почту преподавателя."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Вы находитесь в разделе пользовательских "
+#~ "настроек. (дополнить по статусу)"
 #~ msgstr ""
 
