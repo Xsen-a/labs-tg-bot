@@ -56,8 +56,15 @@ def validate_email(email):
 
 @router.message(F.text == __("Добавить преподавателя"))
 async def add_teacher_start(msg: Message, state: FSMContext):
-    await msg.answer(_("Введите ФИО преподавателя."))
-    await state.set_state(AddTeacherStates.waiting_for_FIO)
+    user_data = await state.get_data()
+    telegram_id = user_data.get("telegram_id")
+    url_req = f"{settings.API_URL}/check_is_petrsu_student"
+    response = requests.get(url_req, json={"telegram_id": telegram_id})
+    if response.json().get("is_petrsu_student", True):
+        await msg.answer(_("Выбрать преподавателя из списка или добавить вручную?"))
+    else:
+        await msg.answer(_("Введите ФИО преподавателя."))
+        await state.set_state(AddTeacherStates.waiting_for_FIO)
 
 
 @router.message(AddTeacherStates.waiting_for_FIO)
@@ -149,8 +156,11 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
     phone_number = user_data.get("phone_number")
     social_page_link = user_data.get("social_page_link")
     classroom = user_data.get("classroom")
+    telegram_id = user_data.get("telegram_id")
+    url_req = f"{settings.API_URL}/get_user_id"
+    response = requests.get(url_req, json={"telegram_id": telegram_id})
     url_req = f"{settings.API_URL}/add_teacher"
-    response = requests.post(url_req, json={"user_id": 1,
+    response = requests.post(url_req, json={"user_id": response.json().get("user_id"),
                                             "name": name,
                                             "phone_number": phone_number,
                                             "email": email,
@@ -171,7 +181,6 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
                 classroom=classroom
             )
         )
-        await state.clear()
         await main_bot_handler.open_teacher_menu(callback_query.message, state)
     else:
         await callback_query.message.answer(json.loads(response.text).get('detail'))

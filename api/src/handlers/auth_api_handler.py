@@ -1,18 +1,30 @@
 from sqlmodel import Session, select
-from api.src.schemas import CheckUserSchema, CheckUserResponseSchema, AddUserSchema, CheckPetrsuStudentSchema, CheckPetrsuStudentResponseSchema
+from api.src.schemas import CheckUserExistSchema, CheckUserExistResponseSchema, AddUserSchema, CheckPetrsuStudentSchema, \
+    CheckPetrsuStudentResponseSchema, GetUserIdSchema, GetUserIdResponseSchema
 from api.src.models import User
 
 
-def check_user_handler(session: Session, schema: CheckUserSchema) -> CheckUserResponseSchema:
+def get_user_id_by_tg_handler(session: Session, schema: GetUserIdSchema) -> GetUserIdResponseSchema:
     user_query = select(User).where(User.telegram_id == schema.telegram_id)
     user = session.exec(user_query).first()
     if user:
-        return CheckUserResponseSchema(exists=True)
+        print(user.user_id)
+        return GetUserIdResponseSchema(user_id=user.user_id)
     else:
-        return CheckUserResponseSchema(exists=False)
+        raise ValueError(f"Пользователь с Telegram ID {schema.telegram_id} не найден")
 
 
-def check_is_petrsu_student_handler(session: Session, schema: CheckPetrsuStudentSchema) -> CheckPetrsuStudentResponseSchema:
+def check_user_handler(session: Session, schema: CheckUserExistSchema) -> CheckUserExistResponseSchema:
+    user_query = select(User).where(User.telegram_id == schema.telegram_id)
+    user = session.exec(user_query).first()
+    if user:
+        return CheckUserExistResponseSchema(exists=True)
+    else:
+        return CheckUserExistResponseSchema(exists=False)
+
+
+def check_is_petrsu_student_handler(session: Session,
+                                    schema: CheckPetrsuStudentSchema) -> CheckPetrsuStudentResponseSchema:
     user_query = select(User).where(User.telegram_id == schema.telegram_id)
     user = session.exec(user_query).first()
     if user.is_petrsu_student:

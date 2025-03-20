@@ -8,6 +8,14 @@ from pydantic import BaseModel
 from sqlmodel import SQLModel
 
 
+class GetUserIdSchema(SQLModel):
+    telegram_id: str
+
+
+class GetUserIdResponseSchema(SQLModel):
+    user_id: int
+
+
 class AddTeacherSchema(SQLModel):
     user_id: int
     name: str
@@ -18,11 +26,11 @@ class AddTeacherSchema(SQLModel):
     is_from_API: bool
 
 
-class CheckUserSchema(SQLModel):
+class CheckUserExistSchema(SQLModel):
     telegram_id: str
 
 
-class CheckUserResponseSchema(BaseModel):
+class CheckUserExistResponseSchema(BaseModel):
     exists: bool
 
 
