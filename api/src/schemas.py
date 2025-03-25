@@ -4,7 +4,7 @@
 
 from datetime import datetime, date, time
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from sqlmodel import SQLModel
 
 
@@ -19,10 +19,10 @@ class GetUserIdResponseSchema(SQLModel):
 class AddTeacherSchema(SQLModel):
     user_id: int
     name: str
-    phone_number: str
-    email: str
-    social_page_link: str
-    classroom: str
+    phone_number: str | None = None
+    email: str | None = None
+    social_page_link: str | None = None
+    classroom: str | None = None
     is_from_API: bool
 
 

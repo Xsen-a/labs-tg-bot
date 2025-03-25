@@ -105,7 +105,6 @@ async def open_teacher_menu(message: Message, state: FSMContext, telegram_id: in
     await state.clear()
     if telegram_id is None:
         telegram_id = str(message.from_user.id)
-    print("main", telegram_id)
     await state.update_data(telegram_id=telegram_id)
     await message.answer(
         _("Вы находитесь в меню преподавателей."),

@@ -17,3 +17,11 @@ def add_teacher_confirm():
     builder.adjust(1)
     return builder.as_markup()
 
+
+def skip_button():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(text=_("Пропустить"), callback_data="skip")
+    builder.adjust(1)
+    return builder.as_markup()
+
