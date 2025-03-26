@@ -61,10 +61,8 @@ def validate_email(email):
 @router.message(F.text == __("Добавить преподавателя"))
 async def add_teacher_start(message: Message, state: FSMContext):
     user_data = await state.get_data()
-    telegram_id = user_data.get("telegram_id")
     url_req = f"{settings.API_URL}/check_is_petrsu_student"
-    print(telegram_id)
-    response = requests.get(url_req, json={"telegram_id": telegram_id})
+    response = requests.get(url_req, json={"telegram_id": user_data.get("telegram_id")})
     if response.json().get("is_petrsu_student", True):
         await message.answer(_("Выбрать преподавателя из списка или добавить вручную?"))
     else:
@@ -178,12 +176,6 @@ async def add_teacher_classroom(message: Message, state: FSMContext):
 
 async def show_confirmation(message: Message, state: FSMContext):
     user_data = await state.get_data()
-    name = user_data.get("name")
-    email = user_data.get("email")
-    phone_number = user_data.get("phone_number")
-    social_page_link = user_data.get("social_page_link")
-    classroom = user_data.get("classroom")
-
     await message.answer(
         _("Вы действительно хотите добавить преподавателя {name}?\n\n"
           "Номер телефона: {phone_number}\n"
@@ -191,11 +183,11 @@ async def show_confirmation(message: Message, state: FSMContext):
           "Социальная сеть: {social_page_link}\n"
           "Аудитория: {classroom}\n")
         .format(
-            name=format_value(name),
-            phone_number=format_value(phone_number),
-            email=format_value(email),
-            social_page_link=format_value(social_page_link),
-            classroom=format_value(classroom),
+            name=format_value(user_data.get("name")),
+            phone_number=format_value(user_data.get("phone_number")),
+            email=format_value(user_data.get("email")),
+            social_page_link=format_value(user_data.get("social_page_link")),
+            classroom=format_value(user_data.get("classroom")),
         ),
         reply_markup=kb.add_teacher_confirm(),
     )
@@ -211,21 +203,15 @@ async def skip_classroom(callback_query: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "add_teacher")
 async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
-    name = user_data.get("name")
-    email = user_data.get("email")
-    phone_number = user_data.get("phone_number")
-    social_page_link = user_data.get("social_page_link")
-    classroom = user_data.get("classroom")
-    telegram_id = user_data.get("telegram_id")
     url_req = f"{settings.API_URL}/get_user_id"
-    response = requests.get(url_req, json={"telegram_id": telegram_id})
+    response = requests.get(url_req, json={"telegram_id": user_data.get("telegram_id")})
     url_req = f"{settings.API_URL}/add_teacher"
     response = requests.post(url_req, json={"user_id": response.json().get("user_id"),
-                                            "name": name,
-                                            "phone_number": phone_number,
-                                            "email": email,
-                                            "social_page_link": social_page_link,
-                                            "classroom": classroom,
+                                            "name": user_data.get("name"),
+                                            "phone_number": user_data.get("phone_number"),
+                                            "email": user_data.get("email"),
+                                            "social_page_link": user_data.get("social_page_link"),
+                                            "classroom": user_data.get("classroom"),
                                             "is_from_API": False})
     if response.status_code == 200:
         await callback_query.message.answer(
@@ -234,22 +220,23 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
                    "Почта: {email}\n"
                    "Социальная сеть: {social_page_link}\n"
                    "Аудитория: {classroom}")).format(
-                name=format_value(name),
-                phone_number=format_value(phone_number),
-                email=format_value(email),
-                social_page_link=format_value(social_page_link),
-                classroom=format_value(classroom),
+                name=format_value(user_data.get("name")),
+                phone_number=format_value(user_data.get("phone_number")),
+                email=format_value(user_data.get("email")),
+                social_page_link=format_value(user_data.get("social_page_link")),
+                classroom=format_value(user_data.get("classroom")),
             )
         )
-        await main_bot_handler.open_teacher_menu(callback_query.message, state)
+        await main_bot_handler.open_teacher_menu(callback_query.message, state, user_data.get("telegram_id"))
     else:
         await callback_query.message.answer(json.loads(response.text).get('detail'))
 
 
 @router.callback_query(F.data == "cancel_add_teacher")
 async def cancel_add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
+    user_data = await state.get_data()
     await callback_query.message.answer(_("Вы отменили добавление преподавателя."))
-    await main_bot_handler.open_teacher_menu(callback_query.message, state)
+    await main_bot_handler.open_teacher_menu(callback_query.message, state, user_data.get("telegram_id"))
 
 
 @router.callback_query(F.data.startswith("change_teacher_"))
