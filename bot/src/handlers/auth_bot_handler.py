@@ -83,7 +83,7 @@ async def get_group(message: Message, state: FSMContext):
 @router.callback_query(F.data == "petrsu_false")
 async def is_not_petrsu(callback_query: CallbackQuery, state: FSMContext):
     await state.update_data(is_petrsu_student=False)
-    await state.update_data(group="")
+    await state.update_data(group=None)
     response_status = await add_user_to_db(state)
     if response_status == 200:
         await callback_query.message.answer(

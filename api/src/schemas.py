@@ -16,6 +16,14 @@ class GetUserIdResponseSchema(SQLModel):
     user_id: int
 
 
+class GetUserGroupSchema(SQLModel):
+    telegram_id: str
+
+
+class GetUserGroupResponseSchema(SQLModel):
+    group: str | None = None
+
+
 class AddTeacherSchema(SQLModel):
     user_id: int
     name: str
@@ -24,6 +32,14 @@ class AddTeacherSchema(SQLModel):
     social_page_link: str | None = None
     classroom: str | None = None
     is_from_API: bool
+
+
+class GetTeachersSchema(SQLModel):
+    user_id: int
+
+
+class GetTeachersResponseSchema(SQLModel):
+    teachers: list
 
 
 class CheckUserExistSchema(SQLModel):
@@ -37,7 +53,7 @@ class CheckUserExistResponseSchema(BaseModel):
 class AddUserSchema(SQLModel):
     telegram_id: str
     is_petrsu_student: bool
-    group: str
+    group: str | None = None
 
 
 class CheckPetrsuStudentSchema(SQLModel):
@@ -46,15 +62,15 @@ class CheckPetrsuStudentSchema(SQLModel):
 
 class CheckPetrsuStudentResponseSchema(BaseModel):
     is_petrsu_student: bool
-    group: str
+    group: str | None = None
 
 
 class ChangeUserGroupSchema(SQLModel):
     telegram_id: str
-    group: str
+    group: str | None = None
 
 
 class ChangeUserStatusSchema(SQLModel):
     telegram_id: str
-    group: str
+    group: str | None = None
     is_petrsu_student: bool
