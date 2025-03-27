@@ -122,6 +122,11 @@ async def add_teacher_fio(message: Message, state: FSMContext):
 @router.message(AddTeacherStates.waiting_for_phone_number)
 async def add_teacher_phone_number(message: Message, state: FSMContext):
     phone_number = message.text
+    await message.bot.edit_message_reply_markup(
+        chat_id=message.chat.id,
+        message_id=message.message_id - 1,
+        reply_markup=None
+    )
     if not validate_phone_number(phone_number):
         await message.answer(
             _("Неверный формат номера телефона. Пожалуйста, введите номер в формате +79999999999."),
@@ -141,7 +146,7 @@ async def add_teacher_phone_number(message: Message, state: FSMContext):
 async def skip_phone_number(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(phone_number=None)
-    await callback_query.message.answer(
+    await callback_query.message.edit_text(
         _("Введите почту преподавателя в формате name@mail.ru."),
         reply_markup=kb.skip_button()
     )
@@ -150,6 +155,11 @@ async def skip_phone_number(callback_query: CallbackQuery, state: FSMContext):
 
 @router.message(AddTeacherStates.waiting_for_email)
 async def add_teacher_email(message: Message, state: FSMContext):
+    await message.bot.edit_message_reply_markup(
+        chat_id=message.chat.id,
+        message_id=message.message_id - 1,
+        reply_markup=None
+    )
     email = message.text
     if not validate_email(email):
         await message.answer(
@@ -170,7 +180,7 @@ async def add_teacher_email(message: Message, state: FSMContext):
 async def skip_email(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(email=None)
-    await callback_query.message.answer(
+    await callback_query.message.edit_text(
         _("Введите ссылку на социальную сеть преподавателя."),
         reply_markup=kb.skip_button()
     )
@@ -179,6 +189,11 @@ async def skip_email(callback_query: CallbackQuery, state: FSMContext):
 
 @router.message(AddTeacherStates.waiting_for_link)
 async def add_teacher_link(message: Message, state: FSMContext):
+    await message.bot.edit_message_reply_markup(
+        chat_id=message.chat.id,
+        message_id=message.message_id - 1,
+        reply_markup=None
+    )
     social_page_link = message.text
     await state.update_data(social_page_link=social_page_link)
     await message.answer(
@@ -192,7 +207,7 @@ async def add_teacher_link(message: Message, state: FSMContext):
 async def skip_link(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(social_page_link=None)
-    await callback_query.message.answer(
+    await callback_query.message.edit_text(
         _("Введите номер аудитории или кафедры, где можно найти преподавателя."),
         reply_markup=kb.skip_button()
     )
@@ -201,6 +216,11 @@ async def skip_link(callback_query: CallbackQuery, state: FSMContext):
 
 @router.message(AddTeacherStates.waiting_for_classroom)
 async def add_teacher_classroom(message: Message, state: FSMContext):
+    await message.bot.edit_message_reply_markup(
+        chat_id=message.chat.id,
+        message_id=message.message_id - 1,
+        reply_markup=None
+    )
     classroom = message.text
     await state.update_data(classroom=classroom)
     await show_confirmation(message, state)
@@ -208,6 +228,10 @@ async def add_teacher_classroom(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == "skip", AddTeacherStates.waiting_for_classroom)
 async def skip_classroom(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.delete_message(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+    )
     await callback_query.answer()
     await state.update_data(classroom=None)
     await show_confirmation(callback_query.message, state)
@@ -226,7 +250,7 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
                                             "classroom": state_data.get("classroom"),
                                             "is_from_API": state_data.get("is_from_api")})
     if response.status_code == 200:
-        await callback_query.message.answer(
+        await callback_query.message.edit_text(
             str(__("Преподаватель {name} добавлен.\n\n"
                    "Номер телефона: {phone_number}\n"
                    "Почта: {email}\n"
@@ -246,6 +270,11 @@ async def add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data == "cancel_add_teacher")
 async def cancel_add_teacher_end(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.edit_message_reply_markup(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+        reply_markup=None
+    )
     await callback_query.answer()
     state_data = await state.get_data()
     await callback_query.message.answer(_("Вы отменили добавление преподавателя."))
@@ -254,6 +283,11 @@ async def cancel_add_teacher_end(callback_query: CallbackQuery, state: FSMContex
 
 @router.callback_query(F.data.startswith("change_teacher_"))
 async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.edit_message_reply_markup(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+        reply_markup=None
+    )
     field = callback_query.data.split("_")[-1]
 
     match field:
@@ -334,12 +368,12 @@ async def request_new_classroom(message: Message, state: FSMContext):
 async def add_teacher_by_hand(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(is_from_api=False)
-    await callback_query.message.answer(_("Введите ФИО преподавателя."))
+    await callback_query.message.edit_text(_("Введите ФИО преподавателя."))
     await state.set_state(AddTeacherStates.waiting_for_FIO)
 
 
 @router.callback_query(F.data == "show_teacher_api_list")
-async def add_teacher_by_hand(callback_query: CallbackQuery, state: FSMContext):
+async def add_teacher_by_api(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
 
     state_data = await state.get_data()
@@ -372,7 +406,7 @@ async def add_teacher_by_hand(callback_query: CallbackQuery, state: FSMContext):
                 teachers_names = {teacher["name"] for teacher in response_data.get("teachers", [])}
                 unique_lecturers = [lecturer for lecturer in lecturers_list if lecturer not in teachers_names]
                 await state.update_data(lecturers=unique_lecturers)
-                await callback_query.message.answer(
+                await callback_query.message.edit_text(
                     _("Список преподавателей:"),
                     reply_markup=kb.lecturers_list(unique_lecturers, page=0)
                 )
@@ -399,7 +433,7 @@ async def handle_pagination(callback_query: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(F.data.startswith("lecturer_index_"))
-async def add_teacher_by_hand(callback_query: CallbackQuery, state: FSMContext):
+async def add_teacher_by_api_phone(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     state_data = await state.get_data()
     lecturers = state_data.get("lecturers", [])
@@ -410,7 +444,7 @@ async def add_teacher_by_hand(callback_query: CallbackQuery, state: FSMContext):
     await state.update_data(name=selected_lecturer)
     await state.update_data(is_from_api=True)
 
-    await callback_query.message.answer(
+    await callback_query.message.edit_text(
         _("Введите номер телефона преподавателя в формате +79999999999."),
         reply_markup=kb.skip_button()
     )
