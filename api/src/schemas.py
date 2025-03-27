@@ -39,7 +39,7 @@ class GetTeachersSchema(SQLModel):
 
 
 class GetTeachersResponseSchema(SQLModel):
-    teachers: list
+    teachers: list[AddTeacherSchema]
 
 
 class CheckUserExistSchema(SQLModel):
