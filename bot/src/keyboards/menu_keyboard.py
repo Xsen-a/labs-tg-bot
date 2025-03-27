@@ -5,9 +5,9 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 
 def back_button():
-    builder = ReplyKeyboardBuilder()
-    builder.button(text=_("⬅ Назад"))
-    # return builder.as_markup()
+    # builder = ReplyKeyboardBuilder()
+    # builder.button(text=_("⬅ Назад"))
+    # # return builder.as_markup()
     return KeyboardButton(text=_("⬅ Назад"))
 
 def main_menu_keyboard():
