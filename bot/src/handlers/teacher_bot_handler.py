@@ -19,6 +19,7 @@ router = Router()
 
 
 class AddTeacherStates(StatesGroup):
+    adding_teacher = State()
     waiting_for_FIO = State()
     waiting_for_phone_number = State()
     waiting_for_email = State()
@@ -93,6 +94,7 @@ async def show_confirmation(message: Message, state: FSMContext):
 
 @router.message(F.text == __("Добавить преподавателя"))
 async def add_teacher_start(message: Message, state: FSMContext):
+    await state.set_state(AddTeacherStates.adding_teacher)
     state_data = await state.get_data()
     url_req = f"{settings.API_URL}/get_user_id"
     response = requests.get(url_req, json={"telegram_id": state_data.get("telegram_id")})
@@ -330,8 +332,15 @@ async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
 async def request_new_fio(message: Message, state: FSMContext):
     fio = message.text
     if not validate_fio(fio):
+        await state.update_data(validation_status=True)
+        await message.bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            reply_markup=None
+        )
         await message.answer(
-            _("Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество (если имеется).")
+            _("Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество (если имеется)."),
+            reply_markup=kb.cancel_editing_attr()
         )
         return
     else:
@@ -339,6 +348,11 @@ async def request_new_fio(message: Message, state: FSMContext):
             await state.update_data(name=fio)
             await show_confirmation(message, state)
         elif await state.get_state() == EditTeacherStates.editing_fio:
+            await message.bot.edit_message_reply_markup(
+                chat_id=message.chat.id,
+                message_id=message.message_id - 1,
+                reply_markup=None
+            )
             state_data = await state.get_data()
             prev_val = state_data.get("name")
             await state.update_data(editing_value=fio)
@@ -350,7 +364,7 @@ async def request_new_fio(message: Message, state: FSMContext):
             if response.status_code == 200:
                 await state.update_data(chosen_lecturer_name=fio)
                 await message.answer(
-                    _("Вы изменили ФИО преподавателя {prev_val} на {val}.").format(prev_fio=format_value(prev_val),
+                    _("Вы изменили ФИО преподавателя {prev_val} на {val}.").format(prev_val=format_value(prev_val),
                                                                                    val=fio)
                 )
                 menu_message = await message.answer(
@@ -376,8 +390,15 @@ async def request_new_fio(message: Message, state: FSMContext):
 async def request_new_phone_number(message: Message, state: FSMContext):
     phone_number = message.text
     if not validate_phone_number(phone_number):
+        await state.update_data(validation_status=True)
+        await message.bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            reply_markup=None
+        )
         await message.answer(
-            _("Неверный формат номера телефона. Пожалуйста, введите номер в формате +79999999999.")
+            _("Неверный формат номера телефона. Пожалуйста, введите номер в формате +79999999999."),
+            reply_markup=kb.cancel_editing_attr()
         )
         return
     else:
@@ -385,6 +406,11 @@ async def request_new_phone_number(message: Message, state: FSMContext):
             await state.update_data(phone_number=phone_number)
             await show_confirmation(message, state)
         elif await state.get_state() == EditTeacherStates.editing_phone_number:
+            await message.bot.edit_message_reply_markup(
+                chat_id=message.chat.id,
+                message_id=message.message_id - 1,
+                reply_markup=None
+            )
             state_data = await state.get_data()
             prev_val = state_data.get("phone_number")
             await state.update_data(editing_value=phone_number)
@@ -422,8 +448,15 @@ async def request_new_phone_number(message: Message, state: FSMContext):
 async def request_new_email(message: Message, state: FSMContext):
     email = message.text
     if not validate_email(email):
+        await state.update_data(validation_status=True)
+        await message.bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            reply_markup=None
+        )
         await message.answer(
-            _("Неверный формат почты. Введите, пожалуйста, в формате name@mail.ru.")
+            _("Неверный формат почты. Введите, пожалуйста, в формате name@mail.ru."),
+            reply_markup=kb.cancel_editing_attr()
         )
         return
     else:
@@ -431,6 +464,11 @@ async def request_new_email(message: Message, state: FSMContext):
             await state.update_data(email=email)
             await show_confirmation(message, state)
         elif await state.get_state() == EditTeacherStates.editing_email:
+            await message.bot.edit_message_reply_markup(
+                chat_id=message.chat.id,
+                message_id=message.message_id - 1,
+                reply_markup=None
+            )
             state_data = await state.get_data()
             prev_val = state_data.get("email")
             await state.update_data(editing_value=email)
@@ -471,6 +509,11 @@ async def request_new_link(message: Message, state: FSMContext):
         await state.update_data(social_page_link=social_page_link)
         await show_confirmation(message, state)
     elif await state.get_state() == EditTeacherStates.editing_link:
+        await message.bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            reply_markup=None
+        )
         state_data = await state.get_data()
         prev_val = state_data.get("social_page_link")
         await state.update_data(editing_value=social_page_link)
@@ -511,6 +554,11 @@ async def request_new_classroom(message: Message, state: FSMContext):
         await state.update_data(classroom=classroom)
         await show_confirmation(message, state)
     elif await state.get_state() == EditTeacherStates.editing_classroom:
+        await message.bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            reply_markup=None
+        )
         state_data = await state.get_data()
         prev_val = state_data.get("classroom")
         await state.update_data(editing_value=classroom)
@@ -757,14 +805,14 @@ async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "cancel_editing")
 async def cancel_edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
-    state_date = await state.get_data()
+    state_data = await state.get_data()
     await callback_query.message.bot.delete_message(
         chat_id=callback_query.message.chat.id,
         message_id=callback_query.message.message_id,
     )
     await callback_query.message.bot.edit_message_reply_markup(
         chat_id=callback_query.message.chat.id,
-        message_id=state_date.get("menu_message_id"),
+        message_id=state_data.get("menu_message_id"),
         reply_markup=kb.teacher_menu()
     )
 
@@ -772,15 +820,32 @@ async def cancel_edit_teacher_data(callback_query: CallbackQuery, state: FSMCont
 @router.callback_query(F.data == "cancel_editing_attr")
 async def cancel_edit_teacher_data_attr(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
+    state_data = await state.get_data()
     await callback_query.message.bot.delete_message(
         chat_id=callback_query.message.chat.id,
         message_id=callback_query.message.message_id,
     )
-    state_data = await state.get_data()
-    await callback_query.message.answer(
-        _("Выберите изменения"),
-        reply_markup=kb.edit_options(state_data.get("chosen_teacher_api_status"))
-    )
+    if state_data.get("validation_status"):
+        menu_message = await callback_query.message.answer(
+            str(__("Вы в меню преподавателя {name}.\n\n"
+                   "Номер телефона: {phone_number}\n"
+                   "Почта: {email}\n"
+                   "Социальная сеть: {social_page_link}\n"
+                   "Аудитория: {classroom}")).format(
+                name=format_value(state_data.get("chosen_lecturer_name")),
+                phone_number=format_value(state_data.get("chosen_lecturer_phone")),
+                email=format_value(state_data.get("chosen_lecturer_email")),
+                social_page_link=format_value(state_data.get("chosen_lecturer_link")),
+                classroom=format_value(state_data.get("chosen_lecturer_classroom")),
+            ),
+            reply_markup=kb.teacher_menu()
+        )
+        await state.update_data(menu_message_id=menu_message.message_id)
+    else:
+        await callback_query.message.answer(
+            _("Выберите изменения"),
+            reply_markup=kb.edit_options(state_data.get("chosen_teacher_api_status"))
+        )
 
 
 @router.callback_query(F.data == "delete_teacher")
@@ -858,6 +923,3 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext):
         message_id=callback_query.message.message_id,
     )
     await add_teacher_start(callback_query.message, state)
-
-
-
