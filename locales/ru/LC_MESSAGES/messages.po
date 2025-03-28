@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-21 00:43+0300\n"
+"POT-Creation-Date: 2025-03-28 19:36+0300\n"
 "PO-Revision-Date: 2025-03-13 12:37+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -90,17 +90,17 @@ msgstr "Выберите период для диаграммы Ганта."
 msgid "Вы находитесь в меню дисциплин."
 msgstr "Вы находитесь в меню дисциплин."
 
-#: bot/src/handlers/main_bot_handler.py:106
+#: bot/src/handlers/main_bot_handler.py:110
 #, fuzzy
 msgid "Вы находитесь в меню преподавателей."
 msgstr "Вы находитесь в меню преподавателей."
 
-#: bot/src/handlers/main_bot_handler.py:114
+#: bot/src/handlers/main_bot_handler.py:118
 #, fuzzy
 msgid "Вы находитесь в меню пар."
 msgstr "Вы находитесь в меню пар."
 
-#: bot/src/handlers/main_bot_handler.py:130
+#: bot/src/handlers/main_bot_handler.py:134
 #, fuzzy, python-brace-format
 msgid ""
 "Вы находитесь в разделе пользовательских настроек.\n"
@@ -113,7 +113,7 @@ msgstr ""
 "Вы являетесь студентом ПетрГУ.\n"
 "Группа: {group}"
 
-#: bot/src/handlers/main_bot_handler.py:136
+#: bot/src/handlers/main_bot_handler.py:140
 #, fuzzy
 msgid ""
 "Вы находитесь в разделе пользовательских настроек.\n"
@@ -159,12 +159,35 @@ msgstr "Ошибка изменения статуса. Сервер недос�
 msgid "Теперь Вы являетесь студентом ПетрГУ. Укажите номер группы."
 msgstr "Теперь Вы являетесь студентом ПетрГУ. Укажите номер группы."
 
-#: bot/src/handlers/teacher_bot_handler.py:59
+#: bot/src/handlers/teacher_bot_handler.py:79
+#, fuzzy, python-brace-format
+msgid ""
+"Вы действительно хотите добавить преподавателя {name}?\n"
+"\n"
+"Номер телефона: {phone_number}\n"
+"Почта: {email}\n"
+"Социальная сеть: {social_page_link}\n"
+"Аудитория: {classroom}\n"
+msgstr ""
+"Вы действительно хотите добавить преподавателя {name}?\n"
+"\n"
+"Номер телефона: {phone_number}\n"
+"Почта: {email}\n"
+"Социальная сеть: {social_page_link}\n"
+"Аудитория: {classroom}\n"
+
+#: bot/src/handlers/teacher_bot_handler.py:109
+msgid "Выбрать преподавателя из списка или добавить вручную?"
+msgstr "Выбрать преподавателя из списка или добавить вручную?"
+
+#: bot/src/handlers/teacher_bot_handler.py:113
+#: bot/src/handlers/teacher_bot_handler.py:599
 #, fuzzy
 msgid "Введите ФИО преподавателя."
 msgstr "Введите ФИО преподавателя."
 
-#: bot/src/handlers/teacher_bot_handler.py:68
+#: bot/src/handlers/teacher_bot_handler.py:126
+#: bot/src/handlers/teacher_bot_handler.py:342
 msgid ""
 "Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество "
 "(если имеется)."
@@ -172,12 +195,14 @@ msgstr ""
 "Неверный формат ФИО. Введите, пожалуйста, в формате Фамилия Имя Отчество "
 "(если имеется)."
 
-#: bot/src/handlers/teacher_bot_handler.py:74
+#: bot/src/handlers/teacher_bot_handler.py:132
+#: bot/src/handlers/teacher_bot_handler.py:677
 #, fuzzy
 msgid "Введите номер телефона преподавателя в формате +79999999999."
 msgstr "Введите номер телефона преподавателя в формате +79999999999."
 
-#: bot/src/handlers/teacher_bot_handler.py:84
+#: bot/src/handlers/teacher_bot_handler.py:148
+#: bot/src/handlers/teacher_bot_handler.py:400
 msgid ""
 "Неверный формат номера телефона. Пожалуйста, введите номер в формате "
 "+79999999999."
@@ -185,41 +210,104 @@ msgstr ""
 "Неверный формат номера телефона. Пожалуйста, введите номер в формате "
 "+79999999999."
 
-#: bot/src/handlers/teacher_bot_handler.py:90
+#: bot/src/handlers/teacher_bot_handler.py:155
+#: bot/src/handlers/teacher_bot_handler.py:166
 #, fuzzy
 msgid "Введите почту преподавателя в формате name@mail.ru."
 msgstr "Введите почту преподавателя в формате name@mail.ru."
 
-#: bot/src/handlers/teacher_bot_handler.py:100
+#: bot/src/handlers/teacher_bot_handler.py:182
+#: bot/src/handlers/teacher_bot_handler.py:458
 msgid "Неверный формат почты. Введите, пожалуйста, в формате name@mail.ru."
 msgstr "Неверный формат почты. Введите, пожалуйста, в формате name@mail.ru."
 
-#: bot/src/handlers/teacher_bot_handler.py:106
+#: bot/src/handlers/teacher_bot_handler.py:189
+#: bot/src/handlers/teacher_bot_handler.py:200
 msgid "Введите ссылку на социальную сеть преподавателя."
 msgstr "Введите ссылку на социальную сеть преподавателя."
 
-#: bot/src/handlers/teacher_bot_handler.py:116
+#: bot/src/handlers/teacher_bot_handler.py:216
+#: bot/src/handlers/teacher_bot_handler.py:227
 msgid "Введите номер аудитории или кафедры, где можно найти преподавателя."
 msgstr "Введите номер аудитории или кафедры, где можно найти преподавателя."
 
-#: bot/src/handlers/teacher_bot_handler.py:133
+#: bot/src/handlers/teacher_bot_handler.py:296
+#, fuzzy
+msgid "Вы отменили добавление преподавателя."
+msgstr "Вы отменили добавление преподавателя."
+
+#: bot/src/handlers/teacher_bot_handler.py:312
+#: bot/src/handlers/teacher_bot_handler.py:777
+#, fuzzy
+msgid "Введите новые ФИО преподавателя."
+msgstr "Введите новые ФИО преподавателя."
+
+#: bot/src/handlers/teacher_bot_handler.py:315
+#: bot/src/handlers/teacher_bot_handler.py:782
+#, fuzzy
+msgid "Введите новый номер телефона преподавателя."
+msgstr "Введите новый номер телефона преподавателя."
+
+#: bot/src/handlers/teacher_bot_handler.py:318
+#: bot/src/handlers/teacher_bot_handler.py:787
+#, fuzzy
+msgid "Введите новый адрес электронной почты преподавателя."
+msgstr "Введите новый адрес электронной почты преподавателя."
+
+#: bot/src/handlers/teacher_bot_handler.py:321
+#: bot/src/handlers/teacher_bot_handler.py:792
+#, fuzzy
+msgid "Введите новую ссылку на социальную сеть преподавателя."
+msgstr "Введите новую ссылку на социальную сеть преподавателя."
+
+#: bot/src/handlers/teacher_bot_handler.py:325
+#: bot/src/handlers/teacher_bot_handler.py:798
+#, fuzzy
+msgid "Введите новый номер аудитории или кафедры, где можно найти преподавателя."
+msgstr "Введите новый номер аудитории или кафедры, где можно найти преподавателя."
+
+#: bot/src/handlers/teacher_bot_handler.py:367
 #, python-brace-format
-msgid ""
-"Вы действительно хотите добавить преподавателя\n"
-"{name}?\n"
-"\n"
-"Номер телефона: {phone_number}\n"
-"Почта: {email}\n"
-"Социальная сеть: {social_page_link}\n"
-"Аудитория:{classroom}\n"
-msgstr ""
-"Вы действительно хотите добавить преподавателя\n"
-"{name}?\n"
-"\n"
-"Номер телефона: {phone_number}\n"
-"Почта: {email}\n"
-"Социальная сеть: {social_page_link}\n"
-"Аудитория:{classroom}\n"
+msgid "Вы изменили ФИО преподавателя {prev_val} на {val}."
+msgstr "Вы изменили ФИО преподавателя {prev_val} на {val}."
+
+#: bot/src/handlers/teacher_bot_handler.py:425
+#, fuzzy, python-brace-format
+msgid "Вы изменили номер телефона преподавателя {prev_val} на {val}."
+msgstr "Вы изменили номер телефона преподавателя {prev_val} на {val}."
+
+#: bot/src/handlers/teacher_bot_handler.py:483
+#: bot/src/handlers/teacher_bot_handler.py:528
+#: bot/src/handlers/teacher_bot_handler.py:573
+#, python-brace-format
+msgid "Вы изменили почту преподавателя {prev_val} на {val}."
+msgstr "Вы изменили почту преподавателя {prev_val} на {val}."
+
+#: bot/src/handlers/teacher_bot_handler.py:638
+#: bot/src/handlers/teacher_bot_handler.py:733
+#, fuzzy
+msgid "Список преподавателей:"
+msgstr "Список преподавателей:"
+
+#: bot/src/handlers/teacher_bot_handler.py:758
+#: bot/src/handlers/teacher_bot_handler.py:846
+msgid "Выберите изменения"
+msgstr "Выберите изменения"
+
+#: bot/src/handlers/teacher_bot_handler.py:861
+#, python-brace-format
+msgid "Вы действительно хотите удалить преподавателя {name}?"
+msgstr "Вы действительно хотите удалить преподавателя {name}?"
+
+#: bot/src/handlers/teacher_bot_handler.py:878
+#, python-brace-format
+msgid "Преподаватель {name} успешно удален."
+msgstr "Преподаватель {name} успешно удален."
+
+#: bot/src/handlers/teacher_bot_handler.py:899
+#, python-brace-format
+msgid "Вы отменили удаление преподавателя {name}."
+msgstr "Вы отменили удаление преподавателя {name}."
 
 #: bot/src/keyboards/auth_keyboard.py:9
 msgid "Отправить Telegram ID"
@@ -235,99 +323,99 @@ msgstr "Да, я студент ПетрГУ"
 msgid "Нет, я не студент ПетрГУ"
 msgstr "Нет, я не студент ПетрГУ"
 
-#: bot/src/keyboards/menu_keyboard.py:9 bot/src/keyboards/menu_keyboard.py:11
+#: bot/src/keyboards/menu_keyboard.py:8
 msgid "⬅ Назад"
 msgstr "⬅ Назад"
 
-#: bot/src/keyboards/menu_keyboard.py:16
+#: bot/src/keyboards/menu_keyboard.py:14
 msgid "Лабораторные работы"
 msgstr "Лабораторные работы"
 
-#: bot/src/keyboards/menu_keyboard.py:17
+#: bot/src/keyboards/menu_keyboard.py:15
 #, fuzzy
 msgid "Диаграммы Ганта"
 msgstr "Диаграмма Ганта"
 
-#: bot/src/keyboards/menu_keyboard.py:21
+#: bot/src/keyboards/menu_keyboard.py:19
 msgid "Дисциплины"
 msgstr "Дисциплины"
 
-#: bot/src/keyboards/menu_keyboard.py:22
+#: bot/src/keyboards/menu_keyboard.py:20
 msgid "Преподаватели"
 msgstr "Преподаватели"
 
-#: bot/src/keyboards/menu_keyboard.py:23
+#: bot/src/keyboards/menu_keyboard.py:21
 msgid "Преподаватели и дисциплины"
 msgstr "Преподаватели и дисциплины"
 
-#: bot/src/keyboards/menu_keyboard.py:24
+#: bot/src/keyboards/menu_keyboard.py:22
 msgid "Пары"
 msgstr "Пары"
 
-#: bot/src/keyboards/menu_keyboard.py:25
+#: bot/src/keyboards/menu_keyboard.py:23
 msgid "Настройки"
 msgstr "Настройки"
 
-#: bot/src/keyboards/menu_keyboard.py:34
+#: bot/src/keyboards/menu_keyboard.py:33
 #, fuzzy
 msgid "Добавить лабораторную работу"
 msgstr "Добавить лабораторную работу"
 
-#: bot/src/keyboards/menu_keyboard.py:35
+#: bot/src/keyboards/menu_keyboard.py:34
 #, fuzzy
 msgid "Посмотреть список лабораторных работ"
 msgstr "Посмотреть список лабораторных работ"
 
-#: bot/src/keyboards/menu_keyboard.py:44
+#: bot/src/keyboards/menu_keyboard.py:43
 msgid "По статусу"
 msgstr "По статусу"
 
-#: bot/src/keyboards/menu_keyboard.py:45
+#: bot/src/keyboards/menu_keyboard.py:44
 #, fuzzy
 msgid "По дисциплине"
 msgstr "По дисциплине"
 
-#: bot/src/keyboards/menu_keyboard.py:46
+#: bot/src/keyboards/menu_keyboard.py:45
 msgid "На 7 дней"
 msgstr "На 7 дней"
 
-#: bot/src/keyboards/menu_keyboard.py:54
+#: bot/src/keyboards/menu_keyboard.py:53
 msgid "Общая"
 msgstr "Общая"
 
-#: bot/src/keyboards/menu_keyboard.py:55
+#: bot/src/keyboards/menu_keyboard.py:54
 msgid "Месяц"
 msgstr "Месяц"
 
-#: bot/src/keyboards/menu_keyboard.py:56
+#: bot/src/keyboards/menu_keyboard.py:55
 msgid "Две недели"
 msgstr "Две недели"
 
-#: bot/src/keyboards/menu_keyboard.py:64
+#: bot/src/keyboards/menu_keyboard.py:63
 #, fuzzy
 msgid "Добавить дисциплину"
 msgstr "Добавить дисциплину"
 
-#: bot/src/keyboards/menu_keyboard.py:65
+#: bot/src/keyboards/menu_keyboard.py:64
 #, fuzzy
 msgid "Посмотреть список дисциплин"
 msgstr "Посмотреть список дисциплин"
 
-#: bot/src/keyboards/menu_keyboard.py:74
+#: bot/src/keyboards/menu_keyboard.py:73
 #, fuzzy
 msgid "Добавить преподавателя"
 msgstr "Добавить преподавателя"
 
-#: bot/src/keyboards/menu_keyboard.py:75
+#: bot/src/keyboards/menu_keyboard.py:74
 #, fuzzy
 msgid "Посмотреть список преподавателей"
 msgstr "Посмотреть список преподавателей"
 
-#: bot/src/keyboards/menu_keyboard.py:84
+#: bot/src/keyboards/menu_keyboard.py:83
 msgid "Добавить пару"
 msgstr "Добавить пару"
 
-#: bot/src/keyboards/menu_keyboard.py:85
+#: bot/src/keyboards/menu_keyboard.py:84
 #, fuzzy
 msgid "Посмотреть список пар"
 msgstr "Посмотреть список пар"
@@ -342,35 +430,87 @@ msgid "Изменить статус студента ПетрГУ"
 msgstr "Изменить статус студента ПетрГУ"
 
 #: bot/src/keyboards/teacher_keyboard.py:10
+#: bot/src/keyboards/teacher_keyboard.py:108
 msgid "Да"
 msgstr "Да"
 
 #: bot/src/keyboards/teacher_keyboard.py:11
+#: bot/src/keyboards/teacher_keyboard.py:109
 msgid "Нет"
 msgstr "Нет"
 
-#: bot/src/keyboards/teacher_keyboard.py:12
+#: bot/src/keyboards/teacher_keyboard.py:13
+#: bot/src/keyboards/teacher_keyboard.py:89
 #, fuzzy
 msgid "Изменить ФИО"
-msgstr "Изменить группу"
+msgstr "Изменить ФИО"
 
-#: bot/src/keyboards/teacher_keyboard.py:13
+#: bot/src/keyboards/teacher_keyboard.py:14
+#: bot/src/keyboards/teacher_keyboard.py:90
 msgid "Изменить номер телефона"
 msgstr "Изменить номер телефона"
 
-#: bot/src/keyboards/teacher_keyboard.py:14
+#: bot/src/keyboards/teacher_keyboard.py:15
+#: bot/src/keyboards/teacher_keyboard.py:91
 #, fuzzy
 msgid "Изменить почту"
 msgstr "Изменить почту"
 
-#: bot/src/keyboards/teacher_keyboard.py:15
+#: bot/src/keyboards/teacher_keyboard.py:16
+#: bot/src/keyboards/teacher_keyboard.py:92
 msgid "Изменить социальную сеть"
 msgstr "Изменить социальную сеть"
 
-#: bot/src/keyboards/teacher_keyboard.py:16
+#: bot/src/keyboards/teacher_keyboard.py:17
+#: bot/src/keyboards/teacher_keyboard.py:93
 #, fuzzy
 msgid "Изменить аудиторию"
 msgstr "Изменить аудиторию"
+
+#: bot/src/keyboards/teacher_keyboard.py:25
+msgid "Пропустить"
+msgstr "Пропустить"
+
+#: bot/src/keyboards/teacher_keyboard.py:33
+#, fuzzy
+msgid "Показать список"
+msgstr "Показать список"
+
+#: bot/src/keyboards/teacher_keyboard.py:34
+msgid "Ввести вручную"
+msgstr "Ввести вручную"
+
+#: bot/src/keyboards/teacher_keyboard.py:47
+#, python-brace-format
+msgid "{lecturer}"
+msgstr "{lecturer}"
+
+#: bot/src/keyboards/teacher_keyboard.py:70
+msgid "⬅"
+msgstr "⬅"
+
+#: bot/src/keyboards/teacher_keyboard.py:74
+msgid "➡"
+msgstr "➡"
+
+#: bot/src/keyboards/teacher_keyboard.py:79
+#, fuzzy
+msgid "Изменить"
+msgstr "Изменить"
+
+#: bot/src/keyboards/teacher_keyboard.py:80
+msgid "Удалить"
+msgstr "Удалить"
+
+#: bot/src/keyboards/teacher_keyboard.py:81
+#, fuzzy
+msgid "Назад"
+msgstr "Назад"
+
+#: bot/src/keyboards/teacher_keyboard.py:94
+#: bot/src/keyboards/teacher_keyboard.py:101
+msgid "Отмена"
+msgstr "Отмена"
 
 #~ msgid ""
 #~ "Сервер ПетрГУ в данный момент "
