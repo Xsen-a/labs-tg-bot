@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from api.src.schemas import AddTeacherSchema, GetTeachersSchema, GetTeachersResponseSchema
+from api.src.schemas import AddTeacherSchema, GetTeachersSchema, GetTeachersResponseSchema, GetTeacherSchema, GetTeacherResponseSchema
 from api.src.models import Teacher, User
 
 
@@ -22,12 +22,13 @@ def add_teacher_handler(session: Session, schema: AddTeacherSchema):
 
 
 def get_teachers_handler(session: Session, schema: GetTeachersSchema) -> GetTeachersResponseSchema:
-    user_query = select(Teacher).where(User.user_id == schema.user_id)
+    user_query = select(Teacher).where(Teacher.user_id == schema.user_id)
     teachers = session.exec(user_query).all()
     teachers_list = []
     for teacher in teachers:
-        teachers_list.append(AddTeacherSchema(
+        teachers_list.append(GetTeacherResponseSchema(
             user_id=teacher.user_id,
+            teacher_id=teacher.teacher_id,
             name=teacher.name,
             phone_number=teacher.phone_number,
             email=teacher.email,
@@ -37,3 +38,21 @@ def get_teachers_handler(session: Session, schema: GetTeachersSchema) -> GetTeac
         ))
 
     return GetTeachersResponseSchema(teachers=teachers_list)
+
+
+def get_teacher_handler(session: Session, schema: GetTeacherSchema) -> GetTeacherResponseSchema:
+    teacher_query = select(Teacher).where((Teacher.user_id == schema.user_id) & (Teacher.teacher_id == schema.teacher_id))
+    print(teacher_query)
+    teacher = session.exec(teacher_query).first()
+    get_teacher = GetTeacherResponseSchema(
+        user_id=teacher.user_id,
+        teacher_id=teacher.teacher_id,
+        name=teacher.name,
+        phone_number=teacher.phone_number,
+        email=teacher.email,
+        social_page_link=teacher.social_page_link,
+        classroom=teacher.classroom,
+        is_from_API=teacher.is_from_API
+    )
+
+    return get_teacher

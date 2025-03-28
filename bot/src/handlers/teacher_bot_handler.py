@@ -30,6 +30,10 @@ class AddTeacherStates(StatesGroup):
     waiting_for_new_classroom = State()
 
 
+class ShowTeacherStates(StatesGroup):
+    showing_list = State()
+
+
 def validate_fio(fio):
     pattern = r"([А-ЯЁ][а-яё-]+\s){1,2}([А-ЯЁ][а-яё-]+)"
     if re.match(pattern, fio):
@@ -444,8 +448,63 @@ async def add_teacher_by_api_phone(callback_query: CallbackQuery, state: FSMCont
     await state.update_data(name=selected_lecturer)
     await state.update_data(is_from_api=True)
 
-    await callback_query.message.edit_text(
-        _("Введите номер телефона преподавателя в формате +79999999999."),
-        reply_markup=kb.skip_button()
-    )
-    await state.set_state(AddTeacherStates.waiting_for_phone_number)
+    if await state.get_state() != ShowTeacherStates.showing_list:
+        await callback_query.message.edit_text(
+            _("Введите номер телефона преподавателя в формате +79999999999."),
+            reply_markup=kb.skip_button()
+        )
+        await state.set_state(AddTeacherStates.waiting_for_phone_number)
+    elif await state.get_state() == ShowTeacherStates.showing_list:
+        # TODO: получить информацию о преподавателе из API и вывести сообщение с информацией, сделать меню препода
+        # TODO: в запрос помещать по индексу из lecturers_id
+        lecturers_id = state_data.get("lecturers_id")
+        # print(lecturers_id, lecturer_index)
+        # print(lecturers_id[int(lecturer_index)])
+        # print(state_data.get("user_id"))
+        url_req = f"{settings.API_URL}/get_teacher"
+        response = requests.get(url_req, json={"user_id": state_data.get("user_id"),
+                                               "teacher_id": lecturers_id[int(lecturer_index)]})
+        response_data = response.json()
+        print(response_data)
+        await callback_query.message.answer(
+            str(__("Вы в меню преподавателя {name}.\n\n"
+                   "Номер телефона: {phone_number}\n"
+                   "Почта: {email}\n"
+                   "Социальная сеть: {social_page_link}\n"
+                   "Аудитория: {classroom}")).format(
+                name=format_value(response_data.get("name")),
+                phone_number=format_value(response_data.get("phone_number")),
+                email=format_value(response_data.get("email")),
+                social_page_link=format_value(response_data.get("social_page_link")),
+                classroom=format_value(response_data.get("classroom")),
+            )
+        )
+
+
+@router.message(F.text == __("Посмотреть список преподавателей"))
+async def add_teacher_start(message: Message, state: FSMContext):
+    await state.set_state(ShowTeacherStates.showing_list)
+
+    state_data = await state.get_data()
+    url_req = f"{settings.API_URL}/get_user_id"
+    response = requests.get(url_req, json={"telegram_id": state_data.get("telegram_id")})
+
+    if response.status_code == 200:
+        user_id = response.json().get("user_id")
+        url_req = f"{settings.API_URL}/get_teachers"
+        response = requests.get(url_req, json={"user_id": user_id})
+        await state.update_data(user_id=user_id)
+        if response.status_code == 200:
+            response_data = response.json()
+            sorted_teachers = sorted(response_data.get("teachers"), key=lambda x: x["name"])
+            lecturers_dict = {teacher["teacher_id"]: teacher["name"] for teacher in sorted_teachers}
+            await state.update_data(lecturers=list(lecturers_dict.values()))
+            await state.update_data(lecturers_id=list(lecturers_dict.keys()))
+            await message.answer(
+                _("Список преподавателей:"),
+                reply_markup=kb.lecturers_list(list(lecturers_dict.values()), page=0)
+            )
+        else:
+            await message.answer(json.loads(response.text).get('detail'))
+    else:
+        await message.answer(json.loads(response.text).get('detail'))

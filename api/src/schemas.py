@@ -34,12 +34,28 @@ class AddTeacherSchema(SQLModel):
     is_from_API: bool
 
 
+class GetTeacherSchema(SQLModel):
+    user_id: int
+    teacher_id: int
+
+
+class GetTeacherResponseSchema(SQLModel):
+    user_id: int
+    teacher_id: int
+    name: str
+    phone_number: str | None = None
+    email: str | None = None
+    social_page_link: str | None = None
+    classroom: str | None = None
+    is_from_API: bool
+
+
 class GetTeachersSchema(SQLModel):
     user_id: int
 
 
 class GetTeachersResponseSchema(SQLModel):
-    teachers: list[AddTeacherSchema]
+    teachers: list[GetTeacherResponseSchema]
 
 
 class CheckUserExistSchema(SQLModel):
