@@ -8,11 +8,11 @@ from api.src.database import SessionDep
 router = APIRouter()
 
 
-@router.post("/change_user_group", tags=["admin"])
+@router.post("/change_user_group", tags=["settings"])
 async def change_user_group_router(schema: ChangeUserGroupSchema, session: SessionDep):
     return change_user_group_handler(session, schema)
 
 
-@router.post("/change_user_status", tags=["admin"])
+@router.post("/change_user_status", tags=["settings"])
 async def change_user_status_router(schema: ChangeUserStatusSchema, session: SessionDep):
     return change_user_status_handler(session, schema)

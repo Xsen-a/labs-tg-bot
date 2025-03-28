@@ -72,6 +72,9 @@ class EditTeacherAttributeSchema(SQLModel):
     editing_value: str
 
 
+class DeleteTeacherSchema(SQLModel):
+    teacher_id: int
+
 class CheckUserExistSchema(SQLModel):
     telegram_id: str
 
