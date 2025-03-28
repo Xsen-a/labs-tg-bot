@@ -5,6 +5,7 @@
 from datetime import datetime, date, time
 
 from pydantic import BaseModel, field_validator
+from sqlalchemy.dialects.postgresql import Any
 from sqlmodel import SQLModel
 
 
@@ -35,7 +36,6 @@ class AddTeacherSchema(SQLModel):
 
 
 class GetTeacherSchema(SQLModel):
-    user_id: int
     teacher_id: int
 
 
@@ -56,6 +56,20 @@ class GetTeachersSchema(SQLModel):
 
 class GetTeachersResponseSchema(SQLModel):
     teachers: list[GetTeacherResponseSchema]
+
+
+class GetTeacherApiStatusSchema(SQLModel):
+    teacher_id: int
+
+
+class GetTeacherApiStatusResponseSchema(SQLModel):
+    is_from_API: bool
+
+
+class EditTeacherAttributeSchema(SQLModel):
+    teacher_id: int
+    editing_attribute: str
+    editing_value: str
 
 
 class CheckUserExistSchema(SQLModel):

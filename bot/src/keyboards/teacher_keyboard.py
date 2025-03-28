@@ -72,3 +72,24 @@ def back_list(page):
 
 def continue_list(page):
     return InlineKeyboardButton(text=_("➡"), callback_data=f"lecturers_page_{page + 1}")
+
+
+def teacher_menu():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Изменить"), callback_data="edit_teacher")
+    builder.button(text=_("Удалить"), callback_data="delete_teacher")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def edit_options(is_from_api):
+    builder = InlineKeyboardBuilder()
+    if not is_from_api:
+        builder.button(text=_("Изменить ФИО"), callback_data="edit_teacher_fio")
+    builder.button(text=_("Изменить номер телефона"), callback_data="edit_teacher_phone")
+    builder.button(text=_("Изменить почту"), callback_data="edit_teacher_email")
+    builder.button(text=_("Изменить социальную сеть"), callback_data="edit_teacher_link")
+    builder.button(text=_("Изменить аудиторию"), callback_data="edit_teacher_classroom")
+    builder.button(text=_("Отмена"), callback_data="cancel_editing")
+    builder.adjust(1)
+    return builder.as_markup()

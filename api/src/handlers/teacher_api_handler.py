@@ -1,5 +1,6 @@
 from sqlmodel import Session, select
-from api.src.schemas import AddTeacherSchema, GetTeachersSchema, GetTeachersResponseSchema, GetTeacherSchema, GetTeacherResponseSchema
+from api.src.schemas import AddTeacherSchema, GetTeachersSchema, GetTeachersResponseSchema, GetTeacherSchema, \
+    GetTeacherResponseSchema, GetTeacherApiStatusSchema, GetTeacherApiStatusResponseSchema, EditTeacherAttributeSchema
 from api.src.models import Teacher, User
 
 
@@ -41,8 +42,7 @@ def get_teachers_handler(session: Session, schema: GetTeachersSchema) -> GetTeac
 
 
 def get_teacher_handler(session: Session, schema: GetTeacherSchema) -> GetTeacherResponseSchema:
-    teacher_query = select(Teacher).where((Teacher.user_id == schema.user_id) & (Teacher.teacher_id == schema.teacher_id))
-    print(teacher_query)
+    teacher_query = select(Teacher).where(Teacher.teacher_id == schema.teacher_id)
     teacher = session.exec(teacher_query).first()
     get_teacher = GetTeacherResponseSchema(
         user_id=teacher.user_id,
@@ -56,3 +56,24 @@ def get_teacher_handler(session: Session, schema: GetTeacherSchema) -> GetTeache
     )
 
     return get_teacher
+
+
+def get_teacher_api_status_handler(session: Session,
+                                   schema: GetTeacherApiStatusSchema) -> GetTeacherApiStatusResponseSchema:
+    teacher_query = select(Teacher).where(Teacher.teacher_id == schema.teacher_id)
+    teacher = session.exec(teacher_query).first()
+    return GetTeacherApiStatusResponseSchema(is_from_API=teacher.is_from_API)
+
+
+def edit_teacher_attribute_handler(session: Session, schema: EditTeacherAttributeSchema):
+    teacher_query = select(Teacher).where(Teacher.teacher_id == schema.teacher_id)
+    teacher = session.exec(teacher_query).first()
+
+    if teacher:
+        setattr(teacher, schema.editing_attribute, schema.editing_value)
+        session.add(teacher)
+        session.commit()
+        session.refresh(teacher)
+        return teacher
+    else:
+        raise ValueError(f"Преподаватель с ID {schema.teacher_id} не найден")

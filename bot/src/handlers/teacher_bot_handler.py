@@ -3,6 +3,7 @@ import json
 import requests
 
 from aiogram import Router, F
+from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
@@ -32,6 +33,15 @@ class AddTeacherStates(StatesGroup):
 
 class ShowTeacherStates(StatesGroup):
     showing_list = State()
+
+
+class EditTeacherStates(StatesGroup):
+    editing_teacher = State()
+    editing_fio = State()
+    editing_phone_number = State()
+    editing_email = State()
+    editing_link = State()
+    editing_classroom = State()
 
 
 def validate_fio(fio):
@@ -293,6 +303,7 @@ async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
         reply_markup=None
     )
     field = callback_query.data.split("_")[-1]
+    await state.update_data(editing_attribute=field)
 
     match field:
         case "fio":
@@ -315,7 +326,7 @@ async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
 
 
-@router.message(AddTeacherStates.waiting_for_new_fio)
+@router.message(or_f(AddTeacherStates.waiting_for_new_fio, EditTeacherStates.editing_fio))
 async def request_new_fio(message: Message, state: FSMContext):
     fio = message.text
     if not validate_fio(fio):
@@ -324,11 +335,41 @@ async def request_new_fio(message: Message, state: FSMContext):
         )
         return
     else:
-        await state.update_data(name=fio)
-        await show_confirmation(message, state)
+        if await state.get_state() == AddTeacherStates.waiting_for_new_fio:
+            await show_confirmation(message, state)
+        elif await state.get_state() == EditTeacherStates.editing_fio:
+            state_data = await state.get_data()
+            prev_fio = state_data.get("name")
+            await state.update_data(editing_value=fio)
+            url_req = f"{settings.API_URL}/edit_teacher"
+            response = requests.post(url_req, json={
+                "teacher_id": state_data.get("chosen_lecturer_id"),
+                "editing_attribute": state_data.get("editing_attribute"),
+                "editing_value": fio})
+            if response.status_code == 200:
+                await state.update_data(chosen_lecturer_name=fio)
+                await message.answer(
+                    _("Вы изменили ФИО преподавателя {prev_fio} на {fio}.").format(prev_fio=prev_fio, fio=fio)
+                )
+                await message.answer(
+                    str(__("Вы в меню преподавателя {name}.\n\n"
+                           "Номер телефона: {phone_number}\n"
+                           "Почта: {email}\n"
+                           "Социальная сеть: {social_page_link}\n"
+                           "Аудитория: {classroom}")).format(
+                        name=format_value(fio),
+                        phone_number=format_value(state_data.get("chosen_lecturer_phone")),
+                        email=format_value(state_data.get("chosen_lecturer_email")),
+                        social_page_link=format_value(state_data.get("chosen_lecturer_link")),
+                        classroom=format_value(state_data.get("chosen_lecturer_classroom")),
+                    ),
+                    reply_markup=kb.teacher_menu()
+                )
+            else:
+                await message.answer(json.loads(response.text).get('detail'))
 
 
-@router.message(AddTeacherStates.waiting_for_new_phone_number)
+@router.message(AddTeacherStates.waiting_for_new_phone_number, EditTeacherStates.editing_phone_number)
 async def request_new_phone_number(message: Message, state: FSMContext):
     phone_number = message.text
     if not validate_phone_number(phone_number):
@@ -341,7 +382,7 @@ async def request_new_phone_number(message: Message, state: FSMContext):
         await show_confirmation(message, state)
 
 
-@router.message(AddTeacherStates.waiting_for_new_email)
+@router.message(AddTeacherStates.waiting_for_new_email, EditTeacherStates.editing_email)
 async def request_new_email(message: Message, state: FSMContext):
     email = message.text
     if not validate_email(email):
@@ -354,14 +395,14 @@ async def request_new_email(message: Message, state: FSMContext):
         await show_confirmation(message, state)
 
 
-@router.message(AddTeacherStates.waiting_for_new_link)
+@router.message(AddTeacherStates.waiting_for_new_link, EditTeacherStates.editing_link)
 async def request_new_link(message: Message, state: FSMContext):
     social_page_link = message.text
     await state.update_data(social_page_link=social_page_link)
     await show_confirmation(message, state)
 
 
-@router.message(AddTeacherStates.waiting_for_new_classroom)
+@router.message(AddTeacherStates.waiting_for_new_classroom, EditTeacherStates.editing_classroom)
 async def request_new_classroom(message: Message, state: FSMContext):
     classroom = message.text
     await state.update_data(classroom=classroom)
@@ -454,31 +495,35 @@ async def add_teacher_by_api_phone(callback_query: CallbackQuery, state: FSMCont
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddTeacherStates.waiting_for_phone_number)
+
     elif await state.get_state() == ShowTeacherStates.showing_list:
-        # TODO: получить информацию о преподавателе из API и вывести сообщение с информацией, сделать меню препода
-        # TODO: в запрос помещать по индексу из lecturers_id
         lecturers_id = state_data.get("lecturers_id")
-        # print(lecturers_id, lecturer_index)
-        # print(lecturers_id[int(lecturer_index)])
-        # print(state_data.get("user_id"))
         url_req = f"{settings.API_URL}/get_teacher"
-        response = requests.get(url_req, json={"user_id": state_data.get("user_id"),
-                                               "teacher_id": lecturers_id[int(lecturer_index)]})
-        response_data = response.json()
-        print(response_data)
-        await callback_query.message.answer(
-            str(__("Вы в меню преподавателя {name}.\n\n"
-                   "Номер телефона: {phone_number}\n"
-                   "Почта: {email}\n"
-                   "Социальная сеть: {social_page_link}\n"
-                   "Аудитория: {classroom}")).format(
-                name=format_value(response_data.get("name")),
-                phone_number=format_value(response_data.get("phone_number")),
-                email=format_value(response_data.get("email")),
-                social_page_link=format_value(response_data.get("social_page_link")),
-                classroom=format_value(response_data.get("classroom")),
+        response = requests.get(url_req, json={"teacher_id": lecturers_id[int(lecturer_index)]})
+        if response.status_code == 200:
+            response_data = response.json()
+            await state.update_data(chosen_lecturer_id=lecturers_id[int(lecturer_index)])
+            await state.update_data(chosen_lecturer_name=response_data.get("name"))
+            await state.update_data(chosen_lecturer_phone=response_data.get("phone_number"))
+            await state.update_data(chosen_lecturer_email=response_data.get("email"))
+            await state.update_data(chosen_lecturer_link=response_data.get("social_page_link"))
+            await state.update_data(chosen_lecturer_classroom=response_data.get("classroom"))
+            await callback_query.message.answer(
+                str(__("Вы в меню преподавателя {name}.\n\n"
+                       "Номер телефона: {phone_number}\n"
+                       "Почта: {email}\n"
+                       "Социальная сеть: {social_page_link}\n"
+                       "Аудитория: {classroom}")).format(
+                    name=format_value(response_data.get("name")),
+                    phone_number=format_value(response_data.get("phone_number")),
+                    email=format_value(response_data.get("email")),
+                    social_page_link=format_value(response_data.get("social_page_link")),
+                    classroom=format_value(response_data.get("classroom")),
+                ),
+                reply_markup=kb.teacher_menu()
             )
-        )
+        else:
+            await callback_query.message.answer(json.loads(response.text).get('detail'))
 
 
 @router.message(F.text == __("Посмотреть список преподавателей"))
@@ -508,3 +553,58 @@ async def add_teacher_start(message: Message, state: FSMContext):
             await message.answer(json.loads(response.text).get('detail'))
     else:
         await message.answer(json.loads(response.text).get('detail'))
+
+
+@router.callback_query(F.data == "edit_teacher")
+async def edit_teacher(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.edit_message_reply_markup(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+        reply_markup=None
+    )
+    state_data = await state.get_data()
+    url_req = f"{settings.API_URL}/get_teacher_api_status"
+    response = requests.get(url_req, json={"teacher_id": state_data.get("chosen_lecturer_id")})
+    if response.status_code == 200:
+        response_data = response.json()
+        api_status = response_data.get("is_from_API")
+        await callback_query.message.answer(
+            _("Выберите изменения"),
+            reply_markup=kb.edit_options(api_status)
+        )
+    else:
+        await callback_query.message.answer(json.loads(response.text).get('detail'))
+
+
+@router.callback_query(F.data.startswith("edit_teacher_"))
+async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.delete_message(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+    )
+    field = callback_query.data.split("_")[-1]
+
+    match field:
+        case "fio":
+            await state.update_data(editing_attribute="name")
+            await callback_query.message.answer(_("Введите новые ФИО преподавателя."))
+            await state.set_state(EditTeacherStates.editing_fio)
+        case "phone":
+            await state.update_data(editing_attribute="phone_number")
+            await callback_query.message.answer(_("Введите новый номер телефона преподавателя."))
+            await state.set_state(EditTeacherStates.editing_phone_number)
+        case "email":
+            await state.update_data(editing_attribute="email")
+            await callback_query.message.answer(_("Введите новый адрес электронной почты преподавателя."))
+            await state.set_state(EditTeacherStates.editing_email)
+        case "link":
+            await state.update_data(editing_attribute="social_page_link")
+            await callback_query.message.answer(_("Введите новую ссылку на социальную сеть преподавателя."))
+            await state.set_state(EditTeacherStates.editing_link)
+        case "classroom":
+            await state.update_data(editing_attribute="classroom")
+            await callback_query.message.answer(
+                _("Введите новый номер аудитории или кафедры, где можно найти преподавателя."))
+            await state.set_state(EditTeacherStates.editing_classroom)
+
+    await callback_query.answer()
