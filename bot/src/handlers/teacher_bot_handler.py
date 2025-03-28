@@ -353,7 +353,7 @@ async def request_new_fio(message: Message, state: FSMContext):
                     _("Вы изменили ФИО преподавателя {prev_val} на {val}.").format(prev_fio=format_value(prev_val),
                                                                                    val=fio)
                 )
-                await message.answer(
+                menu_message = await message.answer(
                     str(__("Вы в меню преподавателя {name}.\n\n"
                            "Номер телефона: {phone_number}\n"
                            "Почта: {email}\n"
@@ -367,6 +367,7 @@ async def request_new_fio(message: Message, state: FSMContext):
                     ),
                     reply_markup=kb.teacher_menu()
                 )
+                await state.update_data(menu_message_id=menu_message.message_id)
             else:
                 await message.answer(json.loads(response.text).get('detail'))
 
@@ -398,7 +399,7 @@ async def request_new_phone_number(message: Message, state: FSMContext):
                     _("Вы изменили номер телефона преподавателя {prev_val} на {val}.").format(
                         prev_val=format_value(prev_val), val=phone_number)
                 )
-                await message.answer(
+                menu_message = await message.answer(
                     str(__("Вы в меню преподавателя {name}.\n\n"
                            "Номер телефона: {phone_number}\n"
                            "Почта: {email}\n"
@@ -412,6 +413,7 @@ async def request_new_phone_number(message: Message, state: FSMContext):
                     ),
                     reply_markup=kb.teacher_menu()
                 )
+                await state.update_data(menu_message_id=menu_message.message_id)
             else:
                 await message.answer(json.loads(response.text).get('detail'))
 
@@ -443,7 +445,7 @@ async def request_new_email(message: Message, state: FSMContext):
                     _("Вы изменили почту преподавателя {prev_val} на {val}.").format(
                         prev_val=format_value(prev_val), val=email)
                 )
-                await message.answer(
+                menu_message = await message.answer(
                     str(__("Вы в меню преподавателя {name}.\n\n"
                            "Номер телефона: {phone_number}\n"
                            "Почта: {email}\n"
@@ -457,6 +459,7 @@ async def request_new_email(message: Message, state: FSMContext):
                     ),
                     reply_markup=kb.teacher_menu()
                 )
+                await state.update_data(menu_message_id=menu_message.message_id)
             else:
                 await message.answer(json.loads(response.text).get('detail'))
 
@@ -482,7 +485,7 @@ async def request_new_link(message: Message, state: FSMContext):
                 _("Вы изменили почту преподавателя {prev_val} на {val}.").format(
                     prev_val=format_value(prev_val), val=social_page_link)
             )
-            await message.answer(
+            menu_message = await message.answer(
                 str(__("Вы в меню преподавателя {name}.\n\n"
                        "Номер телефона: {phone_number}\n"
                        "Почта: {email}\n"
@@ -496,6 +499,7 @@ async def request_new_link(message: Message, state: FSMContext):
                 ),
                 reply_markup=kb.teacher_menu()
             )
+            await state.update_data(menu_message_id=menu_message.message_id)
         else:
             await message.answer(json.loads(response.text).get('detail'))
 
@@ -521,7 +525,7 @@ async def request_new_classroom(message: Message, state: FSMContext):
                 _("Вы изменили почту преподавателя {prev_val} на {val}.").format(
                     prev_val=format_value(prev_val), val=classroom)
             )
-            await message.answer(
+            menu_message = await message.answer(
                 str(__("Вы в меню преподавателя {name}.\n\n"
                        "Номер телефона: {phone_number}\n"
                        "Почта: {email}\n"
@@ -535,6 +539,7 @@ async def request_new_classroom(message: Message, state: FSMContext):
                 ),
                 reply_markup=kb.teacher_menu()
             )
+            await state.update_data(menu_message_id=menu_message.message_id)
         else:
             await message.answer(json.loads(response.text).get('detail'))
 
