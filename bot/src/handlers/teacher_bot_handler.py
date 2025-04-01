@@ -61,16 +61,16 @@ def validate_phone_number(phone_number):
         return False
 
 
-def format_value(value):
-    return "-" if value is None else value
-
-
 def validate_email(email):
     pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
     if re.match(pattern, email):
         return True
     else:
         return False
+
+
+def format_value(value):
+    return "-" if value is None else value
 
 
 async def show_confirmation(message: Message, state: FSMContext):
@@ -592,7 +592,7 @@ async def request_new_classroom(message: Message, state: FSMContext):
             await message.answer(json.loads(response.text).get('detail'))
 
 
-@router.callback_query(F.data == "add_by_hand")
+@router.callback_query(F.data == "add_teacher_by_hand")
 async def add_teacher_by_hand(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(is_from_api=False)
@@ -915,7 +915,7 @@ async def confirm_deleting(callback_query: CallbackQuery, state: FSMContext):
     await state.update_data(menu_message_id=menu_message.message_id)
 
 
-@router.callback_query(F.data == "back_to_list")
+@router.callback_query(F.data == "back_to_teachers_list")
 async def back_to_list(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await callback_query.message.bot.delete_message(

@@ -18,10 +18,10 @@ def main_menu_keyboard():
     builder_row = ReplyKeyboardBuilder()
     builder_row.button(text=_("Дисциплины"))
     builder_row.button(text=_("Преподаватели"))
-    builder_row.button(text=_("Преподаватели и дисциплины"))
     builder_row.button(text=_("Пары"))
-    builder_row.button(text=_("Настройки"))
     builder_row.adjust(2)
+
+    builder_row.button(text=_("Настройки"))
 
     builder_column.attach(builder_row)
     return builder_column.as_markup()

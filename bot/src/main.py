@@ -10,8 +10,8 @@ from aiogram.types import TelegramObject
 from aiogram.utils.i18n import I18nMiddleware, I18n, FSMI18nMiddleware
 from typing import Any
 
-from .handlers import main_bot_handler as main_handler, teacher_bot_handler as teacher_handler,\
-    auth_bot_handler as auth_handler, settings_bot_handler as settings_handler
+from .handlers import main_bot_handler as main_handler, settings_bot_handler as settings_handler,\
+    auth_bot_handler as auth_handler, teacher_bot_handler as teacher_handler, discipline_bot_handler as discipline_handler
 
 
 TOKEN = settings.BOT_TOKEN
@@ -38,9 +38,10 @@ async def main() -> None:
 
     # Добавление роутеров из всех handler
     dp.include_routers(main_handler.router)
-    dp.include_routers(teacher_handler.router)
     dp.include_routers(auth_handler.router)
     dp.include_routers(settings_handler.router)
+    dp.include_routers(teacher_handler.router)
+    dp.include_routers(discipline_handler.router)
 
     # logger.info("Запуск бота...")
     await dp.start_polling(bot)

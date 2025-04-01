@@ -31,7 +31,7 @@ def add_option():
     builder = InlineKeyboardBuilder()
 
     builder.button(text=_("Показать список"), callback_data="show_teacher_api_list")
-    builder.button(text=_("Ввести вручную"), callback_data="add_by_hand")
+    builder.button(text=_("Ввести вручную"), callback_data="add_teacher_by_hand")
     builder.adjust(1)
     return builder.as_markup()
 
@@ -78,7 +78,7 @@ def teacher_menu():
     builder = InlineKeyboardBuilder()
     builder.button(text=_("Изменить"), callback_data="edit_teacher")
     builder.button(text=_("Удалить"), callback_data="delete_teacher")
-    builder.button(text=_("Назад"), callback_data="back_to_list")
+    builder.button(text=_("Назад"), callback_data="back_to_teachers_list")
     builder.adjust(1)
     return builder.as_markup()
 

@@ -93,7 +93,11 @@ async def open_gant_menu(message: Message, state: FSMContext):
 
 
 @router.message(F.text == __("Дисциплины"))
-async def open_discipline_menu(message: Message, state: FSMContext):
+async def open_discipline_menu(message: Message, state: FSMContext, telegram_id: int = None):
+    await state.clear()
+    if telegram_id is None:
+        telegram_id = str(message.from_user.id)
+    await state.update_data(telegram_id=telegram_id)
     await message.answer(
         _("Вы находитесь в меню дисциплин."),
         reply_markup=kb.discipline_menu_keyboard(),
