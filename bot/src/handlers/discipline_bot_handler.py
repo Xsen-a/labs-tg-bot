@@ -373,8 +373,8 @@ async def add_teacher_start(message: Message, state: FSMContext):
             await state.update_data(disciplines=list(disciplines_dict.values()))
             await state.update_data(disciplines_id=list(disciplines_dict.keys()))
             await message.answer(
-                _("Список дисциплин:"),
-                reply_markup=kb.lecturers_list(list(disciplines_dict.values()), page=0)
+                _("Список дисциплин"),
+                reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0)
             )
         else:
             await message.answer(json.loads(response.text).get('detail'))

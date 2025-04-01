@@ -26,6 +26,7 @@ def get_disciplines_handler(session: Session, schema: GetDisciplinesSchema) -> G
     disciplines_list = []
     for discipline in disciplines:
         disciplines_list.append(GetDisciplineResponseSchema(
+            discipline_id=discipline.discipline_id,
             user_id=discipline.user_id,
             teacher_id=discipline.teacher_id,
             name=discipline.name,
@@ -39,6 +40,7 @@ def get_discipline_handler(session: Session, schema: GetDisciplineSchema) -> Get
     discipline_query = select(Discipline).where(Discipline.discipline_id == schema.discipline_id)
     discipline = session.exec(discipline_query).first()
     get_discipline = GetDisciplineResponseSchema(
+        discipline_id=discipline.discipline_id,
         user_id=discipline.user_id,
         teacher_id=discipline.teacher_id,
         name=discipline.name,
