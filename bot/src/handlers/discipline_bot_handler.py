@@ -43,7 +43,7 @@ class EditDisciplineStates(StatesGroup):
 async def show_confirmation(message: Message, state: FSMContext):
     state_data = await state.get_data()
     if state_data.get("teacher_name"):
-        await message.answer(
+        await message.edit_text(
             _("Вы действительно хотите добавить дисциплину {name}?\n\n"
               "Преподаватель: {teacher}")
             .format(
@@ -52,7 +52,7 @@ async def show_confirmation(message: Message, state: FSMContext):
             ),
             reply_markup=kb.add_discipline_confirm(state_data.get("is_from_api")))
     else:
-        await message.answer(
+        await message.edit_text(
             _("Вы действительно хотите добавить дисциплину {name}?\n\n"
               "Преподаватель: -")
             .format(
@@ -123,10 +123,6 @@ async def handle_pagination(callback_query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith("disciplines_lecturer_index_"), or_f(AddDisciplineStates.waiting_for_teacher, AddDisciplineStates.waiting_for_new_teacher))
 async def get_discipline_teacher(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.message.bot.delete_message(
-        chat_id=callback_query.message.chat.id,
-        message_id=callback_query.message.message_id,
-    )
     state_data = await state.get_data()
     await state.update_data(teacher_id=state_data.get("lecturers_id")[int(callback_query.data.split("_")[-1])])
     await state.update_data(teacher_name=state_data.get("lecturers")[int(callback_query.data.split("_")[-1])])
@@ -189,9 +185,27 @@ async def edit_teacher_data(callback_query: CallbackQuery, state: FSMContext):
             await callback_query.message.answer(_("Введите новое название дисциплины."))
             await state.set_state(AddDisciplineStates.waiting_for_new_name)
         case "teacher":
-            await callback_query.message.answer(_("Выберите другого преподавателя."),
-                                                reply_markup=kb.lecturers_list(state_data.get("lecturers"), page=0))
-            await state.set_state(AddDisciplineStates.waiting_for_new_teacher)
+            if state_data.get("is_from_api"):
+                schedule_data = state_data.get("schedule_data")
+                api_lecturers = set()
+                for day in schedule_data['denominator']:
+                    for lesson in day:
+                        if lesson['title'] == state_data.get("name"):
+                            api_lecturers.add(lesson['lecturer'])
+
+                for day in schedule_data['numerator']:
+                    for lesson in day:
+                        if lesson['title'] == state_data.get("name"):
+                            api_lecturers.add(lesson['lecturer'])
+                available_lecturers = [lecturer for lecturer in state_data.get("lecturers") if lecturer in api_lecturers]
+                await state.update_data(lecturers=available_lecturers)
+                await callback_query.message.answer(_("Выберите другого преподавателя."),
+                                                    reply_markup=kb.lecturers_list(available_lecturers, page=0))
+                await state.set_state(AddDisciplineStates.waiting_for_new_teacher)
+            else:
+                await callback_query.message.answer(_("Выберите другого преподавателя."),
+                                                    reply_markup=kb.lecturers_list(state_data.get("lecturers"), page=0))
+                await state.set_state(AddDisciplineStates.waiting_for_new_teacher)
 
     await callback_query.answer()
 
@@ -254,17 +268,16 @@ async def add_teacher_by_api(callback_query: CallbackQuery, state: FSMContext):
         response = requests.get(url_req)
         if response.status_code == 200:
             response_data = response.json()
+            await state.update_data(schedule_data=response_data)
 
             disciplines = set()
             for day in response_data['denominator']:
                 for lesson in day:
-                    if 'title' in lesson:
-                        disciplines.add(lesson['title'])
+                    disciplines.add(lesson['title'])
 
             for day in response_data['numerator']:
                 for lesson in day:
-                    if 'title' in lesson:
-                        disciplines.add(lesson['title'])
+                    disciplines.add(lesson['title'])
 
             disciplines_list = sorted(disciplines)
 
@@ -276,7 +289,7 @@ async def add_teacher_by_api(callback_query: CallbackQuery, state: FSMContext):
                 unique_disciplines = [discipline for discipline in disciplines_list if discipline not in disciplines_names]
                 await state.update_data(disciplines=unique_disciplines)
                 await callback_query.message.edit_text(
-                    _("Список дисциплин:"),
+                    _("Список дисциплин"),
                     reply_markup=kb.disciplines_list(unique_disciplines, page=0)
                 )
             else:
@@ -294,8 +307,6 @@ async def handle_pagination(callback_query: CallbackQuery, state: FSMContext):
     disciplines = state_data.get("disciplines", [])
 
     page = int(callback_query.data.split("_")[-1])
-    print(page)
-    print(state)
     await state.update_data(current_page=page)
 
     await callback_query.message.edit_reply_markup(
@@ -322,12 +333,28 @@ async def add_teacher_by_api_phone(callback_query: CallbackQuery, state: FSMCont
             response_data = response.json()
             sorted_teachers = sorted(response_data.get("teachers"), key=lambda x: x["name"])
             lecturers_dict = {teacher["teacher_id"]: teacher["name"] for teacher in sorted_teachers}
+            schedule_data = state_data.get("schedule_data")
+            api_lecturers = set()
+            for day in schedule_data['denominator']:
+                for lesson in day:
+                    if lesson['title'] == selected_discipline:
+                        api_lecturers.add(lesson['lecturer'])
+
+            for day in schedule_data['numerator']:
+                for lesson in day:
+                    if lesson['title'] == selected_discipline:
+                        api_lecturers.add(lesson['lecturer'])
+            available_lecturers = [lecturer for lecturer in list(lecturers_dict.values()) if lecturer in api_lecturers]
             await state.update_data(lecturers_dict=lecturers_dict)
-            await state.update_data(lecturers=list(lecturers_dict.values()))
+            await state.update_data(lecturers=available_lecturers)
             await state.update_data(lecturers_id=list(lecturers_dict.keys()))
-            await callback_query.message.answer(
+            # await callback_query.message.bot.delete_message(
+            #     chat_id=callback_query.message.chat.id,
+            #     message_id=callback_query.message.message_id,
+            # )
+            await callback_query.message.edit_text(
                 _("Выберите преподавателя, ведущего дисциплину.\n"),
-                reply_markup=kb.lecturers_list(list(lecturers_dict.values()), page=0))
+                reply_markup=kb.lecturers_list(available_lecturers, page=0))
         await state.set_state(AddDisciplineStates.waiting_for_teacher)
 
     elif await state.get_state() == ShowDisciplineStates.showing_list:
@@ -366,7 +393,6 @@ async def add_teacher_start(message: Message, state: FSMContext):
         response = requests.get(url_req, json={"user_id": user_id})
         if response.status_code == 200:
             response_data = response.json()
-            print(response_data)
             sorted_disciplines = sorted(response_data.get("disciplines"), key=lambda x: x["name"])
             disciplines_dict = {discipline["discipline_id"]: discipline["name"] for discipline in sorted_disciplines}
             await state.update_data(disciplines_dict=disciplines_dict)
