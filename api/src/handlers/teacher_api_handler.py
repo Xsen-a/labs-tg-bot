@@ -1,7 +1,7 @@
 from sqlmodel import Session, select, delete, update
 from api.src.schemas import AddTeacherSchema, GetTeachersSchema, GetTeachersResponseSchema, GetTeacherSchema, \
     GetTeacherResponseSchema, GetTeacherApiStatusSchema, GetTeacherApiStatusResponseSchema, EditTeacherAttributeSchema,\
-    DeleteTeacherSchema
+    DeleteTeacherSchema, GetTeacherNameSchema, GetTeacherNameResponseSchema
 from api.src.models import Teacher, User
 
 
@@ -63,6 +63,12 @@ def get_teacher_api_status_handler(session: Session, schema: GetTeacherApiStatus
     teacher_query = select(Teacher).where(Teacher.teacher_id == schema.teacher_id)
     teacher = session.exec(teacher_query).first()
     return GetTeacherApiStatusResponseSchema(is_from_API=teacher.is_from_API)
+
+
+def get_teacher_name_handler(session: Session, schema: GetTeacherNameSchema) -> GetTeacherNameResponseSchema:
+    teacher_query = select(Teacher).where(Teacher.teacher_id == schema.teacher_id)
+    teacher = session.exec(teacher_query).first()
+    return GetTeacherNameResponseSchema(name=teacher.name)
 
 
 def edit_teacher_attribute_handler(session: Session, schema: EditTeacherAttributeSchema):

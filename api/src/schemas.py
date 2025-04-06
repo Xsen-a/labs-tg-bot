@@ -25,7 +25,6 @@ class GetUserGroupResponseSchema(SQLModel):
     group: str | None = None
 
 
-
 class CheckUserExistSchema(SQLModel):
     telegram_id: str
 
@@ -99,6 +98,14 @@ class GetTeacherApiStatusSchema(SQLModel):
 
 class GetTeacherApiStatusResponseSchema(SQLModel):
     is_from_API: bool
+
+
+class GetTeacherNameSchema(SQLModel):
+    teacher_id: int
+
+
+class GetTeacherNameResponseSchema(SQLModel):
+    name: str
 
 
 class EditTeacherAttributeSchema(SQLModel):

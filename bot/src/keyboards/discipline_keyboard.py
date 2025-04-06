@@ -1,7 +1,9 @@
+from aiogram.fsm.context import FSMContext
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+#from bot.src.handlers.discipline_bot_handler import EditDisciplineStates
 
 
 def add_discipline_confirm(is_from_api):
@@ -66,7 +68,8 @@ def discipline_menu():
 
 def edit_options(exist_teacher, is_from_api):
     builder = InlineKeyboardBuilder()
-    builder.button(text=_("Изменить название"), callback_data="edit_discipline_name")
+    if not is_from_api:
+        builder.button(text=_("Изменить название"), callback_data="edit_discipline_name")
     if exist_teacher:
         builder.button(text=_("Изменить преподавателя"), callback_data="edit_discipline_teacher")
     else:
@@ -77,27 +80,31 @@ def edit_options(exist_teacher, is_from_api):
 
 def cancel_editing_attr():
     builder = InlineKeyboardBuilder()
-    builder.button(text=_("Отмена"), callback_data="cancel_editing_attr")
+    builder.button(text=_("Отмена"), callback_data="cancel_editing_attr_discipline")
     builder.adjust(1)
     return builder.as_markup()
 
 
-def confirm_delete_teacher():
+def confirm_delete_discipline():
     builder = InlineKeyboardBuilder()
-    builder.button(text=_("Да"), callback_data="confirm_deleting")
-    builder.button(text=_("Нет"), callback_data="cancel_deleting")
+    builder.button(text=_("Да"), callback_data="confirm_deleting_discipline")
+    builder.button(text=_("Нет"), callback_data="cancel_deleting_discipline")
     builder.adjust(1)
     return builder.as_markup()
 
 
-def lecturers_list(lecturers, page: int = 0, items_per_page: int = 5):
+def lecturers_list(lecturers, page: int = 0, items_per_page: int = 5, state: str = None):
     builder = InlineKeyboardBuilder()
 
     start_idx = page * items_per_page
     end_idx = start_idx + items_per_page
     current_page_lecturers = lecturers[start_idx:end_idx]
 
-    builder.button(text=_("Пропустить"), callback_data="skip_disciplines_lecturer")
+    print(state)
+    if state is None:
+        builder.button(text=_("Отмена"), callback_data="cancel_editing_attr_discipline")
+    else:
+        builder.button(text=_("Пропустить"), callback_data="skip_disciplines_lecturer")
     for i, lecturer in enumerate(current_page_lecturers, start=start_idx):
         builder.button(text=_("{lecturer}".format(lecturer=lecturers[i])), callback_data=f"disciplines_lecturer_index_{i}"
     )

@@ -62,8 +62,13 @@ def edit_discipline_attribute_handler(session: Session, schema: EditDisciplineAt
     discipline_query = select(Discipline).where(Discipline.discipline_id == schema.discipline_id)
     discipline = session.exec(discipline_query).first()
 
+    if schema.editing_attribute == "teacher_id":
+        editing_value = int(schema.editing_value)
+    else:
+        editing_value = str(schema.editing_value)
+
     if discipline:
-        setattr(discipline, schema.editing_attribute, schema.editing_value)
+        setattr(discipline, schema.editing_attribute, editing_value)
         # session.add(discipline)
         session.commit()
         # session.refresh(discipline)
