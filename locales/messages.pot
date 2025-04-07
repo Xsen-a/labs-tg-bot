@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-03-28 19:36+0300\n"
+"POT-Creation-Date: 2025-04-06 20:58+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,89 @@ msgstr ""
 msgid "Добро пожаловать!"
 msgstr ""
 
+#: bot/src/handlers/discipline_bot_handler.py:48
+#: bot/src/handlers/discipline_bot_handler.py:66
+#, python-brace-format
+msgid ""
+"Вы действительно хотите добавить дисциплину {name}?\n"
+"\n"
+"Преподаватель: {teacher}"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:57
+#: bot/src/handlers/discipline_bot_handler.py:75
+#, python-brace-format
+msgid ""
+"Вы действительно хотите добавить дисциплину {name}?\n"
+"\n"
+"Преподаватель: -"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:97
+msgid "Выбрать дисциплину из расписания или добавить вручную?"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:101
+#: bot/src/handlers/discipline_bot_handler.py:323
+msgid "Введите название дисциплины."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:124
+#: bot/src/handlers/discipline_bot_handler.py:412
+msgid "Выберите преподавателя, ведущего дисциплину.\n"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:221
+msgid "Вы отменили добавление дисциплины."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:238
+#: bot/src/handlers/discipline_bot_handler.py:528
+msgid "Введите новое название дисциплины."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:272
+#: bot/src/handlers/discipline_bot_handler.py:277
+msgid "Выберите преподавателя, ведущего дисциплину."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:303
+#, python-brace-format
+msgid "Вы изменили название дисциплины {prev_val} на {val}."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:352
+#: bot/src/handlers/discipline_bot_handler.py:478
+msgid "Список дисциплин"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:509
+#: bot/src/handlers/discipline_bot_handler.py:614
+#: bot/src/handlers/teacher_bot_handler.py:758
+#: bot/src/handlers/teacher_bot_handler.py:846
+msgid "Выберите изменения"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:565
+#: bot/src/handlers/discipline_bot_handler.py:570
+msgid "Выберите другого преподавателя, ведущего дисциплину."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:630
+#, python-brace-format
+msgid "Вы действительно хотите удалить дисциплину {name}?"
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:647
+#, python-brace-format
+msgid "Дисциплина {name} успешно удалена."
+msgstr ""
+
+#: bot/src/handlers/discipline_bot_handler.py:668
+#, python-brace-format
+msgid "Вы отменили удаление дисциплины {name}."
+msgstr ""
+
 #: bot/src/handlers/main_bot_handler.py:42
 #: bot/src/handlers/main_bot_handler.py:51
 #: bot/src/handlers/main_bot_handler.py:66
@@ -78,19 +161,20 @@ msgstr ""
 msgid "Выберите период для диаграммы Ганта."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:98
+#: bot/src/handlers/main_bot_handler.py:116
+#: bot/src/handlers/main_bot_handler.py:125
 msgid "Вы находитесь в меню дисциплин."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:110
+#: bot/src/handlers/main_bot_handler.py:139
 msgid "Вы находитесь в меню преподавателей."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:118
+#: bot/src/handlers/main_bot_handler.py:147
 msgid "Вы находитесь в меню пар."
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:134
+#: bot/src/handlers/main_bot_handler.py:163
 #, python-brace-format
 msgid ""
 "Вы находитесь в разделе пользовательских настроек.\n"
@@ -99,7 +183,7 @@ msgid ""
 "Группа: {group}"
 msgstr ""
 
-#: bot/src/handlers/main_bot_handler.py:140
+#: bot/src/handlers/main_bot_handler.py:169
 msgid ""
 "Вы находитесь в разделе пользовательских настроек.\n"
 "\n"
@@ -248,11 +332,6 @@ msgstr ""
 msgid "Список преподавателей:"
 msgstr ""
 
-#: bot/src/handlers/teacher_bot_handler.py:758
-#: bot/src/handlers/teacher_bot_handler.py:846
-msgid "Выберите изменения"
-msgstr ""
-
 #: bot/src/handlers/teacher_bot_handler.py:861
 #, python-brace-format
 msgid "Вы действительно хотите удалить преподавателя {name}?"
@@ -280,6 +359,95 @@ msgstr ""
 msgid "Нет, я не студент ПетрГУ"
 msgstr ""
 
+#: bot/src/keyboards/discipline_keyboard.py:12
+#: bot/src/keyboards/discipline_keyboard.py:90
+#: bot/src/keyboards/teacher_keyboard.py:10
+#: bot/src/keyboards/teacher_keyboard.py:108
+msgid "Да"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:13
+#: bot/src/keyboards/discipline_keyboard.py:91
+#: bot/src/keyboards/teacher_keyboard.py:11
+#: bot/src/keyboards/teacher_keyboard.py:109
+msgid "Нет"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:15
+#: bot/src/keyboards/discipline_keyboard.py:72
+msgid "Изменить название"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:16
+#: bot/src/keyboards/discipline_keyboard.py:74
+msgid "Изменить преподавателя"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:24
+#: bot/src/keyboards/teacher_keyboard.py:33
+msgid "Показать список"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:25
+#: bot/src/keyboards/teacher_keyboard.py:34
+msgid "Ввести вручную"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:38
+#, python-brace-format
+msgid "{discipline}"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:62
+#: bot/src/keyboards/teacher_keyboard.py:79
+msgid "Изменить"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:63
+#: bot/src/keyboards/teacher_keyboard.py:80
+msgid "Удалить"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:64
+#: bot/src/keyboards/teacher_keyboard.py:81
+msgid "Назад"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:76
+#: bot/src/keyboards/menu_keyboard.py:73
+msgid "Добавить преподавателя"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:83
+#: bot/src/keyboards/discipline_keyboard.py:105
+#: bot/src/keyboards/teacher_keyboard.py:94
+#: bot/src/keyboards/teacher_keyboard.py:101
+msgid "Отмена"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:107
+#: bot/src/keyboards/teacher_keyboard.py:25
+msgid "Пропустить"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:109
+#: bot/src/keyboards/teacher_keyboard.py:47
+#, python-brace-format
+msgid "{lecturer}"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:132
+#: bot/src/keyboards/discipline_keyboard.py:140
+#: bot/src/keyboards/teacher_keyboard.py:70
+msgid "⬅"
+msgstr ""
+
+#: bot/src/keyboards/discipline_keyboard.py:136
+#: bot/src/keyboards/discipline_keyboard.py:144
+#: bot/src/keyboards/teacher_keyboard.py:74
+msgid "➡"
+msgstr ""
+
 #: bot/src/keyboards/menu_keyboard.py:8
 msgid "⬅ Назад"
 msgstr ""
@@ -301,14 +469,10 @@ msgid "Преподаватели"
 msgstr ""
 
 #: bot/src/keyboards/menu_keyboard.py:21
-msgid "Преподаватели и дисциплины"
-msgstr ""
-
-#: bot/src/keyboards/menu_keyboard.py:22
 msgid "Пары"
 msgstr ""
 
-#: bot/src/keyboards/menu_keyboard.py:23
+#: bot/src/keyboards/menu_keyboard.py:24
 msgid "Настройки"
 msgstr ""
 
@@ -352,10 +516,6 @@ msgstr ""
 msgid "Посмотреть список дисциплин"
 msgstr ""
 
-#: bot/src/keyboards/menu_keyboard.py:73
-msgid "Добавить преподавателя"
-msgstr ""
-
 #: bot/src/keyboards/menu_keyboard.py:74
 msgid "Посмотреть список преподавателей"
 msgstr ""
@@ -375,16 +535,6 @@ msgstr ""
 #: bot/src/keyboards/settings_keyboard.py:11
 #: bot/src/keyboards/settings_keyboard.py:15
 msgid "Изменить статус студента ПетрГУ"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:10
-#: bot/src/keyboards/teacher_keyboard.py:108
-msgid "Да"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:11
-#: bot/src/keyboards/teacher_keyboard.py:109
-msgid "Нет"
 msgstr ""
 
 #: bot/src/keyboards/teacher_keyboard.py:13
@@ -410,47 +560,5 @@ msgstr ""
 #: bot/src/keyboards/teacher_keyboard.py:17
 #: bot/src/keyboards/teacher_keyboard.py:93
 msgid "Изменить аудиторию"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:25
-msgid "Пропустить"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:33
-msgid "Показать список"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:34
-msgid "Ввести вручную"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:47
-#, python-brace-format
-msgid "{lecturer}"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:70
-msgid "⬅"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:74
-msgid "➡"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:79
-msgid "Изменить"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:80
-msgid "Удалить"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:81
-msgid "Назад"
-msgstr ""
-
-#: bot/src/keyboards/teacher_keyboard.py:94
-#: bot/src/keyboards/teacher_keyboard.py:101
-msgid "Отмена"
 msgstr ""
 
