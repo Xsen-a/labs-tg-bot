@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
 from api.src.schemas import AddTeacherSchema, GetTeachersSchema, GetTeacherSchema, GetTeacherApiStatusSchema,\
-    EditTeacherAttributeSchema, DeleteTeacherSchema
+    EditTeacherAttributeSchema, DeleteTeacherSchema, GetTeacherNameSchema
 from api.src.handlers.teacher_api_handler import add_teacher_handler, get_teachers_handler, get_teacher_handler,\
-    get_teacher_api_status_handler, edit_teacher_attribute_handler, delete_teacher_handler
+    get_teacher_api_status_handler, edit_teacher_attribute_handler, delete_teacher_handler, get_teacher_name_handler
 
 from api.src.database import SessionDep
 
@@ -28,6 +28,11 @@ async def get_teacher_router(schema: GetTeacherSchema, session: SessionDep):
 @router.get("/get_teacher_api_status", tags=["teachers"])
 async def get_teacher_api_status_router(schema: GetTeacherApiStatusSchema, session: SessionDep):
     return get_teacher_api_status_handler(session, schema)
+
+
+@router.get("/get_teacher_name", tags=["teachers"])
+async def get_teacher_name_router(schema: GetTeacherNameSchema, session: SessionDep):
+    return get_teacher_name_handler(session, schema)
 
 
 @router.post("/edit_teacher", tags=["teachers"])
