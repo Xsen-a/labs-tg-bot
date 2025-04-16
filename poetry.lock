@@ -44,6 +44,24 @@ redis = ["redis[hiredis] (>=5.0.1,<5.3.0)"]
 test = ["aresponses (>=2.1.6,<2.2.0)", "pycryptodomex (>=3.19.0,<3.20.0)", "pytest (>=7.4.2,<7.5.0)", "pytest-aiohttp (>=1.0.5,<1.1.0)", "pytest-asyncio (>=0.21.1,<0.22.0)", "pytest-cov (>=4.1.0,<4.2.0)", "pytest-html (>=4.0.2,<4.1.0)", "pytest-lazy-fixture (>=0.6.3,<0.7.0)", "pytest-mock (>=3.12.0,<3.13.0)", "pytest-mypy (>=0.10.3,<0.11.0)", "pytz (>=2023.3,<2024.0)"]
 
 [[package]]
+name = "aiogram-calendar"
+version = "0.6.0"
+description = "Simple Inline Calendar & Date Selection tool for Aiogram Telegram bots"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "aiogram_calendar-0.6.0-py3-none-any.whl", hash = "sha256:75e6616eb7ffb399362a2e29d94d75a3750921e354067bb0c2f3097de15db34f"},
+    {file = "aiogram_calendar-0.6.0.tar.gz", hash = "sha256:deef542841e348032621823c727e30fd668339056771bdaaf937b5f765973ab8"},
+]
+
+[package.dependencies]
+aiogram = ">=3.7"
+
+[package.extras]
+dev = ["pytest", "pytest-asyncio"]
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.5.0"
 description = "Happy Eyeballs for asyncio"
@@ -1319,4 +1337,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "5088bf5b66e43705adb3667b48fa0deacec16d3d40751ff2ced59e2a7f8b4f27"
+content-hash = "f7d98239834db36b199ad98b920400540578249e38b6b895716d66950e6dafd5"

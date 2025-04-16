@@ -7,6 +7,7 @@ from datetime import datetime, date, time
 from pydantic import BaseModel, field_validator
 from sqlalchemy.dialects.postgresql import Any
 from sqlmodel import SQLModel
+from models import Status
 
 
 class GetUserIdSchema(SQLModel):
@@ -161,3 +162,15 @@ class EditDisciplineAttributeSchema(SQLModel):
 
 class DeleteDisciplineSchema(SQLModel):
     discipline_id: int
+
+
+class AddLabSchema(SQLModel):
+    user_id: int
+    discipline_id: int
+    name: str
+    task_text: str | None = None
+    task_link: str | None = None
+    start_date: date
+    end_date: date
+    extra_info: str | None = None
+    status: Status
