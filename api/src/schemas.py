@@ -7,7 +7,7 @@ from datetime import datetime, date, time
 from pydantic import BaseModel, field_validator
 from sqlalchemy.dialects.postgresql import Any
 from sqlmodel import SQLModel
-from models import Status
+from api.src.models import Status
 
 
 class GetUserIdSchema(SQLModel):
@@ -173,4 +173,10 @@ class AddLabSchema(SQLModel):
     start_date: date
     end_date: date
     extra_info: str | None = None
-    status: Status
+    status: str
+
+
+class AddFileSchema(SQLModel):
+    task_id: int
+    file_name: str
+    file_data: bytes

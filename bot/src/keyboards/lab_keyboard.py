@@ -11,8 +11,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 def add_lab_confirm():
     builder = InlineKeyboardBuilder()
 
-    builder.button(text=_("Да"), callback_data="add_discipline")
-    builder.button(text=_("Нет"), callback_data="cancel_add_discipline")
+    builder.button(text=_("Да"), callback_data="add_lab")
+    builder.button(text=_("Нет"), callback_data="cancel_add_lab")
     builder.button(text=_("Изменить дисциплину"), callback_data="change_lab_discipline")
     builder.button(text=_("Изменить название"), callback_data="change_lab_name")
     builder.button(text=_("Изменить текст"), callback_data="change_lab_text")

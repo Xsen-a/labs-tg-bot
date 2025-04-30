@@ -1,3 +1,4 @@
+import base64
 import re
 import json
 import requests
@@ -19,6 +20,7 @@ import bot.src.keyboards.lab_keyboard as kb
 from ..settings import settings
 
 from bot.src.bot_unit import bot as bot_unit
+from api.src.models import Status
 
 router = Router()
 
@@ -89,28 +91,25 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
         description=format_value(state_data.get("description")),
         files=", ".join(file_names) if file_names else "-",
         link=format_value(state_data.get("link")),
-        start_date=format_value(state_data.get("start_date")),
-        end_date=format_value(state_data.get("end_date")),
+        start_date=format_value(datetime.strptime(state_data.get("start_date"), "%Y-%m-%d").strftime("%d.%m.%Y")),
+        end_date=format_value(datetime.strptime(state_data.get("end_date"), "%Y-%m-%d").strftime("%d.%m.%Y")),
         additional_info=format_value(state_data.get("additional_info"))
     )
 
     await message.answer(
         confirmation_text,
-        reply_markup=kb.add_lab_confirm(True)
+        reply_markup=kb.add_lab_confirm()
     )
 
-    # Затем отправляем файлы по одному
     if state_data.get("files"):
         for file_info in state_data["files"]:
             try:
                 if isinstance(file_info, dict):
                     file_id = file_info['file_id']
-                    #file_name = file_info.get('file_name', 'file')
 
                     await bot.send_document(
                         chat_id=message.chat.id,
                         document=file_id,
-                        #caption=f"Файл: {file_name}"
                     )
                 else:
                     await bot.send_document(
@@ -181,7 +180,6 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
 
     await state.update_data(discipline_id=discipline_id)
     await state.update_data(discipline_name=discipline_name)
-    print(discipline_id, discipline_name)
 
     await callback_query.message.edit_reply_markup(
         reply_markup=None
@@ -207,7 +205,7 @@ async def get_lab_description(message: Message, state: FSMContext):
     description = message.text
     await state.update_data(description=description)
     await message.answer(
-        _("Прикрепите файл с заданием для лабораторной работы размером до 1 ГБ"),
+        _("Прикрепите файл с заданием для лабораторной работы размером до 50 МБ"),
         reply_markup=kb.finish_files_button()
     )
     await state.set_state(AddLabStates.waiting_for_files)
@@ -218,24 +216,33 @@ async def skip_description(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(description=None)
     await callback_query.message.edit_text(
-        _("Прикрепите файл с заданием для лабораторной работы размером до 1 ГБ"),
+        _("Прикрепите файл с заданием для лабораторной работы размером до 50 МБ"),
         reply_markup=kb.finish_files_button()
     )
     await state.set_state(AddLabStates.waiting_for_files)
 
 
-@router.message(AddLabStates.waiting_for_files, F.document)
-async def get_lab_file(message: Message, state: FSMContext):
-    document = message.document
-    if document.file_size > 1073741824:
-        await message.answer(_("Файл слишком большой. Максимальный размер - 1 ГБ"))
-        return
+@router.message(AddLabStates.waiting_for_files, F.document | F.photo | F.audio | F.video)
+async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit):
+    file_info = None
 
-    try:
+    if message.document:
+        document = message.document
+        if document.file_size > 52428800:
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            return
+
+        file = await bot.get_file(document.file_id)
+        file_data = await bot.download_file(file.file_path)
+
+        # Читаем содержимое файла в bytes
+        file_bytes = file_data.read()
+
         file_info = {
             'file_id': document.file_id,
             'file_name': document.file_name or "Без названия",
-            'file_size': document.file_size,
+            'file_data': file_bytes,
+            'file_type': 'document',
             'mime_type': document.mime_type
         }
 
@@ -244,14 +251,80 @@ async def get_lab_file(message: Message, state: FSMContext):
         files.append(file_info)
         await state.update_data(files=files)
 
-        await message.answer(
-            _("Файл '{file_name}' успешно загружен. Прикрепите еще один файл или нажмите 'Завершить добавление файлов'").format(
-                file_name=file_info['file_name']
-            ),
-            reply_markup=kb.finish_files_button()
-        )
-    except Exception as e:
-        await message.answer(_("Произошла ошибка при загрузке файла: {error}").format(error=str(e)))
+    elif message.photo:
+        photo = message.photo[-1]
+        file = await bot.get_file(photo.file_id)
+        file_data = await bot.download_file(file.file_path)
+        file_bytes = file_data.read()
+
+        file_info = {
+            'file_id': photo.file_id,
+            'file_name': f"photo_{message.message_id}.jpg" or "Без названия",
+            'file_data': file_bytes,
+            'file_type': 'photo',
+            'mime_type': 'image/jpeg'
+        }
+
+        state_data = await state.get_data()
+        files = state_data.get("files", [])
+        files.append(file_info)
+        await state.update_data(files=files)
+
+    elif message.audio:
+        audio = message.audio
+        if audio.file_size > 52428800:
+            await message.answer(_("Аудиофайл слишком большой. Максимальный размер - 50 МБ"))
+            return
+
+        file = await bot.get_file(audio.file_id)
+        file_data = await bot.download_file(file.file_path)
+        file_bytes = file_data.read()
+
+        file_info = {
+            'file_id': audio.file_id,
+            'file_name': audio.file_name or f"audio_{audio.file_id}.mp3",
+            'file_data': file_bytes,
+            'file_type': 'document',
+            'mime_type': audio.mime_type
+        }
+
+        state_data = await state.get_data()
+        files = state_data.get("files", [])
+        files.append(file_info)
+        await state.update_data(files=files)
+
+    elif message.video:
+        video = message.video
+        file = await bot.get_file(video.file_id)
+        file_data = await bot.download_file(file.file_path)
+        file_bytes = file_data.read()
+
+        file_info = {
+            'file_id': video.file_id,
+            'file_name': f"video_{message.message_id}.mp4" or "Без названия",
+            'file_data': file_bytes,
+            'file_type': 'video',
+            'mime_type': video.mime_type or 'video/mp4'
+        }
+
+        state_data = await state.get_data()
+        files = state_data.get("files", [])
+        files.append(file_info)
+        await state.update_data(files=files)
+
+    if file_info:
+        print(file_info["file_name"])
+        try:
+            await message.answer(
+                _("Файл '{file_name}' успешно загружен. Прикрепите еще один файл или нажмите 'Завершить добавление файлов'").format(
+                    file_name=file_info['file_name']
+                ),
+                reply_markup=kb.finish_files_button()
+            )
+            state_data = await state.get_data()
+            print(state_data.get("files"))
+        except Exception as e:
+            await message.answer(_("Произошла ошибка при загрузке файла: {error}").format(error=str(e)))
 
 
 @router.callback_query(F.data == "finish_files", AddLabStates.waiting_for_files)
@@ -341,13 +414,12 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
     start_date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
     # Сохраняем как строку в формате DD.MM.YYYY
-    await state.update_data(start_date=start_date.strftime("%d.%m.%Y"))
+    await state.update_data(start_date=start_date.strftime("%Y-%m-%d"))
 
     await callback.message.edit_text(
         _("Выберите дату сдачи лабораторной работы"),
         reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
     )
-    print(await state.get_data())
     await state.set_state(AddLabStates.waiting_for_end_date)
 
 
@@ -364,7 +436,7 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
     start_date_str = state_data.get("start_date")
 
     if start_date_str:
-        start_date = datetime.strptime(start_date_str, "%d.%m.%Y").date()
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
 
         # Сравниваем даты
         if end_date < start_date:
@@ -374,7 +446,7 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
             return
 
     # Сохраняем дату сдачи
-    await state.update_data(end_date=end_date.strftime("%d.%m.%Y"))
+    await state.update_data(end_date=end_date.strftime("%Y-%m-%d"))
 
     await callback.message.edit_text(
         _("Введите дополнительную информацию о лабораторной работе"),
@@ -397,39 +469,49 @@ async def skip_additional_info(callback_query: CallbackQuery, state: FSMContext)
     await show_lab_confirmation(callback_query.message, state, bot_unit)
 
 
+@router.callback_query(F.data == "add_lab")
+async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    state_data = await state.get_data()
 
-#     @router.callback_query(F.data == "confirm_lab", AddLabWorkStates.confirmation)
-#     async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
-#         await callback_query.answer()
-#         state_data = await state.get_data()
-#
-#         lab_data = {
-#             "user_id": state_data.get("user_id"),
-#             "discipline_id": state_data.get("discipline_id"),
-#             "name": state_data.get("lab_name"),
-#             "description": state_data.get("description"),
-#             "files": state_data.get("files", []),
-#             "link": state_data.get("link"),
-#             "start_date": state_data.get("start_date"),
-#             "end_date": state_data.get("end_date"),
-#             "additional_info": state_data.get("additional_info"),
-#             "status": "not_started"
-#         }
-#
-#         url_req = f"{settings.API_URL}/add_lab"
-#         response = requests.post(url_req, json=lab_data)
-#
-#         if response.status_code == 200:
-#             await callback_query.message.edit_text(
-#                 _("Лабораторная работа {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлена. Если необходимо, измените статус в меню лабораторной работы").format(
-#                     name=state_data.get("lab_name"),
-#                     discipline=state_data.get("discipline_name")
-#                 )
-#             )
-#             await main_bot_handler.open_lab_menu(callback_query.message, state, state_data.get("telegram_id"))
-#         else:
-#             await callback_query.message.answer(json.loads(response.text).get('detail'))
-#
+    lab_data = {
+        "user_id": state_data.get("user_id"),
+        "discipline_id": state_data.get("discipline_id"),
+        "name": state_data.get("lab_name"),
+        "task_text": state_data.get("description"),
+        "task_link": state_data.get("link"),
+        "start_date": state_data.get("start_date"),
+        "end_date": state_data.get("end_date"),
+        "extra_info": state_data.get("additional_info"),
+        "status": "not_started"
+    }
+    url_req = f"{settings.API_URL}/add_lab"
+    response = requests.post(url_req, json=lab_data)
+
+    if response.status_code == 200:
+        await state.update_data(task_id=str(response.json()["task_id"]))
+        state_data = await state.get_data()
+        if state_data.get("files"):
+            for file_info in state_data["files"]:
+                url_req = f"{settings.API_URL}/add_file"
+                file_data = {
+                    "task_id": state_data.get("task_id"),
+                    "file_name": file_info["file_name"],
+                    "file_data": base64.b64encode(file_info["file_data"]).decode('utf-8'),
+                }
+                # print(file_data)
+                response = requests.post(url_req, json=file_data)
+            if response.status_code == 200:
+                await callback_query.message.edit_text(
+                    _("Лабораторная работа {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлена. Если необходимо, измените статус в меню лабораторной работы").format(
+                        name=state_data.get("lab_name"),
+                        discipline=state_data.get("discipline_name")
+                    )
+                )
+                await main_bot_handler.open_labs_menu(callback_query.message, state, state_data.get("telegram_id"))
+    else:
+        await callback_query.message.answer(json.loads(response.text).get('detail'))
+
 #     @router.callback_query(F.data.startswith("edit_lab_"), AddLabWorkStates.confirmation)
 #     async def edit_lab_field(callback_query: CallbackQuery, state: FSMContext):
 #         await callback_query.answer()
