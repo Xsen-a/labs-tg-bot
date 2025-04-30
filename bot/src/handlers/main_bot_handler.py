@@ -80,14 +80,6 @@ async def open_labs_menu(message: Message, state: FSMContext, telegram_id: int =
     )
 
 
-@router.message(F.text == __("Посмотреть список лабораторных работ"))
-async def open_labs_list(message: Message, state: FSMContext):
-    await message.answer(
-        _("Выберите вид отображения списка."),
-        reply_markup=kb.labs_list_filer(),
-    )
-
-
 @router.message(F.text == __("Диаграммы Ганта"))
 async def open_gant_menu(message: Message, state: FSMContext):
     await message.answer(

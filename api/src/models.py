@@ -8,6 +8,9 @@ from sqlalchemy import MetaData
 from sqlmodel import Field, SQLModel, Relationship
 from datetime import time, date
 
+from aiogram.utils.i18n import gettext as _
+from aiogram.utils.i18n import lazy_gettext as __
+
 metadata = MetaData()
 
 
@@ -16,6 +19,13 @@ class Status(enum.Enum):
     in_progress = 'В процессе'
     done = 'Готово к сдаче'
     submitted = 'Сдано'
+
+
+class FileType(enum.Enum):
+    document = 'document'
+    photo = 'photo'
+    video = 'video'
+    audio = 'audio'
 
 
 class User(SQLModel, table=True):
@@ -100,5 +110,6 @@ class File(SQLModel, table=True):
     task_id: int = Field(foreign_key="tblTask.task_id", description="Ссылка на идентификатор записи о лабораторной работе")
     file_name: str = Field(max_length=255, description="Имя файла")
     file_data: bytes = Field(description="Содержимое файла любого формата в байтах")
+    file_type: FileType = Field(default=FileType.document, description="Тип файла Telegram")
 
     task: Task = Relationship(back_populates="files")

@@ -7,6 +7,8 @@ from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
+from api.src.models import Status
+
 
 def add_lab_confirm():
     builder = InlineKeyboardBuilder()
@@ -15,13 +17,13 @@ def add_lab_confirm():
     builder.button(text=_("Нет"), callback_data="cancel_add_lab")
     builder.button(text=_("Изменить дисциплину"), callback_data="change_lab_discipline")
     builder.button(text=_("Изменить название"), callback_data="change_lab_name")
-    builder.button(text=_("Изменить текст"), callback_data="change_lab_text")
+    builder.button(text=_("Изменить текст"), callback_data="change_lab_description")
     builder.button(text=_("Изменить файлы"), callback_data="change_lab_files")
     builder.button(text=_("Изменить ссылку"), callback_data="change_lab_link")
+    builder.button(text=_("Изменить доп. информацию"), callback_data="change_lab_additional_info")
     builder.button(text=_("Изменить дату начала"), callback_data="change_lab_start_date")
     builder.button(text=_("Изменить срок сдачи"), callback_data="change_lab_end_date")
-    builder.button(text=_("Изменить доп. информацию"), callback_data="change_lab_additional_info")
-    builder.adjust(1)
+    builder.adjust(1, 1, 2, 2, 2, 2)
     return builder.as_markup()
 
 
@@ -46,6 +48,29 @@ def add_option():
 
     builder.button(text=_("Показать список"), callback_data="show_discipline_api_list")
     builder.button(text=_("Ввести вручную"), callback_data="add_discipline_by_hand")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def list_show_option():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(text=_("По статусу"), callback_data="lab_list_status")
+    builder.button(text=_("По дисциплине"), callback_data="lab_list_discipline")
+    builder.button(text=_("На 7 дней"), callback_data="lab_list_week")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def status_option():
+    builder = InlineKeyboardBuilder()
+
+    for status in Status:
+        builder.button(
+            text=str(status.value),
+            callback_data=f"lab_status_{status.name}"
+        )
+        print(status.name, f"lab_status_{status.name}")
     builder.adjust(1)
     return builder.as_markup()
 
@@ -78,27 +103,6 @@ def disciplines_list(disciplines, page: int = 0, items_per_page: int = 5):
     if navigation_buttons:
         builder.row(*navigation_buttons)
 
-    return builder.as_markup()
-
-
-def discipline_menu():
-    builder = InlineKeyboardBuilder()
-    builder.button(text=_("Изменить"), callback_data="edit_discipline")
-    builder.button(text=_("Удалить"), callback_data="delete_discipline")
-    builder.button(text=_("Назад"), callback_data="back_to_discipline_list")
-    builder.adjust(1)
-    return builder.as_markup()
-
-
-def edit_options(exist_teacher, is_from_api):
-    builder = InlineKeyboardBuilder()
-    if not is_from_api:
-        builder.button(text=_("Изменить название"), callback_data="edit_discipline_name")
-    if exist_teacher:
-        builder.button(text=_("Изменить преподавателя"), callback_data="edit_discipline_teacher")
-    else:
-        builder.button(text=_("Добавить преподавателя"), callback_data="edit_discipline_teacher")
-    builder.adjust(1)
     return builder.as_markup()
 
 
@@ -196,3 +200,42 @@ def calendar(year: int = None, month: int = None) -> InlineKeyboardMarkup:
     ])
 
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def labs_list(labs, page: int = 0, items_per_page: int = 5):
+    builder = InlineKeyboardBuilder()
+
+    start_idx = page * items_per_page
+    end_idx = start_idx + items_per_page
+    current_page_labs = labs[start_idx:end_idx]
+
+    for i, lab in enumerate(current_page_labs, start=start_idx):
+        builder.button(text=_("{lab}".format(lab=labs[i])),
+                       callback_data=f"lab_index_{i}"
+                       )
+
+    navigation_buttons = []
+
+    if page > 0:
+        navigation_buttons.append(
+            back_l_list(page)
+        )
+
+    if end_idx < len(labs):
+        navigation_buttons.append(
+            continue_l_list(page)
+        )
+
+    builder.adjust(1)
+    if navigation_buttons:
+        builder.row(*navigation_buttons)
+
+    return builder.as_markup()
+
+
+def back_l_list(page):
+    return InlineKeyboardButton(text=_("⬅"), callback_data=f"lab_page_{page - 1}")
+
+
+def continue_l_list(page):
+    return InlineKeyboardButton(text=_("➡"), callback_data=f"lab_page_{page + 1}")

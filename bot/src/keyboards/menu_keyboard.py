@@ -37,16 +37,6 @@ def labs_menu_keyboard():
     return builder.as_markup()
 
 
-def labs_list_filer():
-    builder = InlineKeyboardBuilder()
-
-    builder.button(text=_("По статусу"), callback_data="list_status")
-    builder.button(text=_("По дисциплине"), callback_data="list_discipline")
-    builder.button(text=_("На 7 дней"), callback_data="list_seven_days")
-    builder.adjust(1)
-    return builder.as_markup()
-
-
 def choose_gant_diagram():
     builder = InlineKeyboardBuilder()
 

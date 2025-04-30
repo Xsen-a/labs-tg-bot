@@ -180,3 +180,25 @@ class AddFileSchema(SQLModel):
     task_id: int
     file_name: str
     file_data: bytes
+    file_type: str
+
+
+class GetLabsSchema(SQLModel):
+    user_id: int
+
+
+class GetLabResponseSchema(SQLModel):
+    task_id: int
+    user_id: int
+    discipline_id: int
+    name: str
+    task_text: str | None = None
+    task_link: str | None = None
+    start_date: date
+    end_date: date
+    extra_info: str | None = None
+    status: Status
+
+
+class GetLabsResponseSchema(SQLModel):
+    labs: list[GetLabResponseSchema]
