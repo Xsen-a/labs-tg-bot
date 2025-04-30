@@ -1,6 +1,8 @@
 import base64
 import re
 import json
+from io import BytesIO
+
 import requests
 from datetime import datetime
 
@@ -9,7 +11,7 @@ from aiogram.filters import or_f
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, CallbackQuery, Document
+from aiogram.types import Message, CallbackQuery, Document, BufferedInputFile
 
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
@@ -104,21 +106,36 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
     if state_data.get("files"):
         for file_info in state_data["files"]:
             try:
-                if isinstance(file_info, dict):
-                    file_id = file_info['file_id']
-
+                file_id = file_info['file_id']
+                # file_data = BufferedInputFile(
+                #     file=file_info['file_data'],
+                #     filename=file_info['file_name']
+                # )
+                if file_info['file_type'] == 'document':
                     await bot.send_document(
+                            chat_id=message.chat.id,
+                            document=file_id
+                        )
+                elif file_info['file_type'] == 'photo':
+                    await bot.send_photo(
+                            chat_id=message.chat.id,
+                            photo=file_id
+                        )
+                elif file_info['file_type'] == 'video':
+                    await bot.send_video(
                         chat_id=message.chat.id,
-                        document=file_id,
+                        video=file_id,
+                        supports_streaming=True
                     )
-                else:
-                    await bot.send_document(
+                elif file_info['file_type'] == 'audio':
+                    await bot.send_audio(
                         chat_id=message.chat.id,
-                        document=file_info
+                        audio=file_id,
                     )
             except Exception as e:
+                print(str(e))
                 await message.answer(
-                    _("Не удалось отправить файл: {error}").format(error=str(e))
+                    _("Не удалось отправить файл").format(error=str(e))
                 )
 
 
@@ -224,18 +241,28 @@ async def skip_description(callback_query: CallbackQuery, state: FSMContext):
 
 @router.message(AddLabStates.waiting_for_files, F.document | F.photo | F.audio | F.video)
 async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit):
+    # Удаляем кнопки из предыдущего сообщения
+    try:
+        await bot.edit_message_reply_markup(
+            chat_id=message.chat.id,
+            message_id=message.message_id - 1,
+            reply_markup=None
+        )
+    except Exception:
+        pass  # Игнорируем ошибки, если сообщение уже изменено или не найдено
+
+    max_file_size = 50 * 1024 * 1024
     file_info = None
 
     if message.document:
         document = message.document
-        if document.file_size > 52428800:
+
+        if document.file_size > max_file_size:
             await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
             return
 
         file = await bot.get_file(document.file_id)
         file_data = await bot.download_file(file.file_path)
-
-        # Читаем содержимое файла в bytes
         file_bytes = file_data.read()
 
         file_info = {
@@ -253,6 +280,11 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
 
     elif message.photo:
         photo = message.photo[-1]
+
+        if photo.file_size > max_file_size:
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            return
+
         file = await bot.get_file(photo.file_id)
         file_data = await bot.download_file(file.file_path)
         file_bytes = file_data.read()
@@ -272,8 +304,9 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
 
     elif message.audio:
         audio = message.audio
-        if audio.file_size > 52428800:
-            await message.answer(_("Аудиофайл слишком большой. Максимальный размер - 50 МБ"))
+
+        if audio.file_size > max_file_size:
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
             return
 
         file = await bot.get_file(audio.file_id)
@@ -284,8 +317,8 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
             'file_id': audio.file_id,
             'file_name': audio.file_name or f"audio_{audio.file_id}.mp3",
             'file_data': file_bytes,
-            'file_type': 'document',
-            'mime_type': audio.mime_type
+            'file_type': 'audio',
+            'mime_type': audio.mime_type or 'audio/mpeg'
         }
 
         state_data = await state.get_data()
@@ -295,13 +328,16 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
 
     elif message.video:
         video = message.video
+        if video.file_size > max_file_size:
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            return
         file = await bot.get_file(video.file_id)
         file_data = await bot.download_file(file.file_path)
         file_bytes = file_data.read()
 
         file_info = {
             'file_id': video.file_id,
-            'file_name': f"video_{message.message_id}.mp4" or "Без названия",
+            'file_name': video.file_name or f"video_{message.message_id}.mp4",
             'file_data': file_bytes,
             'file_type': 'video',
             'mime_type': video.mime_type or 'video/mp4'
@@ -313,7 +349,6 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
         await state.update_data(files=files)
 
     if file_info:
-        print(file_info["file_name"])
         try:
             await message.answer(
                 _("Файл '{file_name}' успешно загружен. Прикрепите еще один файл или нажмите 'Завершить добавление файлов'").format(
@@ -321,14 +356,15 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
                 ),
                 reply_markup=kb.finish_files_button()
             )
-            state_data = await state.get_data()
-            print(state_data.get("files"))
         except Exception as e:
             await message.answer(_("Произошла ошибка при загрузке файла: {error}").format(error=str(e)))
 
 
 @router.callback_query(F.data == "finish_files", AddLabStates.waiting_for_files)
 async def finish_files(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.edit_reply_markup(
+        reply_markup=None
+    )
     await callback_query.answer()
     await callback_query.message.edit_text(
         _("Вставьте ссылку на задание лабораторной работы"),
@@ -471,6 +507,10 @@ async def skip_additional_info(callback_query: CallbackQuery, state: FSMContext)
 
 @router.callback_query(F.data == "add_lab")
 async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.edit_reply_markup(
+        reply_markup=None
+    )
+    await callback_query.message.answer("Сохранение файлов...")
     await callback_query.answer()
     state_data = await state.get_data()
 
@@ -491,6 +531,7 @@ async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
     if response.status_code == 200:
         await state.update_data(task_id=str(response.json()["task_id"]))
         state_data = await state.get_data()
+        flag = True
         if state_data.get("files"):
             for file_info in state_data["files"]:
                 url_req = f"{settings.API_URL}/add_file"
@@ -499,10 +540,11 @@ async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
                     "file_name": file_info["file_name"],
                     "file_data": base64.b64encode(file_info["file_data"]).decode('utf-8'),
                 }
-                # print(file_data)
                 response = requests.post(url_req, json=file_data)
-            if response.status_code == 200:
-                await callback_query.message.edit_text(
+                if response.status_code != 200:
+                    flag = False
+            if flag:
+                await callback_query.message.answer(
                     _("Лабораторная работа {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлена. Если необходимо, измените статус в меню лабораторной работы").format(
                         name=state_data.get("lab_name"),
                         discipline=state_data.get("discipline_name")
