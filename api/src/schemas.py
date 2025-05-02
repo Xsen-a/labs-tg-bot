@@ -228,3 +228,7 @@ class EditLabAttributeSchema(SQLModel):
 
 class DeleteLabSchema(SQLModel):
     task_id: int
+
+
+class DeleteFilesSchema(SQLModel):
+    task_id: int

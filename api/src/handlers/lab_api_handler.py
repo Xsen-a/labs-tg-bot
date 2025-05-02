@@ -1,6 +1,6 @@
 from sqlmodel import Session, select, delete, update
 from api.src.schemas import AddLabSchema, AddFileSchema, GetLabsSchema, GetLabsResponseSchema, GetLabResponseSchema, \
-    GetLabFilesSchema, GetFileResponseSchema, GetLabFilesResponseSchema, EditLabAttributeSchema
+    GetLabFilesSchema, GetFileResponseSchema, GetLabFilesResponseSchema, EditLabAttributeSchema, DeleteFilesSchema
 from api.src.models import Task, User, Status, File, FileType
 
 status_dict = {
@@ -49,7 +49,7 @@ def add_file_handler(session: Session, schema: AddFileSchema):
     session.add(new_item)
     session.commit()
     session.refresh(new_item)
-    return {f"Лабораторная работа {schema} добавлена."}
+    return {f"Файл {schema} добавлен."}
 
 
 def get_labs_handler(session: Session, schema: GetLabsSchema) -> GetLabsResponseSchema:
@@ -114,3 +114,36 @@ def edit_lab_attribute_handler(session: Session, schema: EditLabAttributeSchema)
         return lab
     else:
         raise ValueError(f"Лабораторная работа с ID {schema.task_id} не найдена")
+
+
+def delete_lab_handler(session: Session, schema: DeleteFilesSchema):
+    lab_query = select(Task).where(Task.task_id == schema.task_id)
+    lab = session.exec(lab_query).first()
+
+    if lab:
+        try:
+            session.exec(delete(File).where(File.task_id == schema.task_id))
+            session.exec(delete(Task).where(Task.task_id == schema.task_id))
+            session.commit()
+            return {"message": f"Лабораторная работа удалена."}
+
+        except Exception as e:
+            session.rollback()
+            raise ValueError(f"Ошибка при удалении файлов: {str(e)}")
+
+
+def delete_files_handler(session: Session, schema: DeleteFilesSchema):
+    files_query = select(File).where(File.task_id == schema.task_id)
+    files = session.exec(files_query).all()
+
+    if files:
+        try:
+            session.exec(delete(File).where(File.task_id == schema.task_id))
+            session.commit()
+            return {"message": f"Удалено {len(files)} файлов для задачи {schema.task_id}"}
+
+        except Exception as e:
+            session.rollback()
+            raise ValueError(f"Ошибка при удалении файлов: {str(e)}")
+
+

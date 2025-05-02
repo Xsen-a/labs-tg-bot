@@ -39,6 +39,14 @@ def lab_menu():
     return builder.as_markup()
 
 
+def confirm_delete_lab():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Да"), callback_data="confirm_deleting_lab")
+    builder.button(text=_("Нет"), callback_data="cancel_deleting_lab")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
 def lab_edit_menu():
     builder = InlineKeyboardBuilder()
     builder.button(text=_("Изменить дисциплину"), callback_data="edit_lab_discipline")
@@ -270,7 +278,7 @@ def labs_list(labs, disciplines_dict, show_abb, page: int = 0, items_per_page: i
                 lab=labs[i]["name"],
                 date=datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y"),
             )),
-                callback_data=f"lab_index_{i}"
+                callback_data=f'lab_index_{lab["task_id"]}'
             )
 
     navigation_buttons = []
