@@ -92,7 +92,7 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
     confirmation_text = _(
         "Вы действительно хотите добавить лабораторную работу {name} для дисциплины {discipline}?\n\n"
         "Название: {name}\n"
-        "Описание: {description}\n"
+        "Текст задания: {description}\n"
         "Файлы: {files}\n"
         "Ссылка: {link}\n"
         "Дата начала: {start_date}\n"
@@ -141,7 +141,7 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
                     )
             except Exception as e:
                 await message.answer(
-                    _("Не удалось отправить файл").format(error=str(e))
+                    _("Не удалось отправить файл.").format(error=str(e))
                 )
 
 
@@ -169,7 +169,7 @@ async def add_lab_start(message: Message, state: FSMContext):
             await state.update_data(disciplines_id=list(disciplines_dict.keys()))
 
             await message.answer(
-                _("Выберите дисциплину для лабораторной работы"),
+                _("Выберите дисциплину для лабораторной работы."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
             await state.set_state(AddLabStates.waiting_for_discipline)
         else:
@@ -249,7 +249,7 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
                                                 "editing_value": str(discipline_id)})
         if response.status_code == 200:
             await callback_query.message.answer(
-                _("Дисциплина успешно изменена на {discipline_name}").format(discipline_name=discipline_name))
+                _("Дисциплина успешно изменена на {discipline_name}.").format(discipline_name=discipline_name))
             chosen_lab["discipline_id"] = discipline_id
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -263,7 +263,7 @@ async def get_lab_name(message: Message, state: FSMContext):
     state_data = await state.get_data()
     if await state.get_state() == AddLabStates.waiting_for_name:
         await message.answer(
-            _("Введите текст лабораторной работы"),
+            _("Введите текст лабораторной работы."),
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddLabStates.waiting_for_description)
@@ -277,7 +277,7 @@ async def get_lab_name(message: Message, state: FSMContext):
                                                 "editing_value": name})
         if response.status_code == 200:
             await message.answer(
-                _("Название успешно изменено на {name}").format(name=name))
+                _("Название успешно изменено на {name}.").format(name=name))
             chosen_lab["name"] = name
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -292,7 +292,7 @@ async def get_lab_description(message: Message, state: FSMContext):
     state_data = await state.get_data()
     if await state.get_state() == AddLabStates.waiting_for_description:
         await message.answer(
-            _("Прикрепите файл с заданием для лабораторной работы размером до 50 МБ"),
+            _("Прикрепите файл с заданием для лабораторной работы размером до 50 МБ."),
             reply_markup=kb.finish_files_button()
         )
         await state.set_state(AddLabStates.waiting_for_files)
@@ -350,7 +350,7 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
         document = message.document
 
         if document.file_size > max_file_size:
-            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ."))
             return
 
         file_type = 'document'
@@ -375,7 +375,7 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
         photo = message.photo[-1]
 
         if photo.file_size > max_file_size:
-            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ."))
             return
 
         file = await bot.get_file(photo.file_id)
@@ -399,7 +399,7 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
         audio = message.audio
 
         if audio.file_size > max_file_size:
-            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ."))
             return
 
         file = await bot.get_file(audio.file_id)
@@ -422,7 +422,7 @@ async def get_lab_file(message: Message, state: FSMContext, bot: Bot = bot_unit)
     elif message.video:
         video = message.video
         if video.file_size > max_file_size:
-            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ"))
+            await message.answer(_("Файл слишком большой. Максимальный размер - 50 МБ."))
             return
         file = await bot.get_file(video.file_id)
         file_data = await bot.download_file(file.file_path)
@@ -465,7 +465,7 @@ async def finish_files(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     if await state.get_state() == AddLabStates.waiting_for_files:
         await callback_query.message.edit_text(
-            _("Вставьте ссылку на задание лабораторной работы"),
+            _("Вставьте ссылку на задание лабораторной работы."),
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddLabStates.waiting_for_link)
@@ -514,14 +514,14 @@ async def finish_files(callback_query: CallbackQuery, state: FSMContext):
 async def get_lab_link(message: Message, state: FSMContext):
     link = message.text
     if not re.match(r'^https?://', link):
-        await message.answer(_("Пожалуйста, введите корректную ссылку (начинается с http:// или https://)"))
+        await message.answer(_("Пожалуйста, введите корректную ссылку (начинается с http:// или https://)."))
         return
 
     await state.update_data(link=link)
     state_data = await state.get_data()
     if await state.get_state() == AddLabStates.waiting_for_link:
         await message.answer(
-            _("Выберите дату начала выполнения лабораторной работы"),
+            _("Выберите дату начала выполнения лабораторной работы."),
             reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
         )
         await state.set_state(AddLabStates.waiting_for_start_date)
@@ -535,7 +535,7 @@ async def get_lab_link(message: Message, state: FSMContext):
                                                 "editing_value": link})
         if response.status_code == 200:
             await message.answer(
-                _("Ссылка успешно изменена на {link}").format(link=link))
+                _("Ссылка успешно изменена на {link}.").format(link=link))
             chosen_lab["task_link"] = link
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -630,7 +630,7 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
 
     if await state.get_state() == AddLabStates.waiting_for_start_date:
         await callback.message.edit_text(
-            _("Выберите дату сдачи лабораторной работы"),
+            _("Выберите дату сдачи лабораторной работы."),
             reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
         )
         await state.set_state(AddLabStates.waiting_for_end_date)
@@ -644,7 +644,7 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
                                                 "editing_value": start_date.strftime("%Y-%m-%d")})
         if response.status_code == 200:
             await callback.message.answer(
-                _("Дата начала успешно изменена на {start_date}").format(start_date=start_date))
+                _("Дата начала успешно изменена на {start_date}.").format(start_date=start_date))
             chosen_lab["start_date"] = start_date.strftime("%Y-%m-%d")
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -690,7 +690,7 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
 
     if await state.get_state() == AddLabStates.waiting_for_end_date:
         await callback.message.edit_text(
-            _("Введите дополнительную информацию о лабораторной работе"),
+            _("Введите дополнительную информацию о лабораторной работе."),
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddLabStates.waiting_for_additional_info)
@@ -830,7 +830,7 @@ async def edit_lab_data(callback_query: CallbackQuery, state: FSMContext):
             state_data = await state.get_data()
             disciplines_dict = state_data.get("disciplines_dict")
             await callback_query.message.answer(
-                _("Выберите новую дисциплину для лабораторной работы"),
+                _("Выберите новую дисциплину для лабораторной работы."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
             await state.set_state(AddLabStates.waiting_for_new_discipline)
         case "name":
@@ -894,7 +894,7 @@ async def show_lab_list(message: Message, state: FSMContext):
                 await state.update_data(disciplines=list(disciplines_dict.values()))
                 await state.update_data(disciplines_id=list(disciplines_dict.keys()))
                 await message.answer(
-                    _("Выберите вид отображения списка:"),
+                    _("Выберите вид отображения списка."),
                     reply_markup=kb.list_show_option()
                 )
         else:
@@ -977,7 +977,7 @@ async def back_to_options(callback_query: CallbackQuery, state: FSMContext):
         reply_markup=None
     )
     await callback_query.message.answer(
-        _("Выберите вид отображения списка:"),
+        _("Выберите вид отображения списка."),
         reply_markup=kb.list_show_option()
     )
 
@@ -1024,7 +1024,7 @@ async def show_lab_list_status(callback_query: CallbackQuery, state: FSMContext)
                                                 "editing_value": status_name})
         if response.status_code == 200:
             await callback_query.message.answer(
-                _("Статус успешно изменен на {new_status}").format(new_status=selected_status.value))
+                _("Статус успешно изменен на {new_status}.").format(new_status=selected_status.value))
             chosen_lab["status"] = selected_status.value
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -1045,7 +1045,7 @@ async def show_chosen_lab_menu(message: Message, state: FSMContext, bot: Bot = b
             "Вы в меню лабораторной работы:\n\n"
             "Дисциплина: {discipline}\n"
             "Название: {name}\n"
-            "Описание: {description}\n"
+            "Текст задания: {description}\n"
             "Файлы: {files}\n"
             "Ссылка: {link}\n"
             "Дата начала: {start_date}\n"
@@ -1151,7 +1151,7 @@ async def edit_lab_status(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     state_data = await state.get_data()
     await callback_query.message.answer(
-        _("Выберите информацию для изменения"),
+        _("Выберите информацию для изменения."),
         reply_markup=kb.lab_edit_menu()
     )
 
@@ -1175,7 +1175,7 @@ async def edit_lab_status(callback_query: CallbackQuery, state: FSMContext):
             state_data = await state.get_data()
             disciplines_dict = state_data.get("disciplines_dict")
             await callback_query.message.answer(
-                _("Выберите новую дисциплину для лабораторной работы"),
+                _("Выберите новую дисциплину для лабораторной работы."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
             await state.set_state(EditLabStates.editing_discipline)
         case "name":
@@ -1186,21 +1186,21 @@ async def edit_lab_status(callback_query: CallbackQuery, state: FSMContext):
             await state.set_state(EditLabStates.editing_description)
         case "files":
             await callback_query.message.answer(
-                _("Прикрепите заново файл с заданием для лабораторной работы размером до 50 МБ."),
+                _("Прикрепите заново файл(ы) с заданием для лабораторной работы размером до 50 МБ."),
                 reply_markup=kb.finish_files_button())
             await state.set_state(EditLabStates.editing_files)
         case "link":
             await callback_query.message.answer(
-                _("Выберите новую ссылку на задание для лабораторной работы"))
+                _("Введите новую ссылку на задание для лабораторной работы."))
             await state.set_state(EditLabStates.editing_link)
         case "start_date":
             await callback_query.message.answer(
-                _("Выберите новую дату начала выполнения лабораторной работы"),
+                _("Выберите новую дату начала выполнения лабораторной работы."),
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(EditLabStates.editing_start_date)
         case "end_date":
             await callback_query.message.answer(
-                _("Выберите новую дату сдачи лабораторной работы"),
+                _("Выберите новую дату сдачи лабораторной работы."),
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(EditLabStates.editing_end_date)
         case "additional_info":
@@ -1264,7 +1264,7 @@ async def cancel_deleting(callback_query: CallbackQuery, state: FSMContext):
     await show_chosen_lab_menu(callback_query.message, state)
 
 
-@router.callback_query(F.data == "back_to_lab_list")
+@router.callback_query(F.data == "back_to_lab_menu")
 async def back_to_list(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await callback_query.message.bot.delete_message(

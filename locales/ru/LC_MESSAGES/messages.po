@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-04-06 20:58+0300\n"
+"POT-Creation-Date: 2025-05-03 02:22+0300\n"
 "PO-Revision-Date: 2025-03-13 12:37+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -158,6 +158,297 @@ msgstr "Дисциплина {name} успешно удалена."
 msgid "Вы отменили удаление дисциплины {name}."
 msgstr "Вы отменили удаление дисциплины {name}."
 
+#: bot/src/handlers/lab_bot_handler.py:144
+#: bot/src/handlers/lab_bot_handler.py:1100
+msgid "Не удалось отправить файл."
+msgstr "Не удалось отправить файл."
+
+#: bot/src/handlers/lab_bot_handler.py:172
+msgid "Выберите дисциплину для лабораторной работы."
+msgstr "Выберите дисциплину для лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:216
+#, fuzzy
+msgid "Введите название лабораторной работы."
+msgstr "Введите название лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:252
+#, python-brace-format
+msgid "Дисциплина успешно изменена на {discipline_name}."
+msgstr "Дисциплина успешно изменена на {discipline_name}."
+
+#: bot/src/handlers/lab_bot_handler.py:266
+#, fuzzy
+msgid "Введите текст лабораторной работы."
+msgstr "Введите текст лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:280
+#, python-brace-format
+msgid "Название успешно изменено на {name}."
+msgstr "Название успешно изменено на {name}."
+
+#: bot/src/handlers/lab_bot_handler.py:295
+msgid "Прикрепите файл с заданием для лабораторной работы размером до 50 МБ."
+msgstr "Прикрепите файл с заданием для лабораторной работы размером до 50 МБ."
+
+#: bot/src/handlers/lab_bot_handler.py:309
+msgid "Текст лабораторной успешно изменен."
+msgstr "Текст лабораторной успешно изменен."
+
+#: bot/src/handlers/lab_bot_handler.py:353
+#: bot/src/handlers/lab_bot_handler.py:378
+#: bot/src/handlers/lab_bot_handler.py:402
+#: bot/src/handlers/lab_bot_handler.py:425
+msgid "Файл слишком большой. Максимальный размер - 50 МБ."
+msgstr "Файл слишком большой. Максимальный размер - 50 МБ."
+
+#: bot/src/handlers/lab_bot_handler.py:447
+#, python-brace-format
+msgid ""
+"Файл '{file_name}' успешно загружен. Прикрепите еще один файл или нажмите"
+" 'Завершить добавление файлов'"
+msgstr ""
+"Файл '{file_name}' успешно загружен. Прикрепите еще один файл или нажмите"
+" 'Завершить добавление файлов'"
+
+#: bot/src/handlers/lab_bot_handler.py:453
+#, python-brace-format
+msgid "Произошла ошибка при загрузке файла: {error}"
+msgstr "Произошла ошибка при загрузке файла: {error}"
+
+#: bot/src/handlers/lab_bot_handler.py:468
+msgid "Вставьте ссылку на задание лабораторной работы."
+msgstr "Вставьте ссылку на задание лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:504
+msgid "Файлы успешно заменены."
+msgstr "Файлы успешно заменены."
+
+#: bot/src/handlers/lab_bot_handler.py:510
+msgid "Ошибка добавления файлов. Повторите попытку."
+msgstr "Ошибка добавления файлов. Повторите попытку."
+
+#: bot/src/handlers/lab_bot_handler.py:517
+msgid "Пожалуйста, введите корректную ссылку (начинается с http:// или https://)."
+msgstr "Пожалуйста, введите корректную ссылку (начинается с http:// или https://)."
+
+#: bot/src/handlers/lab_bot_handler.py:524
+#: bot/src/handlers/lab_bot_handler.py:550
+msgid "Выберите дату начала выполнения лабораторной работы."
+msgstr "Выберите дату начала выполнения лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:538
+#, python-brace-format
+msgid "Ссылка успешно изменена на {link}."
+msgstr "Ссылка успешно изменена на {link}."
+
+#: bot/src/handlers/lab_bot_handler.py:615
+msgid ""
+"Выберите дату начала выполнения лабораторной работы.\n"
+"\n"
+"Дата начала не может быть позже даты сдачи. Пожалуйста, выберите другую "
+"дату."
+msgstr ""
+"Выберите дату начала выполнения лабораторной работы.\n"
+"\n"
+"Дата начала не может быть позже даты сдачи. Пожалуйста, выберите другую "
+"дату."
+
+#: bot/src/handlers/lab_bot_handler.py:622
+msgid ""
+"Выберите новую дату начала выполнения лабораторной работы.\n"
+"\n"
+"Дата начала не может быть позже даты сдачи. Пожалуйста, выберите другую "
+"дату."
+msgstr ""
+"Выберите новую дату начала выполнения лабораторной работы.\n"
+"\n"
+"Дата начала не может быть позже даты сдачи. Пожалуйста, выберите другую "
+"дату."
+
+#: bot/src/handlers/lab_bot_handler.py:633
+#, fuzzy
+msgid "Выберите дату сдачи лабораторной работы."
+msgstr "Выберите дату сдачи лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:647
+#, python-brace-format
+msgid "Дата начала успешно изменена на {start_date}."
+msgstr "Дата начала успешно изменена на {start_date}."
+
+#: bot/src/handlers/lab_bot_handler.py:675
+msgid ""
+"Выберите дату сдачи лабораторной работы.\n"
+"\n"
+"Дата сдачи не может быть раньше даты начала. Пожалуйста, выберите другую "
+"дату."
+msgstr ""
+"Выберите дату сдачи лабораторной работы.\n"
+"\n"
+"Дата сдачи не может быть раньше даты начала. Пожалуйста, выберите другую "
+"дату."
+
+#: bot/src/handlers/lab_bot_handler.py:682
+msgid ""
+"Выберите новую дату сдачи лабораторной работы.\n"
+"\n"
+"Дата сдачи не может быть раньше даты начала. Пожалуйста, выберите другую "
+"дату."
+msgstr ""
+"Выберите новую дату сдачи лабораторной работы.\n"
+"\n"
+"Дата сдачи не может быть раньше даты начала. Пожалуйста, выберите другую "
+"дату."
+
+#: bot/src/handlers/lab_bot_handler.py:693
+msgid "Введите дополнительную информацию о лабораторной работе."
+msgstr "Введите дополнительную информацию о лабораторной работе."
+
+#: bot/src/handlers/lab_bot_handler.py:730
+msgid "Дополнительная информация успешно изменена."
+msgstr "Дополнительная информация успешно изменена."
+
+#: bot/src/handlers/lab_bot_handler.py:787
+#, python-brace-format
+msgid ""
+"Лабораторная работа {name} со статусом 'Не начато' для дисциплины "
+"{discipline} успешно добавлена. Если необходимо, измените статус в меню "
+"лабораторной работы."
+msgstr ""
+"Лабораторная работа {name} со статусом 'Не начато' для дисциплины "
+"{discipline} успешно добавлена. Если необходимо, измените статус в меню "
+"лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:795
+#, python-brace-format
+msgid ""
+"Лабораторная работа {name} со статусом 'Не начато' для дисциплины "
+"{discipline} успешно добавлена. Если необходимо, измените статус в меню "
+"лабораторной работы. Ошибка добавления файлов. Добавьте файлы в меню "
+"лабораторной работы."
+msgstr ""
+"Лабораторная работа {name} со статусом 'Не начато' для дисциплины "
+"{discipline} успешно добавлена. Если необходимо, измените статус в меню "
+"лабораторной работы. Ошибка добавления файлов. Добавьте файлы в меню "
+"лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:833
+#: bot/src/handlers/lab_bot_handler.py:1178
+msgid "Выберите новую дисциплину для лабораторной работы."
+msgstr "Выберите новую дисциплину для лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:837
+#: bot/src/handlers/lab_bot_handler.py:1182
+#, fuzzy
+msgid "Введите новое название лабораторной работы."
+msgstr "Введите новое название лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:840
+#: bot/src/handlers/lab_bot_handler.py:1185
+#, fuzzy
+msgid "Введите новый текст лабораторной работы."
+msgstr "Введите новый текст лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:844
+msgid ""
+"Прикрепите заново файл(ы) с заданием для лабораторной работы размером до "
+"50 МБ."
+msgstr ""
+"Прикрепите заново файл(ы) с заданием для лабораторной работы размером до "
+"50 МБ."
+
+#: bot/src/handlers/lab_bot_handler.py:849
+#: bot/src/handlers/lab_bot_handler.py:1194
+msgid "Введите новую ссылку на задание для лабораторной работы."
+msgstr "Введите новую ссылку на задание для лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:853
+#: bot/src/handlers/lab_bot_handler.py:1198
+msgid "Выберите новую дату начала выполнения лабораторной работы."
+msgstr "Выберите новую дату начала выполнения лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:858
+#: bot/src/handlers/lab_bot_handler.py:1203
+msgid "Выберите новую дату сдачи лабораторной работы."
+msgstr "Выберите новую дату сдачи лабораторной работы."
+
+#: bot/src/handlers/lab_bot_handler.py:863
+#: bot/src/handlers/lab_bot_handler.py:1208
+msgid "Введите новую дополнительную информацию о лабораторной работе."
+msgstr "Введите новую дополнительную информацию о лабораторной работе."
+
+#: bot/src/handlers/lab_bot_handler.py:897
+#: bot/src/handlers/lab_bot_handler.py:980
+#, fuzzy
+msgid "Выберите вид отображения списка."
+msgstr "Выберите вид отображения списка."
+
+#: bot/src/handlers/lab_bot_handler.py:916
+msgid "Выберите статус."
+msgstr "Выберите статус."
+
+#: bot/src/handlers/lab_bot_handler.py:922
+#, fuzzy
+msgid "Выберите дисциплину."
+msgstr "Выберите дисциплину."
+
+#: bot/src/handlers/lab_bot_handler.py:1027
+#, python-brace-format
+msgid "Статус успешно изменен на {new_status}."
+msgstr "Статус успешно изменен на {new_status}."
+
+#: bot/src/handlers/lab_bot_handler.py:1045
+#, python-brace-format
+msgid ""
+"Вы в меню лабораторной работы:\n"
+"\n"
+"Дисциплина: {discipline}\n"
+"Название: {name}\n"
+"Текст задания: {description}\n"
+"Файлы: {files}\n"
+"Ссылка: {link}\n"
+"Дата начала: {start_date}\n"
+"Срок сдачи: {end_date}\n"
+"Доп. информация: {additional_info}\n"
+"Статус: <b>{status}</b>"
+msgstr ""
+"Вы в меню лабораторной работы:\n"
+"\n"
+"Дисциплина: {discipline}\n"
+"Название: {name}\n"
+"Текст задания: {description}\n"
+"Файлы: {files}\n"
+"Ссылка: {link}\n"
+"Дата начала: {start_date}\n"
+"Срок сдачи: {end_date}\n"
+"Доп. информация: {additional_info}\n"
+"Статус: <b>{status}</b>"
+
+#: bot/src/handlers/lab_bot_handler.py:1141
+#, fuzzy
+msgid "Выберите статус для изменения."
+msgstr "Выберите статус для изменения."
+
+#: bot/src/handlers/lab_bot_handler.py:1154
+#, fuzzy
+msgid "Выберите информацию для изменения."
+msgstr "Выберите информацию для изменения."
+
+#: bot/src/handlers/lab_bot_handler.py:1223
+#, fuzzy, python-brace-format
+msgid "Вы действительно хотите удалить лабораторную работу {name}?"
+msgstr "Вы действительно хотите удалить лабораторную работу {name}?"
+
+#: bot/src/handlers/lab_bot_handler.py:1242
+#, fuzzy, python-brace-format
+msgid "Лабораторная работа {name} успешно удалена."
+msgstr "Лабораторная работа {name} успешно удалена."
+
+#: bot/src/handlers/lab_bot_handler.py:1261
+#, fuzzy, python-brace-format
+msgid "Вы отменили удаление лабораторной работы {name}."
+msgstr "Вы отменили удаление лабораторной работы {name}."
+
 #: bot/src/handlers/main_bot_handler.py:42
 #: bot/src/handlers/main_bot_handler.py:51
 #: bot/src/handlers/main_bot_handler.py:66
@@ -168,36 +459,32 @@ msgstr "Вы находитесь в главном меню."
 msgid "Подтвердите, пожалуйста, отправку Telegram ID для регистрации."
 msgstr "Подтвердите, пожалуйста, отправку Telegram ID для регистрации."
 
-#: bot/src/handlers/main_bot_handler.py:74
+#: bot/src/handlers/main_bot_handler.py:78
 #, fuzzy
 msgid "Вы находитесь в меню лабораторных работ."
 msgstr "Вы находитесь в меню лабораторных работ."
 
-#: bot/src/handlers/main_bot_handler.py:82
-msgid "Выберите вид отображения списка."
-msgstr "Выберите вид отображения списка."
-
-#: bot/src/handlers/main_bot_handler.py:90
+#: bot/src/handlers/main_bot_handler.py:86
 msgid "Выберите период для диаграммы Ганта."
 msgstr "Выберите период для диаграммы Ганта."
 
-#: bot/src/handlers/main_bot_handler.py:116
-#: bot/src/handlers/main_bot_handler.py:125
+#: bot/src/handlers/main_bot_handler.py:112
+#: bot/src/handlers/main_bot_handler.py:121
 #, fuzzy
 msgid "Вы находитесь в меню дисциплин."
 msgstr "Вы находитесь в меню дисциплин."
 
-#: bot/src/handlers/main_bot_handler.py:139
+#: bot/src/handlers/main_bot_handler.py:135
 #, fuzzy
 msgid "Вы находитесь в меню преподавателей."
 msgstr "Вы находитесь в меню преподавателей."
 
-#: bot/src/handlers/main_bot_handler.py:147
+#: bot/src/handlers/main_bot_handler.py:143
 #, fuzzy
 msgid "Вы находитесь в меню пар."
 msgstr "Вы находитесь в меню пар."
 
-#: bot/src/handlers/main_bot_handler.py:163
+#: bot/src/handlers/main_bot_handler.py:159
 #, fuzzy, python-brace-format
 msgid ""
 "Вы находитесь в разделе пользовательских настроек.\n"
@@ -210,7 +497,7 @@ msgstr ""
 "Вы являетесь студентом ПетрГУ.\n"
 "Группа: {group}"
 
-#: bot/src/handlers/main_bot_handler.py:169
+#: bot/src/handlers/main_bot_handler.py:165
 #, fuzzy
 msgid ""
 "Вы находитесь в разделе пользовательских настроек.\n"
@@ -415,100 +702,187 @@ msgstr "Да, я студент ПетрГУ"
 msgid "Нет, я не студент ПетрГУ"
 msgstr "Нет, я не студент ПетрГУ"
 
-#: bot/src/keyboards/discipline_keyboard.py:12
-#: bot/src/keyboards/discipline_keyboard.py:90
+#: bot/src/keyboards/discipline_keyboard.py:11
+#: bot/src/keyboards/discipline_keyboard.py:89
+#: bot/src/keyboards/lab_keyboard.py:16 bot/src/keyboards/lab_keyboard.py:44
+#: bot/src/keyboards/lab_keyboard.py:152
 #: bot/src/keyboards/teacher_keyboard.py:10
 #: bot/src/keyboards/teacher_keyboard.py:108
 msgid "Да"
 msgstr "Да"
 
-#: bot/src/keyboards/discipline_keyboard.py:13
-#: bot/src/keyboards/discipline_keyboard.py:91
+#: bot/src/keyboards/discipline_keyboard.py:12
+#: bot/src/keyboards/discipline_keyboard.py:90
+#: bot/src/keyboards/lab_keyboard.py:17 bot/src/keyboards/lab_keyboard.py:45
+#: bot/src/keyboards/lab_keyboard.py:153
 #: bot/src/keyboards/teacher_keyboard.py:11
 #: bot/src/keyboards/teacher_keyboard.py:109
 msgid "Нет"
 msgstr "Нет"
 
-#: bot/src/keyboards/discipline_keyboard.py:15
-#: bot/src/keyboards/discipline_keyboard.py:72
+#: bot/src/keyboards/discipline_keyboard.py:14
+#: bot/src/keyboards/discipline_keyboard.py:71
+#: bot/src/keyboards/lab_keyboard.py:19 bot/src/keyboards/lab_keyboard.py:53
 #, fuzzy
 msgid "Изменить название"
 msgstr "Изменить название"
 
-#: bot/src/keyboards/discipline_keyboard.py:16
-#: bot/src/keyboards/discipline_keyboard.py:74
+#: bot/src/keyboards/discipline_keyboard.py:15
+#: bot/src/keyboards/discipline_keyboard.py:73
 #, fuzzy
 msgid "Изменить преподавателя"
 msgstr "Изменить преподавателя"
 
-#: bot/src/keyboards/discipline_keyboard.py:24
+#: bot/src/keyboards/discipline_keyboard.py:23
+#: bot/src/keyboards/lab_keyboard.py:84
 #: bot/src/keyboards/teacher_keyboard.py:33
 #, fuzzy
 msgid "Показать список"
 msgstr "Показать список"
 
-#: bot/src/keyboards/discipline_keyboard.py:25
+#: bot/src/keyboards/discipline_keyboard.py:24
+#: bot/src/keyboards/lab_keyboard.py:85
 #: bot/src/keyboards/teacher_keyboard.py:34
 msgid "Ввести вручную"
 msgstr "Ввести вручную"
 
-#: bot/src/keyboards/discipline_keyboard.py:38
+#: bot/src/keyboards/discipline_keyboard.py:37
+#: bot/src/keyboards/lab_keyboard.py:120
 #, python-brace-format
 msgid "{discipline}"
 msgstr "{discipline}"
 
-#: bot/src/keyboards/discipline_keyboard.py:62
+#: bot/src/keyboards/discipline_keyboard.py:61
+#: bot/src/keyboards/lab_keyboard.py:34
 #: bot/src/keyboards/teacher_keyboard.py:79
 #, fuzzy
 msgid "Изменить"
 msgstr "Изменить"
 
-#: bot/src/keyboards/discipline_keyboard.py:63
+#: bot/src/keyboards/discipline_keyboard.py:62
+#: bot/src/keyboards/lab_keyboard.py:35
 #: bot/src/keyboards/teacher_keyboard.py:80
 msgid "Удалить"
 msgstr "Удалить"
 
-#: bot/src/keyboards/discipline_keyboard.py:64
+#: bot/src/keyboards/discipline_keyboard.py:63
+#: bot/src/keyboards/lab_keyboard.py:37 bot/src/keyboards/lab_keyboard.py:60
+#: bot/src/keyboards/lab_keyboard.py:266
 #: bot/src/keyboards/teacher_keyboard.py:81
 #, fuzzy
 msgid "Назад"
 msgstr "Назад"
 
-#: bot/src/keyboards/discipline_keyboard.py:76
-#: bot/src/keyboards/menu_keyboard.py:73
+#: bot/src/keyboards/discipline_keyboard.py:75
+#: bot/src/keyboards/menu_keyboard.py:63
 #, fuzzy
 msgid "Добавить преподавателя"
 msgstr "Добавить преподавателя"
 
-#: bot/src/keyboards/discipline_keyboard.py:83
-#: bot/src/keyboards/discipline_keyboard.py:105
+#: bot/src/keyboards/discipline_keyboard.py:82
+#: bot/src/keyboards/discipline_keyboard.py:104
+#: bot/src/keyboards/lab_keyboard.py:145
 #: bot/src/keyboards/teacher_keyboard.py:94
 #: bot/src/keyboards/teacher_keyboard.py:101
 msgid "Отмена"
 msgstr "Отмена"
 
-#: bot/src/keyboards/discipline_keyboard.py:107
+#: bot/src/keyboards/discipline_keyboard.py:106
+#: bot/src/keyboards/lab_keyboard.py:68
 #: bot/src/keyboards/teacher_keyboard.py:25
 msgid "Пропустить"
 msgstr "Пропустить"
 
-#: bot/src/keyboards/discipline_keyboard.py:109
+#: bot/src/keyboards/discipline_keyboard.py:108
 #: bot/src/keyboards/teacher_keyboard.py:47
 #, python-brace-format
 msgid "{lecturer}"
 msgstr "{lecturer}"
 
-#: bot/src/keyboards/discipline_keyboard.py:132
-#: bot/src/keyboards/discipline_keyboard.py:140
+#: bot/src/keyboards/discipline_keyboard.py:131
+#: bot/src/keyboards/discipline_keyboard.py:139
+#: bot/src/keyboards/lab_keyboard.py:159 bot/src/keyboards/lab_keyboard.py:304
 #: bot/src/keyboards/teacher_keyboard.py:70
 msgid "⬅"
 msgstr "⬅"
 
-#: bot/src/keyboards/discipline_keyboard.py:136
-#: bot/src/keyboards/discipline_keyboard.py:144
+#: bot/src/keyboards/discipline_keyboard.py:135
+#: bot/src/keyboards/discipline_keyboard.py:143
+#: bot/src/keyboards/lab_keyboard.py:163 bot/src/keyboards/lab_keyboard.py:308
 #: bot/src/keyboards/teacher_keyboard.py:74
 msgid "➡"
 msgstr "➡"
+
+#: bot/src/keyboards/lab_keyboard.py:18 bot/src/keyboards/lab_keyboard.py:52
+#, fuzzy
+msgid "Изменить дисциплину"
+msgstr "Изменить дисциплину"
+
+#: bot/src/keyboards/lab_keyboard.py:20 bot/src/keyboards/lab_keyboard.py:54
+#, fuzzy
+msgid "Изменить текст"
+msgstr "Изменить текст"
+
+#: bot/src/keyboards/lab_keyboard.py:21 bot/src/keyboards/lab_keyboard.py:55
+#, fuzzy
+msgid "Изменить файлы"
+msgstr "Изменить файлы"
+
+#: bot/src/keyboards/lab_keyboard.py:22 bot/src/keyboards/lab_keyboard.py:56
+#, fuzzy
+msgid "Изменить ссылку"
+msgstr "Изменить ссылку"
+
+#: bot/src/keyboards/lab_keyboard.py:23 bot/src/keyboards/lab_keyboard.py:57
+#, fuzzy
+msgid "Изменить доп. информацию"
+msgstr "Изменить доп. информацию"
+
+#: bot/src/keyboards/lab_keyboard.py:24 bot/src/keyboards/lab_keyboard.py:58
+#, fuzzy
+msgid "Изменить дату начала"
+msgstr "Изменить дату начала"
+
+#: bot/src/keyboards/lab_keyboard.py:25 bot/src/keyboards/lab_keyboard.py:59
+#, fuzzy
+msgid "Изменить срок сдачи"
+msgstr "Изменить срок сдачи"
+
+#: bot/src/keyboards/lab_keyboard.py:33
+#, fuzzy
+msgid "Изменить статус"
+msgstr "Изменить статус"
+
+#: bot/src/keyboards/lab_keyboard.py:36
+msgid "Сгенерировать ответ"
+msgstr "Сгенерировать ответ"
+
+#: bot/src/keyboards/lab_keyboard.py:76
+msgid "Завершить добавление файлов"
+msgstr "Завершить добавление файлов"
+
+#: bot/src/keyboards/lab_keyboard.py:93
+msgid "По статусу"
+msgstr "По статусу"
+
+#: bot/src/keyboards/lab_keyboard.py:94
+#, fuzzy
+msgid "По дисциплине"
+msgstr "По дисциплине"
+
+#: bot/src/keyboards/lab_keyboard.py:95
+msgid "На 7 дней"
+msgstr "На 7 дней"
+
+#: bot/src/keyboards/lab_keyboard.py:270
+#, python-brace-format
+msgid "{abb} - {date} - {lab}"
+msgstr "{abb} - {date} - {lab}"
+
+#: bot/src/keyboards/lab_keyboard.py:277
+#, python-brace-format
+msgid "{date} - {lab}"
+msgstr "{date} - {lab}"
 
 #: bot/src/keyboards/menu_keyboard.py:8
 msgid "⬅ Назад"
@@ -550,50 +924,37 @@ msgid "Посмотреть список лабораторных работ"
 msgstr "Посмотреть список лабораторных работ"
 
 #: bot/src/keyboards/menu_keyboard.py:43
-msgid "По статусу"
-msgstr "По статусу"
-
-#: bot/src/keyboards/menu_keyboard.py:44
-#, fuzzy
-msgid "По дисциплине"
-msgstr "По дисциплине"
-
-#: bot/src/keyboards/menu_keyboard.py:45
-msgid "На 7 дней"
-msgstr "На 7 дней"
-
-#: bot/src/keyboards/menu_keyboard.py:53
 msgid "Общая"
 msgstr "Общая"
 
-#: bot/src/keyboards/menu_keyboard.py:54
+#: bot/src/keyboards/menu_keyboard.py:44
 msgid "Месяц"
 msgstr "Месяц"
 
-#: bot/src/keyboards/menu_keyboard.py:55
+#: bot/src/keyboards/menu_keyboard.py:45
 msgid "Две недели"
 msgstr "Две недели"
 
-#: bot/src/keyboards/menu_keyboard.py:63
+#: bot/src/keyboards/menu_keyboard.py:53
 #, fuzzy
 msgid "Добавить дисциплину"
 msgstr "Добавить дисциплину"
 
-#: bot/src/keyboards/menu_keyboard.py:64
+#: bot/src/keyboards/menu_keyboard.py:54
 #, fuzzy
 msgid "Посмотреть список дисциплин"
 msgstr "Посмотреть список дисциплин"
 
-#: bot/src/keyboards/menu_keyboard.py:74
+#: bot/src/keyboards/menu_keyboard.py:64
 #, fuzzy
 msgid "Посмотреть список преподавателей"
 msgstr "Посмотреть список преподавателей"
 
-#: bot/src/keyboards/menu_keyboard.py:83
+#: bot/src/keyboards/menu_keyboard.py:73
 msgid "Добавить пару"
 msgstr "Добавить пару"
 
-#: bot/src/keyboards/menu_keyboard.py:84
+#: bot/src/keyboards/menu_keyboard.py:74
 #, fuzzy
 msgid "Посмотреть список пар"
 msgstr "Посмотреть список пар"
