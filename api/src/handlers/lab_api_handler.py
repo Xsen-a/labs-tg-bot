@@ -1,7 +1,7 @@
 from sqlmodel import Session, select, delete, update
-from api.src.schemas import AddLabSchema, AddFileSchema, GetLabsSchema, GetLabsResponseSchema, GetLabResponseSchema
+from api.src.schemas import AddLabSchema, AddFileSchema, GetLabsSchema, GetLabsResponseSchema, GetLabResponseSchema, \
+    GetLabFilesSchema, GetFileResponseSchema, GetLabFilesResponseSchema, EditLabAttributeSchema
 from api.src.models import Task, User, Status, File, FileType
-
 
 status_dict = {
     "not_started": Status.not_started,
@@ -71,3 +71,46 @@ def get_labs_handler(session: Session, schema: GetLabsSchema) -> GetLabsResponse
         ))
 
     return GetLabsResponseSchema(labs=labs_list)
+
+
+def get_lab_files_handler(session: Session, schema: GetLabFilesSchema) -> GetLabFilesResponseSchema:
+    files_query = select(File).where(File.task_id == schema.task_id)
+    files = session.exec(files_query).all()
+    files_list = []
+    for file in files:
+        files_list.append(GetFileResponseSchema(
+            file_id=file.file_id,
+            task_id=file.task_id,
+            file_name=file.file_name,
+            file_data=file.file_data,
+            file_type=file.file_type
+        ))
+
+    return GetLabFilesResponseSchema(files=files_list)
+
+
+def edit_lab_attribute_handler(session: Session, schema: EditLabAttributeSchema):
+    # update_data = {schema.editing_attribute : schema.editing_value}
+    # discipline_query = update(Discipline).where(Discipline.discipline_id == schema.discipline_id).values(**update_data)
+    lab_query = select(Task).where(Task.task_id == schema.task_id)
+    lab = session.exec(lab_query).first()
+
+    print(schema.editing_attribute)
+
+    if schema.editing_attribute == "discipline_id":
+        editing_value = int(schema.editing_value)
+    else:
+        editing_value = str(schema.editing_value)
+
+    if schema.editing_attribute == "status":
+        editing_value = Status[schema.editing_value]
+        print(editing_value)
+
+    if lab:
+        setattr(lab, schema.editing_attribute, editing_value)
+        # session.add(discipline)
+        session.commit()
+        # session.refresh(discipline)
+        return lab
+    else:
+        raise ValueError(f"Лабораторная работа с ID {schema.task_id} не найдена")

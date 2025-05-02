@@ -202,3 +202,29 @@ class GetLabResponseSchema(SQLModel):
 
 class GetLabsResponseSchema(SQLModel):
     labs: list[GetLabResponseSchema]
+
+
+class GetLabFilesSchema(SQLModel):
+    task_id: int
+
+
+class GetFileResponseSchema(SQLModel):
+    file_id: int
+    task_id: int
+    file_name: str
+    file_data: bytes
+    file_type: str
+
+
+class GetLabFilesResponseSchema(SQLModel):
+    files: list[GetFileResponseSchema]
+
+
+class EditLabAttributeSchema(SQLModel):
+    task_id: int
+    editing_attribute: str
+    editing_value: str
+
+
+class DeleteLabSchema(SQLModel):
+    task_id: int

@@ -2,16 +2,17 @@ import base64
 import re
 import json
 from io import BytesIO
+import io
 
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from aiogram import Router, F, Bot
 from aiogram.filters import or_f
 from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, CallbackQuery, Document, BufferedInputFile
+from aiogram.types import Message, CallbackQuery, Document, BufferedInputFile, InputFile, FSInputFile
 
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
@@ -53,7 +54,7 @@ class AddLabStates(StatesGroup):
 
 class ShowLabStates(StatesGroup):
     showing_list = State()
-    waiting_for_lab = State()
+    showing_chosen_lab = State()
 
 
 class EditLabStates(StatesGroup):
@@ -143,7 +144,6 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
                         audio=file_id,
                     )
             except Exception as e:
-                print(str(e))
                 await message.answer(
                     _("Не удалось отправить файл").format(error=str(e))
                 )
@@ -182,7 +182,8 @@ async def add_lab_start(message: Message, state: FSMContext):
         await message.answer(json.loads(response.text).get('detail'))
 
 
-@router.callback_query(F.data.startswith("lab_disciplines_page_"), AddLabStates.waiting_for_discipline)
+@router.callback_query(F.data.startswith("lab_disciplines_page_"),
+                       or_f(AddLabStates.waiting_for_discipline, ShowLabStates.showing_list))
 async def handle_disciplines_pagination(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     state_data = await state.get_data()
@@ -197,12 +198,13 @@ async def handle_disciplines_pagination(callback_query: CallbackQuery, state: FS
 
 
 @router.callback_query(F.data.startswith("lab_discipline_index_"),
-                       or_f(AddLabStates.waiting_for_discipline, AddLabStates.waiting_for_new_discipline))
+                       or_f(AddLabStates.waiting_for_discipline, AddLabStates.waiting_for_new_discipline,
+                            ShowLabStates.showing_list))
 async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     state_data = await state.get_data()
-
     discipline_index = int(callback_query.data.split("_")[-1])
+
     discipline_id = state_data.get("disciplines_id")[discipline_index]
     discipline_name = state_data.get("disciplines")[discipline_index]
 
@@ -212,12 +214,36 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.message.edit_reply_markup(
         reply_markup=None
     )
+
     if await state.get_state() == AddLabStates.waiting_for_discipline:
         await callback_query.message.answer(_("Введите название лабораторной работы."),
                                             reply_markup=None)
         await state.set_state(AddLabStates.waiting_for_name)
-    else:
+    elif await state.get_state() == AddLabStates.waiting_for_new_discipline:
         await show_lab_confirmation(callback_query.message, state)
+    else:
+        labs_data = state_data.get("labs_response")
+        disciplines_dict = state_data.get("disciplines_dict")
+        await state.update_data(show_abb=False)
+        filtered_lab_list = []
+        for lab in labs_data["labs"]:
+            if lab["discipline_id"] == discipline_id:
+                filtered_lab_list.append(lab)
+        filtered_lab_list.sort(key=lambda x: datetime.strptime(x["end_date"], "%Y-%m-%d"))
+        await state.update_data(labs=filtered_lab_list)
+
+        if filtered_lab_list:
+            info_string = f"Лабораторные работы по дисциплине {disciplines_dict[discipline_id]}\n\n"
+            for lab in filtered_lab_list:
+                info_string += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
+                                  __(f'{lab["name"]}\n') +
+                                  __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+        else:
+            info_string = f"Лабораторных работ по дисциплине {disciplines_dict[discipline_id]} не найдено.\n\n"
+        await callback_query.message.answer(
+            info_string,
+            reply_markup=kb.labs_list(filtered_lab_list, disciplines_dict, False, page=0))
 
 
 @router.message(or_f(AddLabStates.waiting_for_name, AddLabStates.waiting_for_new_name))
@@ -576,8 +602,6 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
 @router.message(or_f(AddLabStates.waiting_for_additional_info, AddLabStates.waiting_for_new_additional_info))
 async def get_additional_info(message: Message, state: FSMContext):
     additional_info = message.text
-    print(additional_info)
-    print(await state.get_state())
     await state.update_data(additional_info=additional_info)
     await show_lab_confirmation(message, state, bot_unit)
 
@@ -707,11 +731,9 @@ async def edit_lab_data(callback_query: CallbackQuery, state: FSMContext):
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(AddLabStates.waiting_for_new_end_date)
         case "additional_info":
-            print(await state.get_state())
             await callback_query.message.answer(
                 _("Введите новую дополнительную информацию о лабораторной работе."))
             await state.set_state(AddLabStates.waiting_for_new_additional_info)
-            print(await state.get_state())
 
     await callback_query.answer()
 
@@ -728,21 +750,25 @@ async def show_lab_list(message: Message, state: FSMContext):
         user_id = response.json().get("user_id")
         await state.update_data(user_id=user_id)
         url_req = f"{settings.API_URL}/get_labs"
-        print(user_id)
         response = requests.get(url_req, json={"user_id": user_id})
         if response.status_code == 200:
             response_data = response.json()
-            print(response_data)
-            sorted_labs = sorted(response_data.get("labs"), key=lambda x: x["name"])
-            labs_dict = {lab["task_id"]: lab["name"] for lab in sorted_labs}
-            await state.update_data(labs_dict=labs_dict)
-            await state.update_data(labs=list(labs_dict.values()))
-            await state.update_data(labs_id=list(labs_dict.keys()))
             await state.update_data(labs_response=response_data)
-            await message.answer(
-                _("Выберите вид отображения списка:"),
-                reply_markup=kb.list_show_option()
-            )
+
+            url_req = f"{settings.API_URL}/get_disciplines"
+            response = requests.get(url_req, json={"user_id": user_id})
+
+            if response.status_code == 200:
+                disciplines = response.json().get("disciplines", [])
+                sorted_disciplines = sorted(disciplines, key=lambda x: x["name"])
+                disciplines_dict = {d["discipline_id"]: d["name"] for d in sorted_disciplines}
+                await state.update_data(disciplines_dict=disciplines_dict)
+                await state.update_data(disciplines=list(disciplines_dict.values()))
+                await state.update_data(disciplines_id=list(disciplines_dict.keys()))
+                await message.answer(
+                    _("Выберите вид отображения списка:"),
+                    reply_markup=kb.list_show_option()
+                )
         else:
             await message.answer(json.loads(response.text).get('detail'))
     else:
@@ -751,34 +777,151 @@ async def show_lab_list(message: Message, state: FSMContext):
 
 @router.callback_query(F.data.startswith("lab_list_"))
 async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext):
-    print(callback_query.data)
     await callback_query.message.bot.edit_message_reply_markup(
         chat_id=callback_query.message.chat.id,
         message_id=callback_query.message.message_id,
         reply_markup=None
     )
     field = callback_query.data.split("_")[-1]
-    print("field", field)
 
     match field:
         case "status":
             await callback_query.message.answer(
-                _("Выберите статус:"),
+                _("Выберите статус."),
                 reply_markup=kb.status_option())
         case "discipline":
             state_data = await state.get_data()
             disciplines_dict = state_data.get("disciplines_dict")
             await callback_query.message.answer(
-                _("Выберите новую дисциплину для лабораторной работы"),
+                _("Выберите дисциплину."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
-            await state.set_state(AddLabStates.waiting_for_new_discipline)
         case "week":
             state_data = await state.get_data()
+            labs_data = state_data.get("labs_response")
             disciplines_dict = state_data.get("disciplines_dict")
+            await state.update_data(show_abb=True)
+            filtered_lab_list_undone = []
+            filtered_lab_list_process = []
+
+            today = datetime.now().date()
+            date_mark = today + timedelta(days=7)
+
+            for lab in labs_data["labs"]:
+                if datetime.strptime(lab["end_date"], "%Y-%m-%d").date() < date_mark:
+                    if lab["status"] != 'Сдано' and datetime.strptime(lab["end_date"], "%Y-%m-%d").date() < today:
+                        filtered_lab_list_undone.append(lab)
+                    else:
+                        filtered_lab_list_process.append(lab)
+            filtered_lab_list_undone.sort(key=lambda x: datetime.strptime(x["end_date"], "%Y-%m-%d"))
+            filtered_lab_list_process.sort(key=lambda x: datetime.strptime(x["end_date"], "%Y-%m-%d"))
+            filtered_lab_list = filtered_lab_list_undone + filtered_lab_list_process
+            await state.update_data(labs=filtered_lab_list)
+
+            if filtered_lab_list_undone or filtered_lab_list_process:
+                if filtered_lab_list_undone:
+                    info_string_undone = __(f"<b>Просроченные лабораторные работы:</b>\n\n")
+                    for lab in filtered_lab_list_undone:
+                        info_string_undone += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
+                                                 __(f'{lab["name"]}\n') +
+                                                 __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                                 __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+                else:
+                    info_string_undone = __(f"<b>Просроченных лабораторных работ не найдено.</b>\n\n")
+                if filtered_lab_list_process:
+                    info_string_process = __(f"<b>Предстоящие лабораторные работы на следующие 7 дней:</b>\n\n")
+                    for lab in filtered_lab_list_process:
+                        info_string_process += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
+                                                  __(f'{lab["name"]}\n') +
+                                                  __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+                else:
+                    info_string_process = __(f"<b>Лабораторных работ на ближайшие 7 дней не найдено.</b>\n\n")
+                info_string = info_string_undone + info_string_process
+            else:
+                info_string = __(f"Лабораторных работ не найдено.\n\n")
             await callback_query.message.answer(
-                _("Выберите новую дисциплину для лабораторной работы"),
-                reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
-            await state.set_state(AddLabStates.waiting_for_new_discipline)
+                info_string,
+                reply_markup=kb.labs_list(filtered_lab_list, disciplines_dict, True, page=0),
+                parse_mode="HTML")
+
+
+@router.callback_query(F.data == "back_to_options")
+async def back_to_options(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.edit_message_reply_markup(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+        reply_markup=None
+    )
+    await callback_query.message.answer(
+        _("Выберите вид отображения списка:"),
+        reply_markup=kb.list_show_option()
+    )
+
+
+@router.callback_query(F.data.startswith("lab_status_"),
+                       or_f(ShowLabStates.showing_list, ShowLabStates.showing_chosen_lab))
+async def show_lab_list_status(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.message.bot.edit_message_reply_markup(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+        reply_markup=None
+    )
+    state_data = await state.get_data()
+
+    status_name = callback_query.data.replace("lab_status_", "")
+    selected_status = Status[status_name]
+
+    if await state.get_state() == ShowLabStates.showing_list:
+        labs_data = state_data.get("labs_response")
+        disciplines_dict = state_data.get("disciplines_dict")
+        await state.update_data(show_abb=True)
+        filtered_lab_list = []
+        for lab in labs_data["labs"]:
+            if lab["status"] == selected_status.value:
+                filtered_lab_list.append(lab)
+        filtered_lab_list.sort(key=lambda x: datetime.strptime(x["end_date"], "%Y-%m-%d"))
+        await state.update_data(labs=filtered_lab_list)
+
+        if filtered_lab_list:
+            info_string = f"Лабораторные работы со статусом: {selected_status.value}\n\n"
+            for lab in filtered_lab_list:
+                info_string += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
+                                  __(f'{lab["name"]}\n') +
+                                  __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+        else:
+            info_string = f"Лабораторных работ со статусом {selected_status.value} не найдено.\n\n"
+        await callback_query.message.answer(
+            info_string,
+            reply_markup=kb.labs_list(filtered_lab_list, disciplines_dict, True, page=0))
+    elif await state.get_state() == ShowLabStates.showing_chosen_lab:
+        chosen_lab = state_data.get("chosen_lab")
+        url_req = f"{settings.API_URL}/edit_lab"
+        response = requests.post(url_req, json={"task_id": chosen_lab["task_id"],
+                                                "editing_attribute": "status",
+                                                "editing_value": status_name})
+        if response.status_code == 200:
+            await callback_query.message.answer(
+                _("Статус успешно изменен на {new_status}").format(new_status=selected_status.value))
+            await show_chosen_lab_info(callback_query, state)
+
+
+@router.callback_query(F.data.startswith("lab_page_"), ShowLabStates.showing_list)
+async def handle_lab_pagination(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    state_data = await state.get_data()
+    show_abb = state_data.get("show_abb")
+    labs = state_data.get("labs", [])
+    disciplines_dict = state_data.get("disciplines_dict")
+    print(disciplines_dict)
+    print(labs)
+
+    page = int(callback_query.data.split("_")[-1])
+    await state.update_data(current_page=page)
+
+    await callback_query.message.edit_reply_markup(
+        reply_markup=kb.labs_list(labs, disciplines_dict, show_abb, page=page)
+    )
 
 
 # @router.callback_query()
@@ -787,95 +930,90 @@ async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext)
 #     await callback.answer(f"Got: {callback.data}")
 
 
-@router.callback_query(F.data.startswith("lab_status_"))
-async def show_lab_list_status(callback_query: CallbackQuery, state: FSMContext):
-    print(callback_query.data)
-    await callback_query.message.bot.edit_message_reply_markup(
-        chat_id=callback_query.message.chat.id,
-        message_id=callback_query.message.message_id,
-        reply_markup=None
-    )
-    status_name = callback_query.data.replace("lab_status_", "")
-    selected_status = Status[status_name]
-    print(selected_status)
-
-    state_data = await state.get_data()
-    labs_data = state_data.get("labs_response")
-    filtered_lab_list = []
-    print(labs_data)
-    for lab in labs_data["labs"]:
-        print(lab)
-        if lab["status"] == selected_status.value:
-            filtered_lab_list.append(lab)
-    print(filtered_lab_list)
-    kb_list = [l["name"] for l in filtered_lab_list]
-    await callback_query.message.answer(
-        _("Выберите новую дисциплину для лабораторной работы"),
-        reply_markup=kb.labs_list(kb_list, page=0))
-    # TODO: отсортировать по сроку сдачи, создать список лаб с аббревиатурой предмета и вывести в виде кнопок
-
-
-@router.callback_query(F.data.startswith("lab_page_"), ShowLabStates.waiting_for_lab)
-async def handle_lab_pagination(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.answer()
-    state_data = await state.get_data()
-    labs = state_data.get("labs", [])
-
-    page = int(callback_query.data.split("_")[-1])
-    await state.update_data(current_page=page)
-
-    await callback_query.message.edit_reply_markup(
-        reply_markup=kb.labs_list(labs, page=page)
-    )
-
-
-@router.callback_query(F.data.startswith("lab_index_"),
-                       or_f(AddLabStates.waiting_for_discipline, AddLabStates.waiting_for_new_discipline))
-async def select_lab(callback_query: CallbackQuery, state: FSMContext):
+@router.callback_query(F.data.startswith("lab_index_"))
+async def show_chosen_lab_info(callback_query: CallbackQuery, state: FSMContext, bot: Bot = bot_unit):
+    await state.set_state(ShowLabStates.showing_chosen_lab)
     await callback_query.answer()
     state_data = await state.get_data()
 
     lab_index = int(callback_query.data.split("_")[-1])
-    lab_id = state_data.get("labs_id")[lab_index]
-    lab_name = state_data.get("labs")[lab_index]
+    labs = state_data.get("labs")
+    chosen_lab = next((lab for lab in labs if lab["task_id"] == lab_index), None)
+    disciplines_dict = state_data.get("disciplines_dict")
+    await state.update_data(chosen_lab=chosen_lab)
 
-    await state.update_data(lab_id=lab_id)
-    await state.update_data(lab_name=lab_name)
-    #
-    # await callback_query.message.edit_reply_markup(
-    #     reply_markup=None
-    # )
-    # if await state.get_state() == AddLabStates.waiting_for_discipline:
-    #     await callback_query.message.answer(_("Введите название лабораторной работы."),
-    #                                         reply_markup=None)
-    #     await state.set_state(AddLabStates.waiting_for_name)
-    # else:
-    #     await show_lab_confirmation(callback_query.message, state)
+    file_names = []
 
-# @router.message(EditLabStates.editing_name)
-# async def request_new_name(message: Message, state: FSMContext):
-#     state_data = await state.get_data()
-#     prev_val = state_data.get("name")
-#     await state.update_data(editing_value=name)
-#     url_req = f"{settings.API_URL}/edit_lab"
-#     response = requests.post(url_req, json={
-#         "lab_id": state_data.get("chosen_lab_id"),
-#         "editing_attribute": "name",
-#         "editing_value": name})
-#     if response.status_code == 200:
-#         await state.update_data(chosen_discipline_name=name)
-#         await message.answer(
-#             _("Вы изменили название дисциплины {prev_val} на {val}.").format(prev_val=format_value(prev_val),
-#                                                                              val=name)
-#         )
-#         menu_message = await message.answer(
-#             str(__("Вы в меню дисциплины {name}.\n\n"
-#                    "Преподаватель: {teacher}\n")).format(
-#                 name=format_value(name),
-#                 teacher=format_value(state_data.get("chosen_discipline_teacher")),
-#             ),
-#             reply_markup=kb.discipline_menu()
-#         )
-#         await state.update_data(menu_message_id=menu_message.message_id)
-#     else:
-#         await message.answer(json.loads(response.text).get('detail'))
+    url_req = f"{settings.API_URL}/get_lab_files"
+    response = requests.get(url_req, json={"task_id": chosen_lab["task_id"]})
+    if response.status_code == 200:
+        response_data = response.json()
+
+        confirmation_text = _(
+            "Вы в меню лабораторной работы:\n\n"
+            "Дисциплина: {discipline}\n"
+            "Название: {name}\n"
+            "Описание: {description}\n"
+            "Файлы: {files}\n"
+            "Ссылка: {link}\n"
+            "Дата начала: {start_date}\n"
+            "Срок сдачи: {end_date}\n"
+            "Доп. информация: {additional_info}"
+        ).format(
+            name=format_value(chosen_lab["name"]),
+            discipline=format_value(disciplines_dict[chosen_lab["discipline_id"]]),
+            description=format_value(chosen_lab["task_text"]),
+            files=", ".join(file_names) if file_names else "-",
+            link=format_value(chosen_lab["task_link"]),
+            start_date=format_value(datetime.strptime(chosen_lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")),
+            end_date=format_value(datetime.strptime(chosen_lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")),
+            additional_info=format_value(chosen_lab["extra_info"])
+        )
+
+        await callback_query.message.answer(
+            confirmation_text,
+            reply_markup=kb.lab_menu()
+        )
+
+        for file_info in response_data["files"]:
+            try:
+                file_bytes = base64.b64decode(file_info['file_data'])
+                file_data = BufferedInputFile(file_bytes, filename=file_info["file_name"])
+                if file_info['file_type'] == 'document':
+                    await bot.send_document(
+                        chat_id=callback_query.message.chat.id,
+                        document=file_data
+                    )
+                elif file_info['file_type'] == 'photo':
+                    await bot.send_photo(
+                        chat_id=callback_query.message.chat.id,
+                        photo=file_data
+                    )
+                elif file_info['file_type'] == 'video':
+                    await bot.send_video(
+                        chat_id=callback_query.message.chat.id,
+                        video=file_data,
+                        supports_streaming=True
+                    )
+                elif file_info['file_type'] == 'audio':
+                    await bot.send_audio(
+                        chat_id=callback_query.message.chat.id,
+                        audio=file_data,
+                    )
+            except Exception as e:
+                print(e)
+                await callback_query.message.answer(
+                    _("Не удалось отправить файл").format(error=str(e))
+                )
+
+
+@router.callback_query(F.data == "edit_status")
+async def edit_lab_status(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    state_data = await state.get_data()
+    chosen_lab = state_data.get("chosen_lab")
+    await callback_query.message.answer(
+        _("Текущий статус лабораторной работы {current_status}, выберите новый статус").format(
+            current_status=chosen_lab["status"]),
+        reply_markup=kb.status_option()
+    )

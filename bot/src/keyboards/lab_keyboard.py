@@ -27,6 +27,33 @@ def add_lab_confirm():
     return builder.as_markup()
 
 
+def lab_menu():
+    builder = InlineKeyboardBuilder()
+
+    builder.button(text=_("Изменить статус"), callback_data="edit_status")
+    builder.button(text=_("Изменить"), callback_data="edit_lab")
+    builder.button(text=_("Удалить"), callback_data="delete_lab")
+    builder.button(text=_("Сгенерировать ответ"), callback_data="use_ai")
+    builder.button(text=_("Назад"), callback_data="back_to_lab_menu")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def lab_edit_menu():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Изменить дисциплину"), callback_data="edit_lab_discipline")
+    builder.button(text=_("Изменить название"), callback_data="edit_lab_name")
+    builder.button(text=_("Изменить текст"), callback_data="edit_lab_description")
+    builder.button(text=_("Изменить файлы"), callback_data="edit_lab_files")
+    builder.button(text=_("Изменить ссылку"), callback_data="edit_lab_link")
+    builder.button(text=_("Изменить доп. информацию"), callback_data="edit_lab_additional_info")
+    builder.button(text=_("Изменить дату начала"), callback_data="edit_lab_start_date")
+    builder.button(text=_("Изменить срок сдачи"), callback_data="edit_lab_end_date")
+    builder.button(text=_("Назад"), callback_data="back_to_lab_menu")
+    builder.adjust(2, 2, 2, 2, 1)
+    return builder.as_markup()
+
+
 def skip_button():
     builder = InlineKeyboardBuilder()
 
@@ -70,7 +97,6 @@ def status_option():
             text=str(status.value),
             callback_data=f"lab_status_{status.name}"
         )
-        print(status.name, f"lab_status_{status.name}")
     builder.adjust(1)
     return builder.as_markup()
 
@@ -138,7 +164,7 @@ DAY_SHORT_NAMES = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
 
 
 def calendar(year: int = None, month: int = None) -> InlineKeyboardMarkup:
-# def calendar(current_date: datetime = None) -> InlineKeyboardMarkup:
+    # def calendar(current_date: datetime = None) -> InlineKeyboardMarkup:
     """Генератор клавиатуры календаря"""
 
     now = datetime.now()
@@ -191,9 +217,6 @@ def calendar(year: int = None, month: int = None) -> InlineKeyboardMarkup:
             row.append(InlineKeyboardButton(text=" ", callback_data="ignore"))
         keyboard.append(row)
 
-
-
-
     # Кнопка "Сегодня"
     keyboard.append([
         InlineKeyboardButton(text="Сегодня", callback_data=f"calendar_date_{now.strftime('%Y-%m-%d')}")
@@ -202,17 +225,53 @@ def calendar(year: int = None, month: int = None) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
 
 
-def labs_list(labs, page: int = 0, items_per_page: int = 5):
+def generate_abbreviation(full_name):
+    if not full_name or not isinstance(full_name, str):
+        return ""
+
+    cleaned = ''.join(c for c in full_name if c.isalpha() or c.isspace() or c == '-')
+
+    words = []
+    for part in cleaned.split():
+        words.extend(part.split('-'))
+
+    abbreviation = ''.join(word[0].upper() for word in words if word and len(word) > 1)
+
+    return abbreviation
+
+
+# def back_to_options_button():
+#     builder = InlineKeyboardBuilder()
+#
+#     builder.button(text=_("Назад"), callback_data="back_to_options")
+#     builder.adjust(1)
+#     return builder.as_markup()
+
+
+def labs_list(labs, disciplines_dict, show_abb, page: int = 0, items_per_page: int = 5):
     builder = InlineKeyboardBuilder()
 
     start_idx = page * items_per_page
     end_idx = start_idx + items_per_page
     current_page_labs = labs[start_idx:end_idx]
 
+    builder.button(text=_("Назад"), callback_data="back_to_options")
+
     for i, lab in enumerate(current_page_labs, start=start_idx):
-        builder.button(text=_("{lab}".format(lab=labs[i])),
-                       callback_data=f"lab_index_{i}"
-                       )
+        if show_abb:
+            builder.button(text=_("{abb} - {date} - {lab}"
+                                  .format(abb=generate_abbreviation(disciplines_dict[lab["discipline_id"]]),
+                                          date=datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y"),
+                                          lab=labs[i]["name"])),
+                           callback_data=f'lab_index_{lab["task_id"]}'
+                           )
+        else:
+            builder.button(text=_("{date} - {lab}".format(
+                lab=labs[i]["name"],
+                date=datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y"),
+            )),
+                callback_data=f"lab_index_{i}"
+            )
 
     navigation_buttons = []
 
