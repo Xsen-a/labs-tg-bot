@@ -3,7 +3,6 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardBut
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
-#from bot.src.handlers.discipline_bot_handler import EditDisciplineStates
 
 
 def add_discipline_confirm(is_from_api):
