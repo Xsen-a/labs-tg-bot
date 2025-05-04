@@ -253,7 +253,7 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
             chosen_lab["discipline_id"] = discipline_id
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(callback_query.message, state)
+            await show_chosen_lab_menu(callback_query.message, state, True)
 
 
 @router.message(or_f(AddLabStates.waiting_for_name, AddLabStates.waiting_for_new_name, EditLabStates.editing_name))
@@ -281,7 +281,7 @@ async def get_lab_name(message: Message, state: FSMContext):
             chosen_lab["name"] = name
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(message, state)
+            await show_chosen_lab_menu(message, state, True)
 
 
 @router.message(or_f(AddLabStates.waiting_for_description, AddLabStates.waiting_for_new_description,
@@ -310,7 +310,7 @@ async def get_lab_description(message: Message, state: FSMContext):
             chosen_lab["task_text"] = description
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(message, state)
+            await show_chosen_lab_menu(message, state, True)
 
 
 @router.callback_query(F.data == "skip", AddLabStates.waiting_for_description)
@@ -504,7 +504,7 @@ async def finish_files(callback_query: CallbackQuery, state: FSMContext):
                     _("Файлы успешно заменены."))
                 await state.set_state(ShowLabStates.showing_chosen_lab)
                 await state.update_data(files=[])
-                await show_chosen_lab_menu(callback_query.message, state)
+                await show_chosen_lab_menu(callback_query.message, state, True)
             else:
                 await callback_query.message.answer(
                     _("Ошибка добавления файлов. Повторите попытку."))
@@ -539,7 +539,7 @@ async def get_lab_link(message: Message, state: FSMContext):
             chosen_lab["task_link"] = link
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(message, state)
+            await show_chosen_lab_menu(message, state, True)
 
 
 @router.callback_query(F.data == "skip", AddLabStates.waiting_for_link)
@@ -648,7 +648,7 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
             chosen_lab["start_date"] = start_date.strftime("%Y-%m-%d")
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(callback.message, state)
+            await show_chosen_lab_menu(callback.message, state, True)
 
 
 @router.callback_query(F.data.startswith("calendar_date_"),
@@ -708,7 +708,7 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
             chosen_lab["end_date"] = end_date.strftime("%Y-%m-%d")
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(callback.message, state)
+            await show_chosen_lab_menu(callback.message, state, True)
 
 
 @router.message(or_f(AddLabStates.waiting_for_additional_info, AddLabStates.waiting_for_new_additional_info,
@@ -731,7 +731,7 @@ async def get_additional_info(message: Message, state: FSMContext):
             chosen_lab["extra-info"] = additional_info
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(message, state)
+            await show_chosen_lab_menu(message, state, True)
 
 
 @router.callback_query(F.data == "skip", AddLabStates.waiting_for_additional_info)
@@ -1028,10 +1028,10 @@ async def show_lab_list_status(callback_query: CallbackQuery, state: FSMContext)
             chosen_lab["status"] = selected_status.value
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
-            await show_chosen_lab_menu(callback_query.message, state)
+            await show_chosen_lab_menu(callback_query.message, state, True)
 
 
-async def show_chosen_lab_menu(message: Message, state: FSMContext, bot: Bot = bot_unit):
+async def show_chosen_lab_menu(message: Message, state: FSMContext, after_edit, bot: Bot = bot_unit):
     state_data = await state.get_data()
     disciplines_dict = state_data.get("disciplines_dict")
     chosen_lab = state_data.get("chosen_lab")
@@ -1064,11 +1064,25 @@ async def show_chosen_lab_menu(message: Message, state: FSMContext, bot: Bot = b
             status=chosen_lab["status"]
         )
 
-        await message.answer(
-            confirmation_text,
-            reply_markup=kb.lab_menu(),
-            parse_mode="HTML"
-        )
+        try:
+            if not after_edit:
+                await message.edit_text(
+                    confirmation_text,
+                    reply_markup=kb.lab_menu(),
+                    parse_mode="HTML"
+                )
+            else:
+                await message.answer(
+                    confirmation_text,
+                    reply_markup=kb.lab_menu(),
+                    parse_mode="HTML"
+                )
+        except:
+            await message.answer(
+                confirmation_text,
+                reply_markup=kb.lab_menu(),
+                parse_mode="HTML"
+            )
 
         for file_info in response_data["files"]:
             try:
@@ -1128,7 +1142,7 @@ async def show_chosen_lab_info(callback_query: CallbackQuery, state: FSMContext,
     chosen_lab = next((lab for lab in labs if lab["task_id"] == lab_index), None)
     await state.update_data(chosen_lab=chosen_lab)
 
-    await show_chosen_lab_menu(callback_query.message, state)
+    await show_chosen_lab_menu(callback_query.message, state, False)
 
 
 @router.callback_query(F.data == "edit_status")
@@ -1261,7 +1275,7 @@ async def cancel_deleting(callback_query: CallbackQuery, state: FSMContext):
         _("Вы отменили удаление лабораторной работы {name}.")
         .format(name=chosen_lab["name"])
     )
-    await show_chosen_lab_menu(callback_query.message, state)
+    await show_chosen_lab_menu(callback_query.message, state, False)
 
 
 @router.callback_query(F.data == "back_to_lab_menu")
@@ -1272,3 +1286,17 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext):
         message_id=callback_query.message.message_id,
     )
     await show_lab_list(callback_query.message, state)
+
+
+@router.callback_query(F.data == "back_to_chosen_lab_menu")
+async def back_to_list(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    await callback_query.message.bot.delete_message(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id - 1,
+    )
+    await callback_query.message.bot.delete_message(
+        chat_id=callback_query.message.chat.id,
+        message_id=callback_query.message.message_id,
+    )
+    await show_chosen_lab_menu(callback_query.message, state, False)

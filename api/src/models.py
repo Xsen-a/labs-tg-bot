@@ -80,7 +80,6 @@ class Lesson(SQLModel, table=True):
     end_time: time = Field(description="Время окончания пары")
     start_date: date = Field(description="Дата проведения первой периодичной или единичной пары")
     periodicity_days: int = Field(default=0, description="Периодичность в днях, с которой повторяются пары")
-    is_from_API: bool = Field(default=False, description="Флаг, получена ли пара из API")
 
     user: User = Relationship(back_populates="lessons")
     discipline: Discipline = Relationship(back_populates="lessons")

@@ -232,3 +232,46 @@ class DeleteLabSchema(SQLModel):
 
 class DeleteFilesSchema(SQLModel):
     task_id: int
+    
+
+class AddLessonSchema(SQLModel):
+    user_id: int
+    discipline_id: int
+    classroom: str
+    start_date: date
+    start_time: time
+    end_time: time
+    periodicity_days: int
+
+
+class GetLessonsSchema(SQLModel):
+    user_id: int
+
+
+class GetLessonResponseSchema(SQLModel):
+    lesson_id: int
+    user_id: int
+    discipline_id: int
+    classroom: str
+    start_date: date
+    start_time: time
+    end_time: time
+    periodicity_days: int
+
+
+class GetLessonsResponseSchema(SQLModel):
+    lessons: list[GetLessonResponseSchema]
+
+
+class GetLessonFilesSchema(SQLModel):
+    lesson_id: int
+
+
+class EditLessonAttributeSchema(SQLModel):
+    lesson_id: int
+    editing_attribute: str
+    editing_value: str
+
+
+class DeleteLessonSchema(SQLModel):
+    lesson_id: int

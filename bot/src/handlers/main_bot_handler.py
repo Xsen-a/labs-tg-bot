@@ -62,10 +62,19 @@ async def start_dialog(message: Message, state: FSMContext, telegram_id: int = N
 @router.message(F.text == __("⬅ Назад"))
 async def back_handler(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer(
-        _("Вы находитесь в главном меню."),
-        reply_markup=kb.main_menu_keyboard(),
-    )
+    try:
+        await message.edit_reply_markup(
+            reply_markup=None
+        )
+        await message.answer(
+            _("Вы находитесь в главном меню."),
+            reply_markup=kb.main_menu_keyboard(),
+        )
+    except:
+        await message.answer(
+            _("Вы находитесь в главном меню."),
+            reply_markup=kb.main_menu_keyboard(),
+        )
 
 
 @router.message(F.text == __("Лабораторные работы"))
@@ -138,9 +147,13 @@ async def open_teacher_menu(message: Message, state: FSMContext, telegram_id: in
 
 
 @router.message(F.text == __("Пары"))
-async def open_lesson_menu(message: Message, state: FSMContext):
+async def open_lesson_menu(message: Message, state: FSMContext, telegram_id: int = None):
+    await state.clear()
+    if telegram_id is None:
+        telegram_id = str(message.from_user.id)
+    await state.update_data(telegram_id=telegram_id)
     await message.answer(
-        _("Вы находитесь в меню пар."),
+        _("Вы находитесь в меню занятий."),
         reply_markup=kb.lesson_menu_keyboard(),
     )
 
