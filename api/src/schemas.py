@@ -249,33 +249,26 @@ class GetLessonsSchema(SQLModel):
 
 
 class GetLessonResponseSchema(SQLModel):
-    task_id: int
+    lesson_id: int
     user_id: int
     discipline_id: int
-    name: str
-    task_text: str | None = None
-    task_link: str | None = None
+    classroom: str
     start_date: date
-    end_date: date
-    extra_info: str | None = None
-    status: Status
+    start_time: time
+    end_time: time
+    periodicity_days: int
 
 
 class GetLessonsResponseSchema(SQLModel):
-    labs: list[GetLessonResponseSchema]
+    lessons: list[GetLessonResponseSchema]
 
 
 class GetLessonFilesSchema(SQLModel):
-    task_id: int
-
-
-
-class GetLessonFilesResponseSchema(SQLModel):
-    files: list[GetFileResponseSchema]
+    lesson_id: int
 
 
 class EditLessonAttributeSchema(SQLModel):
-    task_id: int
+    lesson_id: int
     editing_attribute: str
     editing_value: str
 

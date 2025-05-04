@@ -49,9 +49,6 @@ def get_keyboard_hours():
     return builder.as_markup()
 
 
-hours_list = get_keyboard_hours()
-
-
 def get_keyboard_minutes():
     builder = InlineKeyboardBuilder()
     for i in range(0, 60, 5):
@@ -64,73 +61,34 @@ def get_keyboard_minutes():
     return builder.as_markup()
 
 
-def lab_menu():
+def lesson_menu():
     builder = InlineKeyboardBuilder()
 
-    builder.button(text=_("Изменить статус"), callback_data="edit_status")
-    builder.button(text=_("Изменить"), callback_data="edit_lab")
-    builder.button(text=_("Удалить"), callback_data="delete_lab")
-    builder.button(text=_("Сгенерировать ответ"), callback_data="use_ai")
-    builder.button(text=_("Назад"), callback_data="back_to_lab_menu")
+    builder.button(text=_("Изменить"), callback_data="edit_lesson")
+    builder.button(text=_("Удалить"), callback_data="delete_lesson")
+    builder.button(text=_("Назад"), callback_data="back_to_lesson_menu")
     builder.adjust(1)
     return builder.as_markup()
 
 
-def confirm_delete_lab():
+def confirm_delete_lesson():
     builder = InlineKeyboardBuilder()
-    builder.button(text=_("Да"), callback_data="confirm_deleting_lab")
-    builder.button(text=_("Нет"), callback_data="cancel_deleting_lab")
+    builder.button(text=_("Да"), callback_data="confirm_deleting_lesson")
+    builder.button(text=_("Нет"), callback_data="cancel_deleting_lesson")
     builder.adjust(1)
     return builder.as_markup()
 
 
-def lab_edit_menu():
+def lesson_edit_menu():
     builder = InlineKeyboardBuilder()
-    builder.button(text=_("Изменить дисциплину"), callback_data="edit_lab_discipline")
-    builder.button(text=_("Изменить название"), callback_data="edit_lab_name")
-    builder.button(text=_("Изменить текст"), callback_data="edit_lab_description")
-    builder.button(text=_("Изменить файлы"), callback_data="edit_lab_files")
-    builder.button(text=_("Изменить ссылку"), callback_data="edit_lab_link")
-    builder.button(text=_("Изменить доп. информацию"), callback_data="edit_lab_additional_info")
-    builder.button(text=_("Изменить дату начала"), callback_data="edit_lab_start_date")
-    builder.button(text=_("Изменить срок сдачи"), callback_data="edit_lab_end_date")
-    builder.button(text=_("Назад"), callback_data="back_to_lab_menu")
+    builder.button(text=_("Изменить дисциплину"), callback_data="edit_lesson_discipline")
+    builder.button(text=_("Изменить аудиторию"), callback_data="edit_lesson_classroom")
+    builder.button(text=_("Изменить дату первого занятия"), callback_data="edit_lesson_start_date")
+    builder.button(text=_("Изменить периодичность"), callback_data="edit_lesson_periodicity")
+    builder.button(text=_("Изменить время начала"), callback_data="edit_lesson_start_time")
+    builder.button(text=_("Изменить время окончания"), callback_data="edit_lesson_end_time")
+    builder.button(text=_("Назад"), callback_data="back_to_chosen_lesson_menu")
     builder.adjust(2, 2, 2, 2, 1)
-    return builder.as_markup()
-
-
-def skip_button():
-    builder = InlineKeyboardBuilder()
-
-    builder.button(text=_("Пропустить"), callback_data="skip")
-    builder.adjust(1)
-    return builder.as_markup()
-
-
-def finish_files_button():
-    builder = InlineKeyboardBuilder()
-
-    builder.button(text=_("Завершить добавление файлов"), callback_data="finish_files")
-    builder.adjust(1)
-    return builder.as_markup()
-
-
-def add_option():
-    builder = InlineKeyboardBuilder()
-
-    builder.button(text=_("Показать список"), callback_data="show_discipline_api_list")
-    builder.button(text=_("Ввести вручную"), callback_data="add_discipline_by_hand")
-    builder.adjust(1)
-    return builder.as_markup()
-
-
-def list_show_option():
-    builder = InlineKeyboardBuilder()
-
-    builder.button(text=_("По статусу"), callback_data="lab_list_status")
-    builder.button(text=_("По дисциплине"), callback_data="lab_list_discipline")
-    builder.button(text=_("На 7 дней"), callback_data="lab_list_week")
-    builder.adjust(1)
     return builder.as_markup()
 
 
@@ -162,21 +120,6 @@ def disciplines_list(disciplines, page: int = 0, items_per_page: int = 5):
     if navigation_buttons:
         builder.row(*navigation_buttons)
 
-    return builder.as_markup()
-
-
-def cancel_editing_attr():
-    builder = InlineKeyboardBuilder()
-    builder.button(text=_("Отмена"), callback_data="cancel_editing_attr_discipline")
-    builder.adjust(1)
-    return builder.as_markup()
-
-
-def confirm_delete_discipline():
-    builder = InlineKeyboardBuilder()
-    builder.button(text=_("Да"), callback_data="confirm_deleting_discipline")
-    builder.button(text=_("Нет"), callback_data="cancel_deleting_discipline")
-    builder.adjust(1)
     return builder.as_markup()
 
 
@@ -273,38 +216,29 @@ def generate_abbreviation(full_name):
     return abbreviation
 
 
-# def back_to_options_button():
-#     builder = InlineKeyboardBuilder()
-#
-#     builder.button(text=_("Назад"), callback_data="back_to_options")
-#     builder.adjust(1)
-#     return builder.as_markup()
-
-
-def labs_list(labs, disciplines_dict, show_abb, page: int = 0, items_per_page: int = 5):
+def lessons_list(lessons, disciplines_dict, page: int = 0, items_per_page: int = 5):
     builder = InlineKeyboardBuilder()
 
     start_idx = page * items_per_page
     end_idx = start_idx + items_per_page
-    current_page_labs = labs[start_idx:end_idx]
+    current_page_lessons = lessons[start_idx:end_idx]
 
-    builder.button(text=_("Назад"), callback_data="back_to_options")
+    for i, lesson in enumerate(current_page_lessons, start=start_idx):
+        abb = generate_abbreviation(disciplines_dict[lesson["discipline_id"]])
+        date = datetime.strptime(lesson["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")
+        time = f"{lessons[i]['start_time'][:-3]} - {lessons[i]['end_time'][:-3]}"
 
-    for i, lab in enumerate(current_page_labs, start=start_idx):
-        if show_abb:
-            builder.button(text=_("{abb} - {date} - {lab}"
-                                  .format(abb=generate_abbreviation(disciplines_dict[lab["discipline_id"]]),
-                                          date=datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y"),
-                                          lab=labs[i]["name"])),
-                           callback_data=f'lab_index_{lab["task_id"]}'
-                           )
+        # Формирование текста в зависимости от условия
+        if int(lesson["periodicity_days"]) != 0:
+            text = _("{abb} - {date}, раз в {days} дней, {time}").format(
+                abb=abb, date=date, days=lesson["periodicity_days"], time=time)
         else:
-            builder.button(text=_("{date} - {lab}".format(
-                lab=labs[i]["name"],
-                date=datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y"),
-            )),
-                callback_data=f'lab_index_{lab["task_id"]}'
-            )
+            text = _("{abb} - {date}, {time}").format(abb=abb, date=date, time=time)
+
+        builder.button(
+            text=text,
+            callback_data=f'lesson_index_{lesson["lesson_id"]}'
+        )
 
     navigation_buttons = []
 
@@ -313,7 +247,7 @@ def labs_list(labs, disciplines_dict, show_abb, page: int = 0, items_per_page: i
             back_l_list(page)
         )
 
-    if end_idx < len(labs):
+    if end_idx < len(lessons):
         navigation_buttons.append(
             continue_l_list(page)
         )
@@ -326,8 +260,8 @@ def labs_list(labs, disciplines_dict, show_abb, page: int = 0, items_per_page: i
 
 
 def back_l_list(page):
-    return InlineKeyboardButton(text=_("⬅"), callback_data=f"lab_page_{page - 1}")
+    return InlineKeyboardButton(text=_("⬅"), callback_data=f"lesson_page_{page - 1}")
 
 
 def continue_l_list(page):
-    return InlineKeyboardButton(text=_("➡"), callback_data=f"lab_page_{page + 1}")
+    return InlineKeyboardButton(text=_("➡"), callback_data=f"lesson_page_{page + 1}")

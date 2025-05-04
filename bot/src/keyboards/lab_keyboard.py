@@ -57,7 +57,7 @@ def lab_edit_menu():
     builder.button(text=_("Изменить доп. информацию"), callback_data="edit_lab_additional_info")
     builder.button(text=_("Изменить дату начала"), callback_data="edit_lab_start_date")
     builder.button(text=_("Изменить срок сдачи"), callback_data="edit_lab_end_date")
-    builder.button(text=_("Назад"), callback_data="back_to_lab_menu")
+    builder.button(text=_("Назад"), callback_data="back_to_chosen_lab_menu")
     builder.adjust(2, 2, 2, 2, 1)
     return builder.as_markup()
 

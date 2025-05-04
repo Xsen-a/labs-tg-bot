@@ -62,10 +62,19 @@ async def start_dialog(message: Message, state: FSMContext, telegram_id: int = N
 @router.message(F.text == __("⬅ Назад"))
 async def back_handler(message: Message, state: FSMContext):
     await state.clear()
-    await message.answer(
-        _("Вы находитесь в главном меню."),
-        reply_markup=kb.main_menu_keyboard(),
-    )
+    try:
+        await message.edit_reply_markup(
+            reply_markup=None
+        )
+        await message.answer(
+            _("Вы находитесь в главном меню."),
+            reply_markup=kb.main_menu_keyboard(),
+        )
+    except:
+        await message.answer(
+            _("Вы находитесь в главном меню."),
+            reply_markup=kb.main_menu_keyboard(),
+        )
 
 
 @router.message(F.text == __("Лабораторные работы"))

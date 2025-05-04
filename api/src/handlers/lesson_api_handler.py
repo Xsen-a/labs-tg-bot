@@ -35,10 +35,10 @@ def get_lessons_handler(session: Session, schema: GetLessonsSchema) -> GetLesson
             user_id=lesson.user_id,
             discipline_id=lesson.discipline_id,
             classroom=lesson.classroom,
-            start_date=lesson.start_date.date(),
+            start_date=lesson.start_date,
             start_time=lesson.start_time,
             end_time=lesson.end_time,
-            pretiodicity_days=lesson.periodicity_days
+            periodicity_days=lesson.periodicity_days
         ))
 
     return GetLessonsResponseSchema(lessons=lessons_list)
@@ -52,7 +52,7 @@ def edit_lesson_attribute_handler(session: Session, schema: EditLessonAttributeS
 
     print(schema.editing_attribute)
 
-    if schema.editing_attribute == "discipline_id":
+    if schema.editing_attribute in ["discipline_id", "periodicity_days"]:
         editing_value = int(schema.editing_value)
     else:
         editing_value = str(schema.editing_value)
