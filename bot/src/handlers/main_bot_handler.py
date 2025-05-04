@@ -138,9 +138,13 @@ async def open_teacher_menu(message: Message, state: FSMContext, telegram_id: in
 
 
 @router.message(F.text == __("Пары"))
-async def open_lesson_menu(message: Message, state: FSMContext):
+async def open_lesson_menu(message: Message, state: FSMContext, telegram_id: int = None):
+    await state.clear()
+    if telegram_id is None:
+        telegram_id = str(message.from_user.id)
+    await state.update_data(telegram_id=telegram_id)
     await message.answer(
-        _("Вы находитесь в меню пар."),
+        _("Вы находитесь в меню занятий."),
         reply_markup=kb.lesson_menu_keyboard(),
     )
 

@@ -12,7 +12,7 @@ from typing import Any
 
 from .handlers import main_bot_handler as main_handler, settings_bot_handler as settings_handler,\
     auth_bot_handler as auth_handler, teacher_bot_handler as teacher_handler, discipline_bot_handler as discipline_handler,\
-    lab_bot_handler as lab_handler
+    lab_bot_handler as lab_handler, lesson_bot_handler as lesson_handler
 
 from bot.src.bot_unit import bot as bot_unit
 
@@ -45,6 +45,7 @@ async def main() -> None:
     dp.include_routers(teacher_handler.router)
     dp.include_routers(discipline_handler.router)
     dp.include_routers(lab_handler.router)
+    dp.include_routers((lesson_handler.router))
 
     # logger.info("Запуск бота...")
     await dp.start_polling(bot)

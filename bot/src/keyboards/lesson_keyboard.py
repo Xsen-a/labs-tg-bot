@@ -10,20 +10,57 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 from api.src.models import Status
 
 
-def add_lab_confirm():
+def add_lesson_confirm():
     builder = InlineKeyboardBuilder()
 
-    builder.button(text=_("Да"), callback_data="add_lab")
-    builder.button(text=_("Нет"), callback_data="cancel_add_lab")
-    builder.button(text=_("Изменить дисциплину"), callback_data="change_lab_discipline")
-    builder.button(text=_("Изменить название"), callback_data="change_lab_name")
-    builder.button(text=_("Изменить текст"), callback_data="change_lab_description")
-    builder.button(text=_("Изменить файлы"), callback_data="change_lab_files")
-    builder.button(text=_("Изменить ссылку"), callback_data="change_lab_link")
-    builder.button(text=_("Изменить доп. информацию"), callback_data="change_lab_additional_info")
-    builder.button(text=_("Изменить дату начала"), callback_data="change_lab_start_date")
-    builder.button(text=_("Изменить срок сдачи"), callback_data="change_lab_end_date")
-    builder.adjust(1, 1, 2, 2, 2, 2)
+    builder.button(text=_("Да"), callback_data="add_lesson")
+    builder.button(text=_("Нет"), callback_data="cancel_add_lesson")
+    builder.button(text=_("Изменить дисциплину"), callback_data="change_lesson_discipline")
+    builder.button(text=_("Изменить аудиторию"), callback_data="change_lesson_classroom")
+    builder.button(text=_("Изменить дату первого занятия"), callback_data="change_lesson_start_date")
+    builder.button(text=_("Изменить периодичность"), callback_data="change_lesson_periodicity")
+    builder.button(text=_("Изменить время начала"), callback_data="change_lesson_start_time")
+    builder.button(text=_("Изменить время окончания"), callback_data="change_lesson_end_time")
+    builder.adjust(1, 1, 2, 2, 2)
+    return builder.as_markup()
+
+
+def is_periodicity():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Да"), callback_data="periodicity")
+    builder.button(text=_("Нет"), callback_data="not_periodicity")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def periodicity_type():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Дни"), callback_data="periodicity_day")
+    builder.button(text=_("Недели"), callback_data="periodicity_week")
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def get_keyboard_hours():
+    builder = InlineKeyboardBuilder()
+    for i in range(24):
+        builder.button(text=str(i), callback_data=f"hour_{str(i)}")
+    builder.adjust(4)
+    return builder.as_markup()
+
+
+hours_list = get_keyboard_hours()
+
+
+def get_keyboard_minutes():
+    builder = InlineKeyboardBuilder()
+    for i in range(0, 60, 5):
+        minutes = str(i)
+        if len(minutes) != 2:
+            minutes = "0" + minutes
+        builder.button(text=minutes, callback_data=f"minutes_{minutes}")
+    builder.button(text="Другое", callback_data="another_minutes")
+    builder.adjust(6)
     return builder.as_markup()
 
 
@@ -97,18 +134,6 @@ def list_show_option():
     return builder.as_markup()
 
 
-def status_option():
-    builder = InlineKeyboardBuilder()
-
-    for status in Status:
-        builder.button(
-            text=str(status.value),
-            callback_data=f"lab_status_{status.name}"
-        )
-    builder.adjust(1)
-    return builder.as_markup()
-
-
 def disciplines_list(disciplines, page: int = 0, items_per_page: int = 5):
     builder = InlineKeyboardBuilder()
 
@@ -118,7 +143,7 @@ def disciplines_list(disciplines, page: int = 0, items_per_page: int = 5):
 
     for i, discipline in enumerate(current_page_disciplines, start=start_idx):
         builder.button(text=_("{discipline}".format(discipline=disciplines[i])),
-                       callback_data=f"lab_discipline_index_{i}"
+                       callback_data=f"lesson_discipline_index_{i}"
                        )
 
     navigation_buttons = []
@@ -147,14 +172,20 @@ def cancel_editing_attr():
     return builder.as_markup()
 
 
+def confirm_delete_discipline():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Да"), callback_data="confirm_deleting_discipline")
+    builder.button(text=_("Нет"), callback_data="cancel_deleting_discipline")
+    builder.adjust(1)
+    return builder.as_markup()
 
 
 def back_d_list(page):
-    return InlineKeyboardButton(text=_("⬅"), callback_data=f"lab_disciplines_page_{page - 1}")
+    return InlineKeyboardButton(text=_("⬅"), callback_data=f"lesson_disciplines_page_{page - 1}")
 
 
 def continue_d_list(page):
-    return InlineKeyboardButton(text=_("➡"), callback_data=f"lab_disciplines_page_{page + 1}")
+    return InlineKeyboardButton(text=_("➡"), callback_data=f"lesson_disciplines_page_{page + 1}")
 
 
 MONTH_NAMES = [
