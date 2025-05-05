@@ -1,22 +1,18 @@
 import base64
 import re
 import json
-from io import BytesIO
-import io
 
 import requests
 from datetime import datetime, timedelta
 
 from aiogram import Router, F, Bot
 from aiogram.filters import or_f
-from aiogram.filters.callback_data import CallbackData
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, CallbackQuery, Document, BufferedInputFile, InputFile, FSInputFile
+from aiogram.types import Message, CallbackQuery, BufferedInputFile
 
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
-from aiogram_calendar import SimpleCalendar, SimpleCalendarCallback
 
 from bot.src.handlers import main_bot_handler
 import bot.src.keyboards.lab_keyboard as kb
@@ -162,6 +158,10 @@ async def add_lab_start(message: Message, state: FSMContext):
 
         if response.status_code == 200:
             disciplines = response.json().get("disciplines", [])
+            if len(disciplines) == 0:
+                await message.answer(
+                    _("Дисциплин не найдено. Пожалуйста, добавьте дисциплины в меню дисциплин."))
+                return
             sorted_disciplines = sorted(disciplines, key=lambda x: x["name"])
             disciplines_dict = {d["discipline_id"]: d["name"] for d in sorted_disciplines}
             await state.update_data(disciplines_dict=disciplines_dict)

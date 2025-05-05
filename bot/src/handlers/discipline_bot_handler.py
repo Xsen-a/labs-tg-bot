@@ -115,14 +115,20 @@ async def add_discipline_name(message: Message, state: FSMContext):
     response = requests.get(url_req, json={"user_id": state_data.get("user_id")})
     if response.status_code == 200:
         response_data = response.json()
-        sorted_teachers = sorted(response_data.get("teachers"), key=lambda x: x["name"])
-        lecturers_dict = {teacher["teacher_id"]: teacher["name"] for teacher in sorted_teachers}
-        await state.update_data(lecturers_dict=lecturers_dict)
-        await state.update_data(lecturers=list(lecturers_dict.values()))
-        await state.update_data(lecturers_id=list(lecturers_dict.keys()))
-        await message.answer(
-            _("Выберите преподавателя, ведущего дисциплину.\n"),
-            reply_markup=kb.lecturers_list(list(lecturers_dict.values()), page=0, state=str(await state.get_state())))
+        if len(response_data.get("teachers")) == 0:
+            await message.answer(
+                _("Выберите преподавателя, ведущего дисциплину.\n\nПреподавателей не найдено. Пожалуйста, если необходимо, добавьте преподавателя в меню преподавателей."),
+                reply_markup=kb.lecturers_list([], page=0,
+                                               state=str(await state.get_state())))
+        else:
+            sorted_teachers = sorted(response_data.get("teachers"), key=lambda x: x["name"])
+            lecturers_dict = {teacher["teacher_id"]: teacher["name"] for teacher in sorted_teachers}
+            await state.update_data(lecturers_dict=lecturers_dict)
+            await state.update_data(lecturers=list(lecturers_dict.values()))
+            await state.update_data(lecturers_id=list(lecturers_dict.keys()))
+            await message.answer(
+                _("Выберите преподавателя, ведущего дисциплину.\n"),
+                reply_markup=kb.lecturers_list(list(lecturers_dict.values()), page=0, state=str(await state.get_state())))
     await state.set_state(AddDisciplineStates.waiting_for_teacher)
 
 

@@ -13,6 +13,7 @@ from aiogram.utils.i18n import lazy_gettext as __
 
 import bot.src.keyboards.menu_keyboard as kb
 import bot.src.keyboards.auth_keyboard as kb_auth
+import bot.src.keyboards.diagrams_keyboard as kb_diag
 import bot.src.keyboards.settings_keyboard as kb_settings
 
 router = Router()
@@ -89,12 +90,41 @@ async def open_labs_menu(message: Message, state: FSMContext, telegram_id: int =
     )
 
 
-@router.message(F.text == __("Диаграммы Ганта"))
-async def open_gant_menu(message: Message, state: FSMContext):
-    await message.answer(
-        _("Выберите период для диаграммы Ганта."),
-        reply_markup=kb.choose_gant_diagram(),
-    )
+@router.message(F.text == __("Диаграмма Ганта"))
+async def open_gant_menu(message: Message, state: FSMContext, telegram_id: int = None):
+    await state.clear()
+    if telegram_id is None:
+        telegram_id = str(message.from_user.id)
+    await state.update_data(telegram_id=telegram_id)
+    url_req = f"{settings.API_URL}/check_is_petrsu_student"
+    response = requests.get(url_req, json={"telegram_id": str(telegram_id)})
+    response_data = response.json()
+    if response.status_code == 200:
+        if response_data.get("is_petrsu_student", True):
+            url_req = f"{settings.API_URL}/get_user_group"
+            response = requests.get(url_req, json={"telegram_id": telegram_id})
+            if response.status_code == 200:
+                group = response.json().get("group")
+                url_req = "https://petrsu.egipti.com/api/v2/schedule/{group}".format(group=group)
+                response = requests.get(url_req)
+                if response.status_code == 200:
+                    response_data = response.json()
+                    await state.update_data(schedule_data=response_data)
+                    await message.answer(
+                        _("Выберите период для диаграммы Ганта."),
+                        reply_markup=kb_diag.choose_gant_diagram(),
+                    )
+                else:
+                    await message.answer(json.loads(response.text).get('detail'))
+            else:
+                await message.answer(json.loads(response.text).get('detail'))
+        else:
+            await message.answer(
+                _("Выберите период для диаграммы Ганта."),
+                reply_markup=kb_diag.choose_gant_diagram(),
+            )
+    else:
+        await message.answer(json.loads(response.text).get('detail'))
 
 
 @router.message(F.text == __("Дисциплины"))
