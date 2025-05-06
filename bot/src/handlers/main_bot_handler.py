@@ -1,7 +1,9 @@
-from aiogram import Router, F, types
+import io
+
+from aiogram import Router, F, types, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import CommandStart
-from aiogram.types import Message
+from aiogram.types import Message, BufferedInputFile
 from aiogram.utils import i18n
 
 from ..settings import settings
@@ -15,6 +17,9 @@ import bot.src.keyboards.menu_keyboard as kb
 import bot.src.keyboards.auth_keyboard as kb_auth
 import bot.src.keyboards.diagrams_keyboard as kb_diag
 import bot.src.keyboards.settings_keyboard as kb_settings
+from bot.src.handlers.diagrams_bot_handler import create_kanban, create_kanban_2
+
+from bot.src.bot_unit import bot as bot_unit
 
 router = Router()
 
@@ -125,6 +130,57 @@ async def open_gant_menu(message: Message, state: FSMContext, telegram_id: int =
             )
     else:
         await message.answer(json.loads(response.text).get('detail'))
+
+
+
+@router.message(F.text == __("Канбан-доска"))
+async def open_gant_menu(message: Message, state: FSMContext, telegram_id: int = None, bot: Bot = bot_unit):
+    await state.clear()
+    if telegram_id is None:
+        telegram_id = str(message.from_user.id)
+    await state.update_data(telegram_id=telegram_id)
+    url_req = f"{settings.API_URL}/get_user_id"
+    response = requests.get(url_req, json={"telegram_id": telegram_id})
+    if response.status_code == 200:
+        user_id = response.json().get("user_id")
+        await state.update_data(user_id=user_id)
+        url_req = f"{settings.API_URL}/get_labs"
+        response = requests.get(url_req, json={"user_id": user_id})
+        if response.status_code == 200:
+            response_data = response.json()
+            await state.update_data(labs_response=response_data)
+
+            url_req = f"{settings.API_URL}/get_disciplines"
+            response = requests.get(url_req, json={"user_id": user_id})
+
+            if response.status_code == 200:
+                disciplines = response.json().get("disciplines", [])
+                sorted_disciplines = sorted(disciplines, key=lambda x: x["name"])
+                disciplines_dict = {d["discipline_id"]: d["name"] for d in sorted_disciplines}
+                await state.update_data(disciplines_dict=disciplines_dict)
+                await state.update_data(disciplines=list(disciplines_dict.values()))
+                await state.update_data(disciplines_id=list(disciplines_dict.keys()))
+                state_data = await state.get_data()
+                # await create_kanban(state_data)
+                try:
+                    plt, fig = await create_kanban_2(state_data)
+
+                    buf = io.BytesIO()
+                    fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', pad_inches=0.5)
+                    plt.close(fig)
+
+                    photo = BufferedInputFile(
+                        file=buf.getvalue(),
+                        filename="kanban_desk.png"
+                    )
+                    await bot.send_photo(chat_id=message.chat.id, photo=photo)
+                    await bot.send_document(chat_id=message.chat.id, document=photo)
+                    buf.close()
+                except Exception as e:
+                    print(e)
+                    await message.answer(
+                        _("У Вас не добавлено ни одного задания.")
+                    )
 
 
 @router.message(F.text == __("Дисциплины"))

@@ -17,6 +17,7 @@ from aiogram.types import Message, CallbackQuery, BufferedInputFile
 
 from aiogram.utils.i18n import gettext as _
 from aiogram.utils.i18n import lazy_gettext as __
+from matplotlib.patches import FancyBboxPatch
 
 import bot.src.keyboards.diagrams_keyboard as kb
 from ..settings import settings
@@ -827,3 +828,244 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext, bot: Bo
             await callback_query.message.answer(json.loads(response.text).get('detail'))
     else:
         await callback_query.message.answer(json.loads(response.text).get('detail'))
+
+
+async def create_kanban(data):
+    # Получаем список лабораторных работ
+    labs = data['labs_response']['labs']
+
+    # Словарь для перевода названий дисциплин
+    disciplines = data['disciplines_dict']
+
+    # Группируем работы по статусам
+    status_groups = {
+        "Не начато": [],
+        "В процессе": [],
+        "Готово к сдаче": [],
+        "Сдано": []
+    }
+
+    for lab in labs:
+        status = lab['status']
+        if status in status_groups:
+            lab_with_discipline = lab.copy()
+            lab_with_discipline['discipline_name'] = disciplines.get(lab['discipline_id'], 'Неизвестно')
+            status_groups[status].append(lab_with_discipline)
+
+    # Определяем максимальное количество работ в одной колонке
+    max_works = max(len(works) for works in status_groups.values()) or 1
+
+    # Создаем фигуру с динамической высотой
+    fig, axes = plt.subplots(1, 4, figsize=(20, 10 + max_works * 0.5))
+    fig.suptitle('Канбан-доска', fontsize=16, y=1.02)
+
+    # Цвета для статусов
+    status_colors = {
+        "Не начато": "#FFCCCC",
+        "В процессе": "#FFE4B5",
+        "Готово к сдаче": "#ADD8E6",
+        "Сдано": "#90EE90"
+    }
+
+    # Обрабатываем каждую колонку
+    for i, (status, works) in enumerate(status_groups.items()):
+        ax = axes[i]
+        ax.set_title(status, fontsize=12, pad=10)
+        ax.set_xlim(0, 10)
+        ax.set_ylim(0, max(len(works) * 4 + 2, 6))  # Увеличиваем диапазон для динамической высоты
+        ax.axis('off')
+
+        # Если нет работ, добавляем надпись
+        if not works:
+            ax.text(5, 3, "Нет работ", ha='center', va='center', fontsize=10)
+            continue
+
+        # Добавляем карточки для каждой работы
+        for j, work in enumerate(works):
+            # Динамическая высота карточки в зависимости от количества строк
+            text_lines = [
+                work['name'],
+                work['discipline_name'],
+                f"Срок: {work['end_date']}"
+            ]
+            card_height = 1.5 + len(text_lines) * 0.7  # Базовая высота + по 0.7 на строку
+
+            # Позиция карточки с равномерным распределением
+            y_pos = (len(works) - j) * (card_height + 0.5)  # +0.5 для отступа между карточками
+
+            # Рисуем карточку с закругленными углами
+            card = FancyBboxPatch(
+                (1, y_pos - card_height), 8, card_height,
+                boxstyle="round,pad=0.1",
+                facecolor=status_colors[status], edgecolor='black',
+                alpha=0.8, linewidth=1
+            )
+            ax.add_patch(card)
+
+            # Добавляем текст с выравниванием по левому краю и переносом строк
+            for k, line in enumerate(text_lines):
+                # Переносим длинные строки
+                wrapped_lines = []
+                if len(line) > 30:
+                    parts = [line[i:i + 30] for i in range(0, len(line), 30)]
+                    wrapped_lines.extend(parts)
+                else:
+                    wrapped_lines.append(line)
+
+                # Добавляем каждую часть текста
+                for part_num, part in enumerate(wrapped_lines):
+                    ax.text(
+                        1.5,  # Отступ от левого края карточки
+                        y_pos - 0.8 - k * 0.7 - part_num * 0.7,  # Позиция с учетом номера строки и переноса
+                        part,
+                        ha='left',
+                        va='top',
+                        fontsize=9,
+                        wrap=True,
+                        bbox=dict(facecolor='white', alpha=0.3, pad=0, edgecolor='none')
+                    )
+
+    plt.tight_layout(pad=3.0, h_pad=5.0)
+    return plt, fig
+
+async def create_kanban_2(data):
+    # Получаем и группируем данные
+    labs = data['labs_response']['labs']
+    disciplines = data['disciplines_dict']
+
+    status_groups = {
+        "Не начато": [],
+        "В процессе": [],
+        "Готово к сдаче": [],
+        "Сдано": []
+    }
+
+    for lab in labs:
+        status = lab['status']
+        if status in status_groups:
+            lab['discipline_name'] = disciplines.get(lab['discipline_id'], 'Неизвестно')
+            status_groups[status].append(lab)
+
+    # Рассчитываем максимальное количество задач в колонке
+    max_tasks = max(len(tasks) for tasks in status_groups.values()) or 1
+
+    # Динамически настраиваем высоту графика
+    base_height = 8
+    task_height = 1.2
+    spacing = 0.3
+    column_height = max(base_height, max_tasks * (task_height + spacing) + 2)
+
+    # Настройки визуализации
+    fig, ax = plt.subplots(figsize=(15, column_height / 2))  # Масштабируем высоту
+    columns = list(status_groups.keys())
+    colors = [status_colors['Не начато'], status_colors['В процессе'], status_colors['Готово к сдаче'], status_colors['Сдано']]
+    column_width = 5.0
+    margin = 0.4
+
+    # Рисуем колонки
+    for i, (col, color) in enumerate(zip(columns, colors)):
+        x = i * (column_width + margin) + margin
+        ax.add_patch(
+            FancyBboxPatch(
+                (x, margin),
+                column_width,
+                column_height - margin,
+                facecolor=color,
+                alpha=0.7,
+                edgecolor="black",
+                linewidth=2,
+                boxstyle="round,pad=0.1"
+            )
+        )
+        ax.text(
+            x + column_width / 2,
+            column_height,
+            col,
+            ha='center',
+            va='center',
+            fontsize=14,
+            weight='bold',
+            bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.3')
+        )
+
+    def wrap_text(text, max_length=30):
+        words = text.split()
+        lines = []
+        current_line = ""
+
+        for word in words:
+            if len(current_line) + len(word) + 1 <= max_length:
+                current_line += " " + word if current_line else word
+            else:
+                lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+        print(lines)
+        return '\n'.join(lines)
+
+    for col_idx, (status, tasks) in enumerate(status_groups.items()):
+        x = col_idx * (column_width + margin) + margin + 0.2
+        y_offset = column_height - margin  # Начальная позиция по Y
+
+        for task in tasks:
+            # Использование:
+            wrapped_name= wrap_text(task['name'])
+            wrapped_discipline = "Дисц: " + wrap_text(f"{task['discipline_name']}")
+            text_content = [
+                wrapped_name,
+                wrapped_discipline,
+                f"Срок сдачи: {datetime.strptime(task['end_date'], '%Y-%m-%d').strftime('%d.%m.%Y')}"
+            ]
+
+            text_list = []
+            for line in text_content:
+                for word in line.split("\n"):
+                    text_list.append(word)
+
+            card_height = len(text_list) * 0.6
+            y_offset -= card_height + 0.5  # Добавляем отступ между карточками
+
+            # Проверяем, чтобы карточка не выходила за пределы колонки
+            if y_offset < margin:
+                break
+
+            # Рисуем карточку
+            ax.add_patch(
+                FancyBboxPatch(
+                    (x, y_offset),
+                    column_width - 0.4,
+                    card_height,
+                    facecolor="white",
+                    edgecolor="gray",
+                    linewidth=1,  # Увеличили толщину границы
+                    boxstyle="round,pad=0.2,rounding_size=0.15"  # Более выраженные скругления
+                )
+            )
+
+            # Размещаем каждую строку текста отдельно с правильными отступами
+            for i, line in enumerate(text_list):
+                ax.text(
+                    x + 0.1,  # Увеличили отступ от левого края
+                    y_offset + card_height - 0.2 - (i * 0.6),  # Равномерное распределение строк
+                    line,
+                    ha='left',
+                    va='top',
+                    fontsize=11,  # Увеличили размер шрифта
+                    fontfamily='sans-serif',
+                    bbox=dict(
+                        facecolor='white',
+                        alpha=0.3,
+                        pad=0.05,
+                        edgecolor='none',
+                        boxstyle='round,pad=0.05'
+                    )
+                )
+
+    # Настройки границ
+    ax.set_xlim(0, (column_width + margin) * len(columns) + margin)
+    ax.set_ylim(0, column_height + margin)
+    ax.axis('off')
+    plt.tight_layout()
+
+    return plt, fig
