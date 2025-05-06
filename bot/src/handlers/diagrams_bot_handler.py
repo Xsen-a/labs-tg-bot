@@ -37,6 +37,9 @@ lesson_colors = {
     'database': '#675ce5'
 }
 
+FIXED_SPACING = 1
+BAR_HEIGHT = 0.7
+
 
 def round_to_2weeks(dt):
     if isinstance(dt, str):
@@ -154,10 +157,6 @@ async def create_diagram_full(data):
         'font.weight': 'bold'
     })
 
-    total_labs = sum(len(labs) for labs in disciplines_labs.values())
-    fig_height = max(6, total_labs * 0.4)
-    fig, ax = plt.subplots(figsize=(15, fig_height))
-
     all_items = []
     y_labels = []
 
@@ -179,6 +178,10 @@ async def create_diagram_full(data):
     if len(all_items) == 0:
         return
 
+    total_labs = sum(len(labs) for labs in disciplines_labs.values())
+    fig_height = len(all_items) * 0.4
+    fig, ax = plt.subplots(figsize=(15, fig_height))
+
     lab_tasks = [item['data'] for item in all_items if item['type'] == 'lab']
 
     start_dates_num = [mdates.datestr2num(lab['start_date']) for lab in lab_tasks]
@@ -186,9 +189,11 @@ async def create_diagram_full(data):
     durations = [end - start for start, end in zip(start_dates_num, end_dates_num)]
     statuses = [lab['status'] for lab in lab_tasks]
 
-    y_pos = np.arange(len(all_items)) * 1
 
-    bar_height = 0.7
+
+    # Генерация позиций с фиксированным расстоянием
+    y_pos = np.arange(len(all_items)) * FIXED_SPACING
+
     lab_index = 0
     deadline_num = 0
     for i, item in enumerate(all_items):
@@ -196,14 +201,14 @@ async def create_diagram_full(data):
             start = start_dates_num[lab_index]
             duration = durations[lab_index]
             status = statuses[lab_index]
-            ax.barh(y_pos[i], duration, left=start, height=bar_height,
+            ax.barh(y_pos[i], duration, left=start, height=BAR_HEIGHT,
                     color=status_colors.get(status),
                     edgecolor='black', linewidth=0.5)
             if item['data']['status'] != 'Сдано':
                 deadline = datetime.strptime(item['data']['end_date'], '%Y-%m-%d')
                 if deadline < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
                     print(item['data'], deadline, datetime.now())
-                    ax.barh(y_pos[i], mdates.date2num(datetime.now()) - mdates.date2num(deadline) - 0.5, left=deadline, height=bar_height,
+                    ax.barh(y_pos[i], mdates.date2num(datetime.now()) - mdates.date2num(deadline) - 0.5, left=deadline, height=BAR_HEIGHT,
                             color='#FFCCCC', linestyle="--", alpha=0.7,
                             edgecolor='red', linewidth=0.5)
                     deadline_num += 1
@@ -266,8 +271,6 @@ async def create_diagram_full(data):
     plt.tight_layout()
     plt.subplots_adjust(left=0.3, right=0.85, top=0.95, bottom=0.05)
 
-    fig.set_size_inches(15, total_labs * 0.5)
-
     # plt.savefig('график_лабораторных.png',
     #             dpi=300,
     #             bbox_inches='tight',
@@ -301,10 +304,6 @@ async def create_diagram_month(labs, disciplines_dict, month, year):
         'font.weight': 'bold'
     })
 
-    total_labs = sum(len(labs) for labs in disciplines_labs.values())
-    fig_height = max(6, total_labs * 0.4)
-    fig, ax = plt.subplots(figsize=(15, fig_height))
-
     all_items = []
     y_labels = []
 
@@ -325,6 +324,10 @@ async def create_diagram_month(labs, disciplines_dict, month, year):
 
     if len(all_items) == 0:
         return
+
+    total_labs = sum(len(labs) for labs in disciplines_labs.values())
+    fig_height = len(all_items) * 0.4
+    fig, ax = plt.subplots(figsize=(15, fig_height))
 
     lab_tasks = [item['data'] for item in all_items if item['type'] == 'lab']
 
@@ -424,7 +427,6 @@ async def create_diagram_month(labs, disciplines_dict, month, year):
 
     plt.tight_layout()
     plt.subplots_adjust(left=0.3, right=0.85, top=0.95, bottom=0.05)
-    fig.set_size_inches(15, total_labs * 0.5)
 
     # plt.savefig('график_лабораторных.png',
     #             dpi=300,
@@ -443,7 +445,7 @@ async def create_diagram_week(data):
     labs = data['labs_response']['labs']
     disciplines_dict = data['disciplines_dict']
 
-    if data['schedule_data']:
+    if 'schedule_data' in data.keys():
         schedule_pairs = get_schedule_pairs(data['schedule_data'])
     else:
         schedule_pairs = []
@@ -472,11 +474,6 @@ async def create_diagram_week(data):
         'font.weight': 'bold'
     })
 
-    # Создаем фигуру с адаптивной высотой
-    total_labs = sum(len(labs) for labs in disciplines_labs.values())
-    fig_height = max(6, total_labs * 0.4)
-    fig, ax = plt.subplots(figsize=(15, fig_height))
-
     all_items = []
     y_labels = []
 
@@ -499,6 +496,10 @@ async def create_diagram_week(data):
 
     if len(all_items) == 0:
         return
+
+    total_labs = sum(len(labs) for labs in disciplines_labs.values())
+    fig_height = len(all_items) * 0.4
+    fig, ax = plt.subplots(figsize=(15, fig_height))
 
     lab_tasks = [item['data'] for item in all_items if item['type'] == 'lab']
 
@@ -622,7 +623,6 @@ async def create_diagram_week(data):
 
     plt.tight_layout()
     plt.subplots_adjust(left=0.3, right=0.85, top=0.95, bottom=0.05)
-    fig.set_size_inches(15, total_labs * 0.3)
 
     # plt.savefig('график_лабораторных.png',
     #             dpi=300,
@@ -667,7 +667,7 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext, bot: Bo
                     plt, fig = await create_diagram_full(state_data)
 
                     buf = io.BytesIO()
-                    fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0.5)
+                    fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', pad_inches=0.5)
                     plt.close(fig)
 
                     photo = BufferedInputFile(
@@ -754,7 +754,7 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext, bot: Bo
         plt, fig = await create_diagram_month(chosen_month_labs, state_data["disciplines_dict"], gant_month, gant_year)
 
         buf = io.BytesIO()
-        fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0.5)
+        fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', pad_inches=0.5)
         plt.close(fig)
 
         photo = BufferedInputFile(
@@ -803,11 +803,12 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext, bot: Bo
                     response_data = response.json()
                     await state.update_data(lessons_response=response_data)
                     state_data = await state.get_data()
+                    # await create_diagram_week(state_data)
                     try:
                         plt, fig = await create_diagram_week(state_data)
 
                         buf = io.BytesIO()
-                        fig.savefig(buf, format='png', dpi=300, bbox_inches='tight', pad_inches=0.5)
+                        fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', pad_inches=0.5)
                         plt.close(fig)
 
                         photo = BufferedInputFile(
