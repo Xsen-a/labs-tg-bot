@@ -9,7 +9,7 @@ def choose_gant_diagram():
 
     builder.button(text=_("Общая"), callback_data="gant_full")
     builder.button(text=_("Месяц"), callback_data="gant_month")
-    builder.button(text=_("Две недели"), callback_data="gant_two_weeks")
+    builder.button(text=_("Три недели"), callback_data="gant_three_weeks")
     builder.adjust(1)
     return builder.as_markup()
 
