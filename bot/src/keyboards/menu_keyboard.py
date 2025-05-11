@@ -9,22 +9,22 @@ def back_button():
 
 
 def main_menu_keyboard():
-    builder_column = ReplyKeyboardBuilder()
+    builder = ReplyKeyboardBuilder()
 
-    builder_column.button(text=_("Лабораторные работы"))
-    builder_column.button(text=_("Диаграммы Ганта"))
-    builder_column.adjust(1)
+    builder.button(text=_("Лабораторные работы"))
 
-    builder_row = ReplyKeyboardBuilder()
-    builder_row.button(text=_("Дисциплины"))
-    builder_row.button(text=_("Преподаватели"))
-    builder_row.button(text=_("Пары"))
-    builder_row.adjust(2)
+    builder.button(text=_("Диаграмма Ганта"))
+    builder.button(text=_("Канбан-доска"))
 
-    builder_row.button(text=_("Настройки"))
+    builder.button(text=_("Пары"))
+    builder.button(text=_("Дисциплины"))
+    builder.button(text=_("Преподаватели"))
 
-    builder_column.attach(builder_row)
-    return builder_column.as_markup()
+    builder.button(text=_("Настройки"))
+
+    builder.adjust(1, 2, 2, 2)
+
+    return builder.as_markup(resize_keyboard=True)
 
 
 def labs_menu_keyboard():
@@ -33,16 +33,6 @@ def labs_menu_keyboard():
     builder.button(text=_("Добавить лабораторную работу"))
     builder.button(text=_("Посмотреть список лабораторных работ"))
     builder.row(back_button())
-    builder.adjust(1)
-    return builder.as_markup()
-
-
-def choose_gant_diagram():
-    builder = InlineKeyboardBuilder()
-
-    builder.button(text=_("Общая"), callback_data="gant_full")
-    builder.button(text=_("Месяц"), callback_data="gant_month")
-    builder.button(text=_("Две недели"), callback_data="gant_two_weeks")
     builder.adjust(1)
     return builder.as_markup()
 

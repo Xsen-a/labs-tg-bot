@@ -894,7 +894,7 @@ msgstr "Лабораторные работы"
 
 #: bot/src/keyboards/menu_keyboard.py:15
 #, fuzzy
-msgid "Диаграммы Ганта"
+msgid "Диаграмма Ганта"
 msgstr "Диаграмма Ганта"
 
 #: bot/src/keyboards/menu_keyboard.py:19

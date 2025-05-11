@@ -132,6 +132,10 @@ async def add_lesson_start(message: Message, state: FSMContext):
 
         if response.status_code == 200:
             disciplines = response.json().get("disciplines", [])
+            if len(disciplines) == 0:
+                await message.answer(
+                    _("Дисциплин не найдено. Пожалуйста, добавьте дисциплины в меню дисциплин."))
+                return
             sorted_disciplines = sorted(disciplines, key=lambda x: x["name"])
             disciplines_dict = {d["discipline_id"]: d["name"] for d in sorted_disciplines}
             await state.update_data(disciplines_dict=disciplines_dict)
