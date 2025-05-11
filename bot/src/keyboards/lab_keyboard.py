@@ -33,7 +33,7 @@ def lab_menu():
     builder.button(text=_("Изменить статус"), callback_data="edit_status")
     builder.button(text=_("Изменить"), callback_data="edit_lab")
     builder.button(text=_("Удалить"), callback_data="delete_lab")
-    builder.button(text=_("Сгенерировать ответ"), callback_data="use_ai")
+    builder.button(text=_("Сгенерировать подсказку"), callback_data="use_ai")
     builder.button(text=_("Назад"), callback_data="back_to_lab_menu")
     builder.adjust(1)
     return builder.as_markup()
@@ -59,6 +59,14 @@ def lab_edit_menu():
     builder.button(text=_("Изменить срок сдачи"), callback_data="edit_lab_end_date")
     builder.button(text=_("Назад"), callback_data="back_to_chosen_lab_menu")
     builder.adjust(2, 2, 2, 2, 1)
+    return builder.as_markup()
+
+
+def use_text_in_ai():
+    builder = InlineKeyboardBuilder()
+    builder.button(text=_("Использовать текущий текст задания"), callback_data="use_current_text")
+    builder.button(text=_("Ввести новый текст задания"), callback_data="use_new_text")
+    builder.adjust(1)
     return builder.as_markup()
 
 
@@ -166,44 +174,30 @@ DAY_SHORT_NAMES = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
 
 
 def calendar(year: int = None, month: int = None) -> InlineKeyboardMarkup:
-    # def calendar(current_date: datetime = None) -> InlineKeyboardMarkup:
-    """Генератор клавиатуры календаря"""
 
     now = datetime.now()
-    # if current_date is None:
-    #     year = now.year
-    #     month = now.month
-    # else:
-    #     year = current_date.year
-    #     month = current_date.month
     if year is None:
         year = now.year
     if month is None:
         month = now.month
 
-    # Получаем информацию о месяце
     _, num_days = monthrange(year, month)
     first_day = date(year, month, 1)
-    starting_weekday = first_day.weekday()  # 0-пн, 6-вс
+    starting_weekday = first_day.weekday()
 
-    # Создаем список для кнопок
     keyboard = []
 
-    # Заголовок (месяц и год + навигация)
     keyboard.append([
         InlineKeyboardButton(text="<<", callback_data=f"calendar_prev_{year}_{month}"),
         InlineKeyboardButton(text=f"{MONTH_NAMES[month]} {year}", callback_data="ignore"),
         InlineKeyboardButton(text=">>", callback_data=f"calendar_next_{year}_{month}")
     ])
 
-    # Дни недели
     keyboard.append([
         InlineKeyboardButton(text=day, callback_data="ignore") for day in DAY_SHORT_NAMES
     ])
 
-    # Дни месяца
     row = []
-    # Пустые клетки перед первым днем
     for _ in range(starting_weekday):
         row.append(InlineKeyboardButton(text=" ", callback_data="ignore"))
 
@@ -214,12 +208,11 @@ def calendar(year: int = None, month: int = None) -> InlineKeyboardMarkup:
             keyboard.append(row)
             row = []
 
-    if row:  # Добавляем оставшиеся дни
+    if row:
         for cell in range(7 - len(row)):
             row.append(InlineKeyboardButton(text=" ", callback_data="ignore"))
         keyboard.append(row)
 
-    # Кнопка "Сегодня"
     keyboard.append([
         InlineKeyboardButton(text="Сегодня", callback_data=f"calendar_date_{now.strftime('%Y-%m-%d')}")
     ])

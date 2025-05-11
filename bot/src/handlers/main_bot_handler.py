@@ -17,7 +17,7 @@ import bot.src.keyboards.menu_keyboard as kb
 import bot.src.keyboards.auth_keyboard as kb_auth
 import bot.src.keyboards.diagrams_keyboard as kb_diag
 import bot.src.keyboards.settings_keyboard as kb_settings
-from bot.src.handlers.diagrams_bot_handler import create_kanban, create_kanban_2
+from bot.src.handlers.diagrams_bot_handler import create_kanban
 
 from bot.src.bot_unit import bot as bot_unit
 
@@ -163,17 +163,16 @@ async def open_gant_menu(message: Message, state: FSMContext, telegram_id: int =
                 state_data = await state.get_data()
                 # await create_kanban(state_data)
                 try:
-                    plt, fig = await create_kanban_2(state_data)
+                    plt, fig = await create_kanban(state_data)
 
                     buf = io.BytesIO()
-                    fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', pad_inches=0.5)
+                    fig.savefig(buf, format='png', dpi=100, bbox_inches='tight', pad_inches=0.2)
                     plt.close(fig)
 
                     photo = BufferedInputFile(
                         file=buf.getvalue(),
                         filename="kanban_desk.png"
                     )
-                    await bot.send_photo(chat_id=message.chat.id, photo=photo)
                     await bot.send_document(chat_id=message.chat.id, document=photo)
                     buf.close()
                 except Exception as e:

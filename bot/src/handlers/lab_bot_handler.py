@@ -20,6 +20,7 @@ from ..settings import settings
 
 from bot.src.bot_unit import bot as bot_unit
 from api.src.models import Status
+from bot.src.deepseek import create_answer
 
 router = Router()
 
@@ -46,6 +47,7 @@ class AddLabStates(StatesGroup):
     waiting_for_new_start_date = State()
     waiting_for_new_end_date = State()
     waiting_for_new_additional_info = State()
+    waiting_for_query_text = State()
 
 
 class ShowLabStates(StatesGroup):
@@ -235,7 +237,8 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
                 info_string += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                   __(f'{lab["name"]}\n') +
                                   __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
-                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                  __(f'Статус: <b>{lab["status"]}</b>\n\n'))
         else:
             info_string = f"Лабораторных работ по дисциплине {disciplines_dict[discipline_id]} не найдено.\n\n"
         await callback_query.message.answer(
@@ -950,7 +953,8 @@ async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext)
                         info_string_undone += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                                  __(f'{lab["name"]}\n') +
                                                  __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
-                                                 __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+                                                 __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                                 __(f'Статус: <b>{lab["status"]}</b>\n\n'))
                 else:
                     info_string_undone = __(f"<b>Просроченных лабораторных работ не найдено.</b>\n\n")
                 if filtered_lab_list_process:
@@ -959,7 +963,8 @@ async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext)
                         info_string_process += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                                   __(f'{lab["name"]}\n') +
                                                   __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
-                                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
+                                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
+                                                  __(f'Статус: <b>{lab["status"]}</b>\n\n'))
                 else:
                     info_string_process = __(f"<b>Лабораторных работ на ближайшие 7 дней не найдено.</b>\n\n")
                 info_string = info_string_undone + info_string_process
@@ -1300,3 +1305,75 @@ async def back_to_list(callback_query: CallbackQuery, state: FSMContext):
         message_id=callback_query.message.message_id,
     )
     await show_chosen_lab_menu(callback_query.message, state, False)
+
+
+@router.callback_query(F.data == "use_ai")
+async def use_ai(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    state_data = await state.get_data()
+    chosen_lab = state_data.get("chosen_lab")
+    if chosen_lab["task_text"]:
+        await callback_query.message.answer(
+            __("Использовать текущий текст задания для запроса или ввести новый?\n\nТекущий текст задания:\n{text}")
+            .format(text=chosen_lab["task_text"]),
+            reply_markup=kb.use_text_in_ai()
+        )
+    else:
+        await callback_query.message.answer(
+            _("Введите текст задания для запроса.")
+        )
+        await state.set_state(AddLabStates.waiting_for_query_text)
+
+
+def escape_markdown(text: str) -> str:
+    escape_chars = r'_*[]()~`>#+-=|{}.!\\'
+    return re.sub(f'([{re.escape(escape_chars)}])', r'\\\1', text)
+
+
+@router.callback_query(F.data == "use_current_text")
+async def use_ai(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    state_data = await state.get_data()
+    chosen_lab = state_data.get("chosen_lab")
+    await callback_query.message.answer(
+        _("Обработка запроса... Это может занять некоторое время.")
+    )
+    response = await create_answer(chosen_lab["task_text"])
+    if response:
+        escaped_response = escape_markdown(response)
+        await callback_query.message.answer(
+            escaped_response,
+            parse_mode="MarkdownV2"
+        )
+    else:
+        await callback_query.message.answer(
+            _("Ошибка выполнения запроса :(")
+        )
+
+
+@router.callback_query(F.data == "use_new_text")
+async def use_ai(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    await callback_query.message.answer(
+        _("Введите текст задания для запроса.")
+    )
+    await state.set_state(AddLabStates.waiting_for_query_text)
+
+
+@router.message(AddLabStates.waiting_for_query_text)
+async def get_task_text(message: Message, state: FSMContext):
+    text = message.text
+    await message.answer(
+        _("Обработка запроса... Это может занять некоторое время.")
+    )
+    response = await create_answer(text)
+    if response:
+        escaped_response = escape_markdown(response)
+        await message.answer(
+            escaped_response,
+            parse_mode="MarkdownV2"
+        )
+    else:
+        await message.answer(
+            _("Ошибка выполнения запроса :(")
+        )
