@@ -309,7 +309,7 @@ async def get_lab_description(message: Message, state: FSMContext):
                                                 "editing_value": description})
         if response.status_code == 200:
             await message.answer(
-                _("Текст задания изменен."))
+                _("Текст задания успешно изменен."))
             chosen_lab["task_text"] = description
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -550,7 +550,7 @@ async def skip_link(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(link=None)
     await callback_query.message.edit_text(
-        _("Выберите дату начала выполнения задания"),
+        _("Выберите дату начала выполнения задания."),
         reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
     )
     await state.set_state(AddLabStates.waiting_for_start_date)
@@ -647,7 +647,7 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
                                                 "editing_value": start_date.strftime("%Y-%m-%d")})
         if response.status_code == 200:
             await callback.message.answer(
-                _("Дата начала успешно изменена на {start_date}.").format(start_date=start_date))
+                _("Дата начала успешно изменена на {start_date}.").format(start_date=start_date.strftime("%d.%m.%Y")))
             chosen_lab["start_date"] = start_date.strftime("%Y-%m-%d")
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -704,7 +704,7 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
                                                 "editing_value": end_date.strftime("%Y-%m-%d")})
         if response.status_code == 200:
             await callback.message.answer(
-                _(f"Дата сдачи успешно изменена на {end_date}").format(end_date=end_date))
+                _("Дата сдачи успешно изменена на {end_date}").format(end_date=end_date.strftime("%d.%m.%Y")))
             chosen_lab["end_date"] = end_date.strftime("%Y-%m-%d")
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -1113,7 +1113,7 @@ async def show_chosen_lab_menu(message: Message, state: FSMContext, after_edit, 
                     )
             except Exception as e:
                 await message.answer(
-                    _("Не удалось отправить файл").format(error=str(e))
+                    _("Не удалось отправить файл.").format(error=str(e))
                 )
 
 

@@ -618,7 +618,7 @@ async def get_additional_info(message: Message, state: FSMContext):
         periodicity = int(periodicity)
     except Exception:
         await message.answer(
-            _("Периодичность должна быть числом"))
+            _("Периодичность должна быть числом."))
         return
 
     state_data = await state.get_data()
