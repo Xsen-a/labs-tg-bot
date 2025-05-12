@@ -30,8 +30,8 @@ def main_menu_keyboard():
 def labs_menu_keyboard():
     builder = ReplyKeyboardBuilder()
 
-    builder.button(text=_("Добавить лабораторную работу"))
-    builder.button(text=_("Посмотреть список лабораторных работ"))
+    builder.button(text=_("Добавить задание"))
+    builder.button(text=_("Посмотреть список заданий"))
     builder.row(back_button())
     builder.adjust(1)
     return builder.as_markup()
@@ -61,7 +61,7 @@ def lesson_menu_keyboard():
     builder = ReplyKeyboardBuilder()
 
     builder.button(text=_("Добавить пару"))
-    builder.button(text=_("Посмотреть список пар"))
+    builder.button(text=_("Посмотреть список занятий"))
     builder.row(back_button())
     builder.adjust(1)
     return builder.as_markup()

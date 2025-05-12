@@ -88,7 +88,7 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
                 file_names.append("Файл")
 
     confirmation_text = _(
-        "Вы действительно хотите добавить лабораторную работу {name} для дисциплины {discipline}?\n\n"
+        "Вы действительно хотите добавить задание {name} для дисциплины {discipline}?\n\n"
         "Название: {name}\n"
         "Текст задания: {description}\n"
         "Файлы: {files}\n"
@@ -143,7 +143,7 @@ async def show_lab_confirmation(message: Message, state: FSMContext, bot: Bot = 
                 )
 
 
-@router.message(F.text == __("Добавить лабораторную работу"))
+@router.message(F.text == __("Добавить задание"))
 async def add_lab_start(message: Message, state: FSMContext):
     await state.set_state(AddLabStates.adding_lab)
     state_data = await state.get_data()
@@ -171,7 +171,7 @@ async def add_lab_start(message: Message, state: FSMContext):
             await state.update_data(disciplines_id=list(disciplines_dict.keys()))
 
             await message.answer(
-                _("Выберите дисциплину для лабораторной работы."),
+                _("Выберите дисциплину для задания."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
             await state.set_state(AddLabStates.waiting_for_discipline)
         else:
@@ -215,7 +215,7 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
     )
 
     if await state.get_state() == AddLabStates.waiting_for_discipline:
-        await callback_query.message.answer(_("Введите название лабораторной работы."),
+        await callback_query.message.answer(_("Введите название задания."),
                                             reply_markup=None)
         await state.set_state(AddLabStates.waiting_for_name)
     elif await state.get_state() == AddLabStates.waiting_for_new_discipline:
@@ -232,7 +232,7 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
         await state.update_data(labs=filtered_lab_list)
 
         if filtered_lab_list:
-            info_string = f"Лабораторные работы по дисциплине {disciplines_dict[discipline_id]}\n\n"
+            info_string = f"Задания по дисциплине {disciplines_dict[discipline_id]}\n\n"
             for lab in filtered_lab_list:
                 info_string += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                   __(f'{lab["name"]}\n') +
@@ -240,7 +240,7 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
                                   __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
                                   __(f'Статус: <b>{lab["status"]}</b>\n\n'))
         else:
-            info_string = f"Лабораторных работ по дисциплине {disciplines_dict[discipline_id]} не найдено.\n\n"
+            info_string = f"Заданий по дисциплине {disciplines_dict[discipline_id]} не найдено.\n\n"
         await callback_query.message.answer(
             info_string,
             reply_markup=kb.labs_list(filtered_lab_list, disciplines_dict, False, page=0))
@@ -266,7 +266,7 @@ async def get_lab_name(message: Message, state: FSMContext):
     state_data = await state.get_data()
     if await state.get_state() == AddLabStates.waiting_for_name:
         await message.answer(
-            _("Введите текст лабораторной работы."),
+            _("Введите текст задания."),
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddLabStates.waiting_for_description)
@@ -295,7 +295,7 @@ async def get_lab_description(message: Message, state: FSMContext):
     state_data = await state.get_data()
     if await state.get_state() == AddLabStates.waiting_for_description:
         await message.answer(
-            _("Прикрепите файл с заданием для лабораторной работы размером до 50 МБ."),
+            _("Прикрепите файл с заданием размером до 50 МБ."),
             reply_markup=kb.finish_files_button()
         )
         await state.set_state(AddLabStates.waiting_for_files)
@@ -309,7 +309,7 @@ async def get_lab_description(message: Message, state: FSMContext):
                                                 "editing_value": description})
         if response.status_code == 200:
             await message.answer(
-                _("Текст лабораторной успешно изменен."))
+                _("Текст задания изменен."))
             chosen_lab["task_text"] = description
             await state.update_data(chosen_lab=chosen_lab)
             await state.set_state(ShowLabStates.showing_chosen_lab)
@@ -321,7 +321,7 @@ async def skip_description(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(description=None)
     await callback_query.message.edit_text(
-        _("Прикрепите файл с заданием для лабораторной работы размером до 50 МБ."),
+        _("Прикрепите файл с заданием размером до 50 МБ."),
         reply_markup=kb.finish_files_button()
     )
     await state.set_state(AddLabStates.waiting_for_files)
@@ -468,7 +468,7 @@ async def finish_files(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     if await state.get_state() == AddLabStates.waiting_for_files:
         await callback_query.message.edit_text(
-            _("Вставьте ссылку на задание лабораторной работы."),
+            _("Вставьте ссылку на задание."),
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddLabStates.waiting_for_link)
@@ -524,7 +524,7 @@ async def get_lab_link(message: Message, state: FSMContext):
     state_data = await state.get_data()
     if await state.get_state() == AddLabStates.waiting_for_link:
         await message.answer(
-            _("Выберите дату начала выполнения лабораторной работы."),
+            _("Выберите дату начала выполнения задания."),
             reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
         )
         await state.set_state(AddLabStates.waiting_for_start_date)
@@ -550,7 +550,7 @@ async def skip_link(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     await state.update_data(link=None)
     await callback_query.message.edit_text(
-        _("Выберите дату начала выполнения лабораторной работы"),
+        _("Выберите дату начала выполнения задания"),
         reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
     )
     await state.set_state(AddLabStates.waiting_for_start_date)
@@ -615,14 +615,14 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
         if end_date < start_date:
             if await state.get_state() == AddLabStates.waiting_for_start_date:
                 await callback.message.edit_text(
-                    _("Выберите дату начала выполнения лабораторной работы.\n\n"
+                    _("Выберите дату начала выполнения задания.\n\n"
                       "Дата начала не может быть позже даты сдачи. Пожалуйста, выберите другую дату."),
                     reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
                 )
                 return
             else:
                 await callback.message.edit_text(
-                    _("Выберите новую дату начала выполнения лабораторной работы.\n\n"
+                    _("Выберите новую дату начала выполнения задания.\n\n"
                       "Дата начала не может быть позже даты сдачи. Пожалуйста, выберите другую дату."),
                     reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
                 )
@@ -633,7 +633,7 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
 
     if await state.get_state() == AddLabStates.waiting_for_start_date:
         await callback.message.edit_text(
-            _("Выберите дату сдачи лабораторной работы."),
+            _("Выберите дату сдачи задания."),
             reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
         )
         await state.set_state(AddLabStates.waiting_for_end_date)
@@ -660,29 +660,26 @@ async def select_start_date(callback: CallbackQuery, state: FSMContext):
 async def select_end_date(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
-    # Получаем выбранную дату
     date_str = callback.data.split("_")[-1]
     end_date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
-    # Получаем дату начала из состояния
     state_data = await state.get_data()
     start_date_str = state_data.get("start_date")
 
     if start_date_str:
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
 
-        # Сравниваем даты
         if end_date < start_date:
             if await state.get_state() == AddLabStates.waiting_for_end_date:
                 await callback.message.edit_text(
-                    _("Выберите дату сдачи лабораторной работы.\n\n"
+                    _("Выберите дату сдачи задания.\n\n"
                       "Дата сдачи не может быть раньше даты начала. Пожалуйста, выберите другую дату."),
                     reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
                 )
                 return
             else:
                 await callback.message.edit_text(
-                    _("Выберите новую дату сдачи лабораторной работы.\n\n"
+                    _("Выберите новую дату сдачи задания.\n\n"
                       "Дата сдачи не может быть раньше даты начала. Пожалуйста, выберите другую дату."),
                     reply_markup=kb.calendar(datetime.now().year, datetime.now().month)
                 )
@@ -693,7 +690,7 @@ async def select_end_date(callback: CallbackQuery, state: FSMContext):
 
     if await state.get_state() == AddLabStates.waiting_for_end_date:
         await callback.message.edit_text(
-            _("Введите дополнительную информацию о лабораторной работе."),
+            _("Введите дополнительную информацию о задании."),
             reply_markup=kb.skip_button()
         )
         await state.set_state(AddLabStates.waiting_for_additional_info)
@@ -787,7 +784,7 @@ async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
                     flag = False
         if flag:
             await callback_query.message.answer(
-                _("Лабораторная работа {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлена. Если необходимо, измените статус в меню лабораторной работы.").format(
+                _("Задание {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлено. Если необходимо, измените статус в меню заданий.").format(
                     name=state_data.get("lab_name"),
                     discipline=state_data.get("discipline_name")
                 )
@@ -795,7 +792,7 @@ async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
             await main_bot_handler.open_labs_menu(callback_query.message, state, state_data.get("telegram_id"))
         else:
             await callback_query.message.answer(
-                _("Лабораторная работа {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлена. Если необходимо, измените статус в меню лабораторной работы. Ошибка добавления файлов. Добавьте файлы в меню лабораторной работы.").format(
+                _("Задание {name} со статусом 'Не начато' для дисциплины {discipline} успешно добавлено. Если необходимо, измените статус в меню заданий. Ошибка добавления файлов. Добавьте файлы в меню заданий.").format(
                     name=state_data.get("lab_name"),
                     discipline=state_data.get("discipline_name")
                 )
@@ -811,7 +808,7 @@ async def confirm_lab(callback_query: CallbackQuery, state: FSMContext):
         reply_markup=None
     )
     await callback_query.answer()
-    await callback_query.message.answer("Вы отменили добавление лабораторной работы.")
+    await callback_query.message.answer("Вы отменили добавление задания.")
     state_data = await state.get_data()
     await main_bot_handler.open_labs_menu(callback_query.message, state, state_data.get("telegram_id"))
 
@@ -833,43 +830,43 @@ async def edit_lab_data(callback_query: CallbackQuery, state: FSMContext):
             state_data = await state.get_data()
             disciplines_dict = state_data.get("disciplines_dict")
             await callback_query.message.answer(
-                _("Выберите новую дисциплину для лабораторной работы."),
+                _("Выберите новую дисциплину для задания."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
             await state.set_state(AddLabStates.waiting_for_new_discipline)
         case "name":
-            await callback_query.message.answer(_("Введите новое название лабораторной работы."))
+            await callback_query.message.answer(_("Введите новое название задания."))
             await state.set_state(AddLabStates.waiting_for_new_name)
         case "description":
-            await callback_query.message.answer(_("Введите новый текст лабораторной работы."))
+            await callback_query.message.answer(_("Введите новый текст задания."))
             await state.set_state(AddLabStates.waiting_for_new_description)
         case "files":
             await callback_query.message.answer(
-                _("Прикрепите заново файл(ы) с заданием для лабораторной работы размером до 50 МБ."),
+                _("Прикрепите заново файл(ы) с заданием размером до 50 МБ."),
                 reply_markup=kb.finish_files_button())
             await state.set_state(AddLabStates.waiting_for_new_files)
         case "link":
             await callback_query.message.answer(
-                _("Выберите новую ссылку на задание для лабораторной работы"))
+                _("Выберите новую ссылку на задание."))
             await state.set_state(AddLabStates.waiting_for_new_link)
         case "start_date":
             await callback_query.message.answer(
-                _("Выберите новую дату начала выполнения лабораторной работы"),
+                _("Выберите новую дату начала выполнения задания."),
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(AddLabStates.waiting_for_new_start_date)
         case "end_date":
             await callback_query.message.answer(
-                _("Выберите новую дату сдачи лабораторной работы"),
+                _("Выберите новую дату сдачи задания."),
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(AddLabStates.waiting_for_new_end_date)
         case "additional_info":
             await callback_query.message.answer(
-                _("Введите новую дополнительную информацию о лабораторной работе."))
+                _("Введите новую дополнительную информацию о задании."))
             await state.set_state(AddLabStates.waiting_for_new_additional_info)
 
     await callback_query.answer()
 
 
-@router.message(F.text == __("Посмотреть список лабораторных работ"))
+@router.message(F.text == __("Посмотреть список заданий"))
 async def show_lab_list(message: Message, state: FSMContext):
     await state.set_state(ShowLabStates.showing_list)
 
@@ -948,7 +945,7 @@ async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext)
 
             if filtered_lab_list_undone or filtered_lab_list_process:
                 if filtered_lab_list_undone:
-                    info_string_undone = __(f"<b>Просроченные лабораторные работы:</b>\n\n")
+                    info_string_undone = __(f"<b>Просроченные задания:</b>\n\n")
                     for lab in filtered_lab_list_undone:
                         info_string_undone += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                                  __(f'{lab["name"]}\n') +
@@ -956,9 +953,9 @@ async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext)
                                                  __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
                                                  __(f'Статус: <b>{lab["status"]}</b>\n\n'))
                 else:
-                    info_string_undone = __(f"<b>Просроченных лабораторных работ не найдено.</b>\n\n")
+                    info_string_undone = __(f"<b>Просроченных заданий не найдено.</b>\n\n")
                 if filtered_lab_list_process:
-                    info_string_process = __(f"<b>Предстоящие лабораторные работы на следующие 7 дней:</b>\n\n")
+                    info_string_process = __(f"<b>Предстоящие задания на следующие 7 дней:</b>\n\n")
                     for lab in filtered_lab_list_process:
                         info_string_process += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                                   __(f'{lab["name"]}\n') +
@@ -966,10 +963,10 @@ async def show_lab_list_option(callback_query: CallbackQuery, state: FSMContext)
                                                   __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
                                                   __(f'Статус: <b>{lab["status"]}</b>\n\n'))
                 else:
-                    info_string_process = __(f"<b>Лабораторных работ на ближайшие 7 дней не найдено.</b>\n\n")
+                    info_string_process = __(f"<b>Заданий на ближайшие 7 дней не найдено.</b>\n\n")
                 info_string = info_string_undone + info_string_process
             else:
-                info_string = __(f"Лабораторных работ не найдено.\n\n")
+                info_string = __(f"Заданий не найдено.\n\n")
             await callback_query.message.answer(
                 info_string,
                 reply_markup=kb.labs_list(filtered_lab_list, disciplines_dict, True, page=0),
@@ -1010,14 +1007,14 @@ async def show_lab_list_status(callback_query: CallbackQuery, state: FSMContext)
         await state.update_data(labs=filtered_lab_list)
 
         if filtered_lab_list:
-            info_string = f"Лабораторные работы со статусом: {selected_status.value}\n\n"
+            info_string = f"Задания со статусом: {selected_status.value}\n\n"
             for lab in filtered_lab_list:
                 info_string += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
                                   __(f'{lab["name"]}\n') +
                                   __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
                                   __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n\n'))
         else:
-            info_string = f"Лабораторных работ со статусом {selected_status.value} не найдено.\n\n"
+            info_string = f"Заданий со статусом {selected_status.value} не найдено.\n\n"
         await callback_query.message.answer(
             info_string,
             reply_markup=kb.labs_list(filtered_lab_list, disciplines_dict, True, page=0))
@@ -1047,7 +1044,7 @@ async def show_chosen_lab_menu(message: Message, state: FSMContext, after_edit, 
         response_data = response.json()
         file_names = [file['file_name'] for file in response_data.get("files", [])]
         confirmation_text = _(
-            "Вы в меню лабораторной работы:\n\n"
+            "Вы в меню задания:\n\n"
             "Дисциплина: {discipline}\n"
             "Название: {name}\n"
             "Текст задания: {description}\n"
@@ -1194,37 +1191,37 @@ async def edit_lab_status(callback_query: CallbackQuery, state: FSMContext):
             state_data = await state.get_data()
             disciplines_dict = state_data.get("disciplines_dict")
             await callback_query.message.answer(
-                _("Выберите новую дисциплину для лабораторной работы."),
+                _("Выберите новую дисциплину для задания."),
                 reply_markup=kb.disciplines_list(list(disciplines_dict.values()), page=0))
             await state.set_state(EditLabStates.editing_discipline)
         case "name":
-            await callback_query.message.answer(_("Введите новое название лабораторной работы."))
+            await callback_query.message.answer(_("Введите новое название задания."))
             await state.set_state(EditLabStates.editing_name)
         case "description":
-            await callback_query.message.answer(_("Введите новый текст лабораторной работы."))
+            await callback_query.message.answer(_("Введите новый текст задания."))
             await state.set_state(EditLabStates.editing_description)
         case "files":
             await callback_query.message.answer(
-                _("Прикрепите заново файл(ы) с заданием для лабораторной работы размером до 50 МБ."),
+                _("Прикрепите заново файл(ы) с заданием размером до 50 МБ."),
                 reply_markup=kb.finish_files_button())
             await state.set_state(EditLabStates.editing_files)
         case "link":
             await callback_query.message.answer(
-                _("Введите новую ссылку на задание для лабораторной работы."))
+                _("Введите новую ссылку на задание."))
             await state.set_state(EditLabStates.editing_link)
         case "start_date":
             await callback_query.message.answer(
-                _("Выберите новую дату начала выполнения лабораторной работы."),
+                _("Выберите новую дату начала выполнения задания."),
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(EditLabStates.editing_start_date)
         case "end_date":
             await callback_query.message.answer(
-                _("Выберите новую дату сдачи лабораторной работы."),
+                _("Выберите новую дату сдачи задания."),
                 reply_markup=kb.calendar(datetime.now().year, datetime.now().month))
             await state.set_state(EditLabStates.editing_end_date)
         case "additional_info":
             await callback_query.message.answer(
-                _("Введите новую дополнительную информацию о лабораторной работе."))
+                _("Введите новую дополнительную информацию о задании."))
             await state.set_state(EditLabStates.editing_additional_info)
 
     await callback_query.answer()
@@ -1239,7 +1236,7 @@ async def ask_deleting_lab(callback_query: CallbackQuery, state: FSMContext):
     state_data = await state.get_data()
     chosen_lab = state_data.get("chosen_lab")
     await callback_query.message.answer(
-        _("Вы действительно хотите удалить лабораторную работу {name}?")
+        _("Вы действительно хотите удалить задание {name}?")
         .format(name=chosen_lab["name"]),
         reply_markup=kb.confirm_delete_lab()
     )
@@ -1258,7 +1255,7 @@ async def confirm_deleting(callback_query: CallbackQuery, state: FSMContext):
             message_id=callback_query.message.message_id,
         )
         await callback_query.message.answer(
-            _("Лабораторная работа {name} успешно удалена.")
+            _("Задание {name} успешно удалено.")
             .format(name=chosen_lab["name"])
         )
         await show_lab_list(callback_query.message, state)
@@ -1277,7 +1274,7 @@ async def cancel_deleting(callback_query: CallbackQuery, state: FSMContext):
         reply_markup=None
     )
     await callback_query.message.answer(
-        _("Вы отменили удаление лабораторной работы {name}.")
+        _("Вы отменили удаление задания {name}.")
         .format(name=chosen_lab["name"])
     )
     await show_chosen_lab_menu(callback_query.message, state, False)

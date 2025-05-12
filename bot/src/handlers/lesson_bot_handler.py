@@ -95,7 +95,7 @@ async def show_lesson_confirmation(message: Message, state: FSMContext, bot: Bot
     end_time = f'{state_data.get("end_hour")}:{state_data.get("end_minutes")}'
 
     confirmation_text = _(
-        "Вы действительно хотите добавить пару по дисциплине {discipline}?\n\n"
+        "Вы действительно хотите добавить занятие по дисциплине {discipline}?\n\n"
         "Аудитория: {classroom}\n"
         "Время начала: {start_time}\n"
         "Время окончания: {end_time}\n"
@@ -115,7 +115,7 @@ async def show_lesson_confirmation(message: Message, state: FSMContext, bot: Bot
     )
 
 
-@router.message(F.text == __("Добавить пару"))
+@router.message(F.text == __("Добавить занятие"))
 async def add_lesson_start(message: Message, state: FSMContext):
     await state.set_state(AddLessonStates.adding_lab)
     state_data = await state.get_data()
@@ -497,10 +497,10 @@ async def add_end_minutes(callback_query: CallbackQuery, state: FSMContext):
         await state.update_data(end_minutes=end_minutes)
         if await state.get_state() == AddLessonStates.waiting_for_end_minutes:
             try:
-                await callback_query.message.edit_text(_("Является ли пара периодической?"),
+                await callback_query.message.edit_text(_("Является ли занятие периодическим?"),
                                                        reply_markup=kb.is_periodicity())
             except:
-                await callback_query.message.answer(_("Является ли пара периодической?"),
+                await callback_query.message.answer(_("Является ли занятие периодическим?"),
                                                     reply_markup=kb.is_periodicity())
             await state.set_state(AddLessonStates.waiting_for_periodicity)
         elif await state.get_state() == AddLessonStates.waiting_for_new_end_minutes:
@@ -536,10 +536,10 @@ async def add_another_end_minutes(msg: Message, state: FSMContext):
         await state.update_data(end_minutes=new_end_minutes)
         if await state.get_state() == AddLessonStates.waiting_for_another_end_minutes:
             try:
-                await msg.edit_text(_("Является ли пара периодической?"),
+                await msg.edit_text(_("Является ли занятие периодическим?"),
                                     reply_markup=kb.is_periodicity())
             except:
-                await msg.answer(_("Является ли пара периодической?"),
+                await msg.answer(_("Является ли занятие периодическим?"),
                                  reply_markup=kb.is_periodicity())
             await state.set_state(AddLessonStates.waiting_for_periodicity)
         elif await state.get_state() == AddLessonStates.waiting_for_new_another_end_minutes:
@@ -740,14 +740,14 @@ async def edit_lab_data(callback_query: CallbackQuery, state: FSMContext):
             )
             await state.set_state(AddLessonStates.waiting_for_new_end_hour)
         case "periodicity":
-            await callback_query.message.answer(_("Является ли пара периодической?"),
+            await callback_query.message.answer(_("Является ли занятие периодическим?"),
                                                 reply_markup=kb.is_periodicity())
             await state.set_state(AddLessonStates.waiting_for_periodicity)
 
     await callback_query.answer()
 
 
-@router.message(F.text == __("Посмотреть список пар"))
+@router.message(F.text == __("Посмотреть список занятий"))
 async def show_lesson_list(message: Message, state: FSMContext):
     await state.set_state(ShowLessonStates.showing_list)
 
@@ -906,7 +906,7 @@ async def edit_lab_status(callback_query: CallbackQuery, state: FSMContext):
             )
             await state.set_state(EditLessonStates.editing_end_hour)
         case "periodicity":
-            await callback_query.message.edit_text(_("Является ли пара периодической?"),
+            await callback_query.message.edit_text(_("Является ли занятие периодическим?"),
                                                    reply_markup=kb.is_periodicity())
             await state.set_state(EditLessonStates.editing_periodicity)
 

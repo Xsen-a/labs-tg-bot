@@ -83,14 +83,14 @@ async def back_handler(message: Message, state: FSMContext):
         )
 
 
-@router.message(F.text == __("Лабораторные работы"))
+@router.message(F.text == __("Задания"))
 async def open_labs_menu(message: Message, state: FSMContext, telegram_id: int = None):
     await state.clear()
     if telegram_id is None:
         telegram_id = str(message.from_user.id)
     await state.update_data(telegram_id=telegram_id)
     await message.answer(
-        _("Вы находитесь в меню лабораторных работ."),
+        _("Вы находитесь в меню заданий."),
         reply_markup=kb.labs_menu_keyboard(),
     )
 
@@ -231,7 +231,7 @@ async def open_teacher_menu(message: Message, state: FSMContext, telegram_id: in
     )
 
 
-@router.message(F.text == __("Пары"))
+@router.message(F.text == __("Занятия"))
 async def open_lesson_menu(message: Message, state: FSMContext, telegram_id: int = None):
     await state.clear()
     if telegram_id is None:
