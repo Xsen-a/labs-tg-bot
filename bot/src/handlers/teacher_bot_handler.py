@@ -910,11 +910,11 @@ async def confirm_deleting(callback_query: CallbackQuery, state: FSMContext):
                "Почта: {email}\n"
                "Социальная сеть: {social_page_link}\n"
                "Аудитория: {classroom}")).format(
-            name=format_value(state_data.get("name")),
-            phone_number=format_value(state_data.get("phone_number")),
-            email=format_value(state_data.get("email")),
-            social_page_link=format_value(state_data.get("social_page_link")),
-            classroom=format_value(state_data.get("classroom")),
+            name=format_value(state_data.get("chosen_lecturer_name")),
+            phone_number=format_value(state_data.get("chosen_lecturer_phone")),
+            email=format_value(state_data.get("chosen_lecturer_email")),
+            social_page_link=format_value(state_data.get("chosen_lecturer_link")),
+            classroom=format_value(state_data.get("chosen_lecturer_classroom")),
         ),
         reply_markup=kb.teacher_menu()
     )
