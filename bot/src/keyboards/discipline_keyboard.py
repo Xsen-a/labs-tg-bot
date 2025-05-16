@@ -73,6 +73,7 @@ def edit_options(exist_teacher, is_from_api):
         builder.button(text=_("Изменить преподавателя"), callback_data="edit_discipline_teacher")
     else:
         builder.button(text=_("Добавить преподавателя"), callback_data="edit_discipline_teacher")
+    builder.button(text=_("Назад"), callback_data="cancel_editing_discipline")
     builder.adjust(1)
     return builder.as_markup()
 

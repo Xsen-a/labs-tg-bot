@@ -91,7 +91,7 @@ def edit_options(is_from_api):
     builder.button(text=_("Изменить почту"), callback_data="edit_teacher_email")
     builder.button(text=_("Изменить социальную сеть"), callback_data="edit_teacher_link")
     builder.button(text=_("Изменить аудиторию"), callback_data="edit_teacher_classroom")
-    builder.button(text=_("Отмена"), callback_data="cancel_editing")
+    builder.button(text=_("Назад"), callback_data="cancel_editing")
     builder.adjust(1)
     return builder.as_markup()
 
