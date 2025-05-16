@@ -33,6 +33,10 @@ async def add_user_to_db(state):
 
 @router.callback_query(F.data == "send_tg_id")
 async def get_is_petrsu(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    await callback_query.message.edit_reply_markup(
+        reply_markup=None,
+    )
     await callback_query.message.answer(
         _("Вы являетесь студентом ПетрГУ?"),
         reply_markup=kb.is_petrsu_student(),
@@ -41,7 +45,11 @@ async def get_is_petrsu(callback_query: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data == "petrsu_true")
 async def is_petrsu(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
     await state.update_data(is_petrsu_student=True)
+    await callback_query.message.edit_reply_markup(
+        reply_markup=None,
+    )
     await callback_query.message.answer(
         _("Введите номер группы.")
     )
@@ -82,6 +90,10 @@ async def get_group(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == "petrsu_false")
 async def is_not_petrsu(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    await callback_query.message.edit_reply_markup(
+        reply_markup=None,
+    )
     await state.update_data(is_petrsu_student=False)
     await state.update_data(group=None)
     response_status = await add_user_to_db(state)

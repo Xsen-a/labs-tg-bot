@@ -633,11 +633,17 @@ async def add_teacher_by_api(callback_query: CallbackQuery, state: FSMContext):
                 response_data = response.json()
                 teachers_names = {teacher["name"] for teacher in response_data.get("teachers", [])}
                 unique_lecturers = [lecturer for lecturer in lecturers_list if lecturer not in teachers_names]
-                await state.update_data(lecturers=unique_lecturers)
-                await callback_query.message.edit_text(
-                    _("Список преподавателей:"),
-                    reply_markup=kb.lecturers_list(unique_lecturers, page=0)
-                )
+                if teachers_names:
+                    await state.update_data(lecturers=unique_lecturers)
+                    await callback_query.message.edit_text(
+                        _("Список преподавателей:"),
+                        reply_markup=kb.lecturers_list(unique_lecturers, page=0)
+                    )
+                else:
+                    await callback_query.message.edit_text(
+                        _("Преподавателей в расписании не найдено. Введите ФИО преподавателя вручную.")
+                    )
+                    await state.set_state(AddTeacherStates.waiting_for_FIO)
             else:
                 await callback_query.message.answer(json.loads(response.text).get('detail'))
         else:

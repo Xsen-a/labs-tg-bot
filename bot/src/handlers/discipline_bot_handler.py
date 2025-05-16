@@ -142,7 +142,7 @@ async def handle_pagination(callback_query: CallbackQuery, state: FSMContext):
     await state.update_data(current_page=page)
 
     await callback_query.message.edit_reply_markup(
-        reply_markup=kb.lecturers_list(lecturers, page=page)
+        reply_markup=kb.lecturers_list(lecturers, page=page, state=str(await state.get_state()))
     )
 
 
@@ -155,6 +155,7 @@ async def get_discipline_teacher(callback_query: CallbackQuery, state: FSMContex
     if await state.get_state() in [AddDisciplineStates.waiting_for_teacher,  AddDisciplineStates.waiting_for_new_teacher]:
         await show_confirmation(callback_query.message, state)
     else:
+        await state.set_state(EditDisciplineStates.editing_teacher)
         await callback_query.message.bot.edit_message_reply_markup(
             chat_id=callback_query.message.chat.id,
             message_id=callback_query.message.message_id,
@@ -537,6 +538,7 @@ async def edit_discipline_data(callback_query: CallbackQuery, state: FSMContext)
         case "teacher":
             url_req = f"{settings.API_URL}/get_teachers"
             response = requests.get(url_req, json={"user_id": state_data.get("user_id")})
+            await state.set_state(EditDisciplineStates.editing_teacher)
             if response.status_code == 200:
                 response_data = response.json()
                 sorted_teachers = sorted(response_data.get("teachers"), key=lambda x: x["name"])
@@ -569,13 +571,13 @@ async def edit_discipline_data(callback_query: CallbackQuery, state: FSMContext)
                     await state.set_state(EditDisciplineStates.editing_teacher)
                     await callback_query.message.answer(
                         _("Выберите другого преподавателя, ведущего дисциплину."),
-                        reply_markup=kb.lecturers_list(available_lecturers, page=0))
+                        reply_markup=kb.lecturers_list(available_lecturers, page=0, state=str(await state.get_state())))
                 else:
                     await state.set_state(EditDisciplineStates.editing_teacher)
                     await callback_query.message.answer(
                         _("Выберите другого преподавателя, ведущего дисциплину."),
                         reply_markup=kb.lecturers_list(list(lecturers_dict.values()),
-                                                       page=0))
+                                                       page=0, state=str(await state.get_state())))
             else:
                 await callback_query.message.answer(json.loads(response.text).get('detail'))
 

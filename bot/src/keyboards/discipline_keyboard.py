@@ -99,8 +99,8 @@ def lecturers_list(lecturers, page: int = 0, items_per_page: int = 5, state: str
     end_idx = start_idx + items_per_page
     current_page_lecturers = lecturers[start_idx:end_idx]
 
-    print(state)
-    if state is None:
+    print("keyboard", state)
+    if str(state) == "EditDisciplineStates:editing_teacher":
         builder.button(text=_("Отмена"), callback_data="cancel_editing_attr_discipline")
     else:
         builder.button(text=_("Пропустить"), callback_data="skip_disciplines_lecturer")

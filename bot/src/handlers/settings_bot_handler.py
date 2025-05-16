@@ -24,6 +24,9 @@ class SettingsStates(StatesGroup):
 @router.callback_query(F.data == "change_group")
 async def is_petrsu(callback_query: CallbackQuery, state: FSMContext):
     await state.update_data(is_petrsu_student=True)
+    await callback_query.message.edit_reply_markup(
+        reply_markup=None
+    )
     await callback_query.message.answer(
         _("Введите новый номер группы.")
     )
@@ -87,6 +90,9 @@ async def is_petrsu(callback_query: CallbackQuery, state: FSMContext):
         url_req = f"{settings.API_URL}/change_user_status"
         response = requests.post(url_req, json={"is_petrsu_student": False, "telegram_id": telegram_id, "group": ""})
         if response.status_code == 200:
+            await callback_query.message.edit_reply_markup(
+                reply_markup=None
+            )
             await callback_query.message.answer(
                 _("Вы больше не являетесь студентом ПетрГУ.")
             )
@@ -97,6 +103,9 @@ async def is_petrsu(callback_query: CallbackQuery, state: FSMContext):
                     response_status=response.status_code)
             )
     else:
+        await callback_query.message.edit_reply_markup(
+            reply_markup=None
+        )
         await callback_query.message.answer(
             _("Теперь Вы являетесь студентом ПетрГУ. Укажите номер группы.")
         )
