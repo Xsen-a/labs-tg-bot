@@ -926,7 +926,7 @@ async def ask_deleting_lab(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.message.answer(
         _("Вы действительно хотите удалить занятие по дисциплине {discipline} на дату {date} со временем проведения {time}?")
         .format(discipline=disciplines_dict[chosen_lesson["discipline_id"]],
-                date=chosen_lesson["start_date"],
+                date=datetime.strptime(chosen_lesson["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y"),
                 time=chosen_lesson["start_time"][:-3] + " - " + chosen_lesson["end_time"][:-3]
                 ),
         reply_markup=kb.confirm_delete_lesson()
