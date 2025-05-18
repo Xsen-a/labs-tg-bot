@@ -571,7 +571,8 @@ async def create_diagram_week(data):
             for i, item in enumerate(all_items):
                 if item['type'] == 'lab' and disciplines_dict.get(item['data']['discipline_id']) == pair['discipline']:
                     if item['data']['status'] != 'Сдано':
-                        if datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                        if datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.strptime(item['data']['end_date'], '%Y-%m-%d') or \
+                                datetime.strptime(item['data']['start_date'],'%Y-%m-%d') <= pair_date <= datetime.now().replace(hour=0, minute=0,second=0, microsecond=0):
                             if pair_date < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
                                 color = lesson_colors['database_end']
                             else:
@@ -587,7 +588,8 @@ async def create_diagram_week(data):
         for i, item in enumerate(all_items):
             if item['type'] == 'lab' and disciplines_dict.get(item['data']['discipline_id']) == pair['discipline']:
                 if item['data']['status'] != 'Сдано':
-                    if datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                    if datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.strptime(item['data']['end_date'], '%Y-%m-%d') or \
+                            datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
                         if pair_date < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
                             color = lesson_colors['schedule_end']
                         else:
