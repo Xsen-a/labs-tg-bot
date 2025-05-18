@@ -234,8 +234,7 @@ async def select_discipline(callback_query: CallbackQuery, state: FSMContext):
         if filtered_lab_list:
             info_string = f"Задания по дисциплине {disciplines_dict[discipline_id]}\n\n"
             for lab in filtered_lab_list:
-                info_string += __(f'Дисциплина: {disciplines_dict[lab["discipline_id"]]}\n' +
-                                  __(f'{lab["name"]}\n') +
+                info_string += __(f'{lab["name"]}\n' +
                                   __(f'Дата начала: {datetime.strptime(lab["start_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
                                   __(f'Срок сдачи: {datetime.strptime(lab["end_date"], "%Y-%m-%d").strftime("%d.%m.%Y")}\n') +
                                   __(f'Статус: <b>{lab["status"]}</b>\n\n'))
