@@ -35,7 +35,9 @@ status_colors = {
 
 lesson_colors = {
     'schedule': '#f59527',
-    'database': '#675ce5'
+    'database': '#675ce5',
+    'schedule_end': '#fac07d',
+    'database_end': '#a69ef7'
 }
 
 FIXED_SPACING = 1
@@ -190,9 +192,6 @@ async def create_diagram_full(data):
     durations = [end - start for start, end in zip(start_dates_num, end_dates_num)]
     statuses = [lab['status'] for lab in lab_tasks]
 
-
-
-    # Генерация позиций с фиксированным расстоянием
     y_pos = np.arange(len(all_items)) * FIXED_SPACING
 
     lab_index = 0
@@ -567,25 +566,35 @@ async def create_diagram_week(data):
     for pair in lessons_data['lessons_pairs']:
         dates = generate_dates(pair['start_date'], pair['periodicity_days'])
         for date in dates:
-            pair_date = datetime.strptime(date.strftime('%d.%m.%Y'), '%d.%m.%Y').replace(hour=0)
+            pair_date = datetime.strptime(date.strftime('%d.%m.%Y'), '%d.%m.%Y').replace(hour=0, minute=0, second=0)
             pair_num = mdates.date2num(pair_date)
             for i, item in enumerate(all_items):
                 if item['type'] == 'lab' and disciplines_dict.get(item['data']['discipline_id']) == pair['discipline']:
                     if item['data']['status'] != 'Сдано':
-                        ax.scatter(pair_num, y_pos[i],
-                                  s=point_size, marker='o',
-                                  color=lesson_colors['database'], zorder=5)
+                        if datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                            if pair_date < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                                color = lesson_colors['database_end']
+                            else:
+                                color = lesson_colors['database']
+                            ax.scatter(pair_num, y_pos[i],
+                                      s=point_size, marker='o',
+                                      color=color, zorder=5)
 
     for pair in lessons_data['schedule_pairs']:
-        pair_date = datetime.strptime(pair['date'], '%d.%m.%Y').replace(hour=0)
+        pair_date = datetime.strptime(pair['date'], '%d.%m.%Y').replace(hour=0, minute=0, second=0, microsecond=0)
         pair_num = mdates.date2num(pair_date)
 
         for i, item in enumerate(all_items):
             if item['type'] == 'lab' and disciplines_dict.get(item['data']['discipline_id']) == pair['discipline']:
                 if item['data']['status'] != 'Сдано':
-                    ax.scatter(pair_num, y_pos[i],
-                              s=point_size, marker='o',
-                              color=lesson_colors['schedule'], zorder=5)
+                    if datetime.strptime(item['data']['start_date'], '%Y-%m-%d') <= pair_date <= datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                        if pair_date < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+                            color = lesson_colors['schedule_end']
+                        else:
+                            color = lesson_colors['schedule']
+                        ax.scatter(pair_num, y_pos[i],
+                                  s=point_size, marker='o',
+                                  color=color, zorder=5)
 
     ax.xaxis.tick_top()
     # plt.xticks(rotation=45)
